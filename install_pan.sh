@@ -29,6 +29,13 @@ getAllNeededDockerImages () {
   cp  ${DOCKER_IMAGE_DIR}/* ${INSTALLED_DOCKER_IMAGE_PATH}
 }
 
+install_scripts () {
+
+  #####################  Install Scripts  ##########################
+  /usr/bin/install scripts/install_DL.sh ${INSTALLED_DIR}/install_DL.sh
+
+  #cp  ${DOCKER_IMAGE_DIR}/* ${INSTALLED_DOCKER_IMAGE_PATH}
+}
 
 ############ Don't source the install file. Run it in sh or bash ##########
 if ! echo "$0" | grep '\.sh$' > /dev/null; then
@@ -49,6 +56,7 @@ THIS_DIR=$(DIRNAME=$(dirname "$0"); cd "$DIRNAME"; pwd)
 THIS_FILE=$(basename "$0")
 THIS_PATH="$THIS_DIR/$THIS_FILE"
 DOCKER_IMAGE_DIR=/home/andrew/install-test/docker-images/x86
+RM="/bin/rm"
 
 NEEDED_PACKAGES="kubeadm kubectl docker.io ssh"
 COMPLETED_APT_DOWNLOAD=0
@@ -129,13 +137,15 @@ mkdir -p ${INSTALLED_DIR}
 
 
 INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/docker-images/${ARCH}
-#getDLWorkspace
+
+getDLWorkspace
 
 getNeededAptPackages
 
-echo $PWD
-
 getAllNeededDockerImages
 
+install_scrpts
+
+${RM} -rf ${TEMP_DIR}
 
 echo $PWD
