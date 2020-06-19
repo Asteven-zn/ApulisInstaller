@@ -1,0 +1,141 @@
+#!/bin/sh
+
+
+getDLWorkspace () {
+
+  ##################### Get DL Source Code ##############################################
+  git clone --single-branch --branch poc_distributed_job git@github.com:apulis/DLWorkspace.git ${TEMP_DIR}/YTung
+
+  tar -cvzf ${INSTALLED_DIR}/YTung.tar.gz ${TEMP_DIR}/YTung
+  rm -rf ${TEMP_DIR}/YTung
+}
+
+getNeededAptPackages () {
+  #####################  Create Installation Disk apt packages ##########################
+  mkdir -p ${INSTALLED_DIR}/apt/${ARCH}
+
+  if [ ${COMPLETED_APT_DOWNLOAD} = "1" ]; then
+      ( cd ${INSTALLED_DIR}/apt/${ARCH}; apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES} | grep "^\w" | sort -u) )
+  else
+      ( cd ${INSTALLED_DIR}/apt/${ARCH}; apt-get download $(apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES} | grep "^\w" | sort -u)  )
+  fi
+}
+
+getAllNeededDockerImages () {
+    
+  #####################  Create Installation Disk apt packages ##########################
+  mkdir -p ${INSTALLED_DOCKER_IMAGE_PATH}
+
+  cp  ${DOCKER_IMAGE_DIR}/* ${INSTALLED_DOCKER_IMAGE_PATH}
+}
+
+
+############ Don't source the install file. Run it in sh or bash ##########
+if ! echo "$0" | grep '\.sh$' > /dev/null; then
+    printf 'Please run using "bash" or "sh", but not "." or "source"\\n' >&2
+    return 1
+fi
+
+
+############ Check CPU Aritecchure ########################################
+ARCH=$(uname -m)
+printf "Hardware Architecture: ${ARCH}\n"
+
+###########  Check Operation System ######################################
+INSTALL_OS=$(grep '^ID=' /etc/os-release | awk -F'=' '{print $2}')
+OS_RELEASE=$(grep '^VERSION_ID=' /etc/os-release | awk -F'=' '{print $2}') 
+
+THIS_DIR=$(DIRNAME=$(dirname "$0"); cd "$DIRNAME"; pwd)
+THIS_FILE=$(basename "$0")
+THIS_PATH="$THIS_DIR/$THIS_FILE"
+DOCKER_IMAGE_DIR=/home/andrew/install-test/docker-images/x86
+
+NEEDED_PACKAGES="kubeadm kubectl docker.io ssh"
+COMPLETED_APT_DOWNLOAD=0
+
+TEMP_DIR=.temp
+INSTALLED_DIR="target"
+INTERNET="1"
+
+USAGE="
+usage: $0 [options]
+
+Create Installation Disk for YTung Workspace
+
+-p     		    Install Destination Path
+-n		    Installation Disk for YTung Installation with No Internet Connection. (Default)
+-i                  Installation Disk for YTung Installation with Internet Connection. 
+-c                  Complete apt packages download.
+-d                  Path to Docker Images
+
+-h		    print usage page. 
+"
+
+if which getopt > /dev/null 2>&1; then
+    OPTS=$(getopt p:d:inch "$*" 2>/dev/null)
+    if [ ! $? ]; then
+        printf "%s\\n" "$USAGE"
+        exit 2
+    fi
+
+    eval set -- "$OPTS"
+
+    while true; do
+        case "$1" in
+            -h)
+                printf "%s\\n" "$USAGE"
+                exit 2
+                ;;
+	    -p)
+		INSTALLED_DIR="$2"
+		shift;
+		shift;
+		;;
+	    -d)
+		DOCKER_IMAGE_DIR="$2"
+		shift;
+		shift;
+		;;	    
+	    -n)
+		INTERNET="0"
+		shift;
+		;;
+	    -i)
+		INTERNET="1"
+		shift;
+		;;
+	    -c)
+		COMPLETED_APT_DOWNLOAD="1"
+		shift;
+		;;
+	    --)
+                shift
+                break
+                ;;
+            *)
+                printf "ERROR: did not recognize option '%s', please try -h\\n" "$1"
+                exit 1
+                ;;
+
+	esac
+    done
+fi
+
+
+printf "Installed Directory: ${INSTALL_DIR} \n"
+
+mkdir -p ${TEMP_DIR}
+mkdir -p ${INSTALLED_DIR}
+
+
+INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/docker-images/${ARCH}
+#getDLWorkspace
+
+getNeededAptPackages
+
+echo $PWD
+
+getAllNeededDockerImages
+
+
+echo $PWD
