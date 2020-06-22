@@ -156,7 +156,7 @@ mkdir -p ${TEMP_DIR}
 mkdir -p ${INSTALLED_DIR}
 
 
-INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/docker-images/common/${ARCH}
+INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/docker-images/${ARCH}
 
 getDLWorkspace
 

@@ -214,7 +214,7 @@ set_up_password_less () {
 load_docker_images () {
     if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
 	    printf "Copy docker images from source\n"
-	    DOCKER_IMAGE_DIRECTORY="${INSTALLED_DIR}/docker-images/${ARCH}/"
+	    DOCKER_IMAGE_DIRECTORY="${INSTALLED_DIR}/docker-images/${ARCH}"
 
 	    for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
 	    do
