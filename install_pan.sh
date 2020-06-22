@@ -1,12 +1,29 @@
 #!/bin/sh
 
 
+# Copyright 2020 Apulis Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+
 getDLWorkspace () {
 
   ##################### Get DL Source Code ##############################################
   git clone --single-branch --branch poc_distributed_job git@github.com:apulis/DLWorkspace.git ${TEMP_DIR}/YTung
 
-  tar -cvzf ${INSTALLED_DIR}/YTung.tar.gz ${TEMP_DIR}/YTung
+  (cd ${TEMP_DIR}; tar -cvzf ../${INSTALLED_DIR}/YTung.tar.gz ./YTung --exclude "./YTung/.git" )
+
   rm -rf ${TEMP_DIR}/YTung
 }
 
@@ -58,7 +75,7 @@ THIS_PATH="$THIS_DIR/$THIS_FILE"
 DOCKER_IMAGE_DIR=/home/andrew/install-test/docker-images/x86
 RM="/bin/rm"
 
-NEEDED_PACKAGES="kubeadm kubectl docker.io ssh"
+NEEDED_PACKAGES="kubeadm kubectl docker.io ssh build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget vim"
 COMPLETED_APT_DOWNLOAD=0
 
 TEMP_DIR=.temp
@@ -71,12 +88,12 @@ usage: $0 [options]
 Create Installation Disk for YTung Workspace
 
 -p     		    Install Destination Path
--n		    Installation Disk for YTung Installation with No Internet Connection. (Default)
--i                  Installation Disk for YTung Installation with Internet Connection. 
--c                  Complete apt packages download.
--d                  Path to Docker Images
+-n		        Installation Disk for YTung Installation with No Internet Connection. (Default)
+-i              Installation Disk for YTung Installation with Internet Connection.
+-c              Complete apt packages download.
+-d              Path to Docker Images
 
--h		    print usage page. 
+-h		        print usage page.
 "
 
 if which getopt > /dev/null 2>&1; then
@@ -94,29 +111,29 @@ if which getopt > /dev/null 2>&1; then
                 printf "%s\\n" "$USAGE"
                 exit 2
                 ;;
-	    -p)
-		INSTALLED_DIR="$2"
-		shift;
-		shift;
-		;;
-	    -d)
-		DOCKER_IMAGE_DIR="$2"
-		shift;
-		shift;
-		;;	    
-	    -n)
-		INTERNET="0"
-		shift;
-		;;
-	    -i)
-		INTERNET="1"
-		shift;
-		;;
-	    -c)
-		COMPLETED_APT_DOWNLOAD="1"
-		shift;
-		;;
-	    --)
+	        -p)
+		        INSTALLED_DIR="$2"
+		        shift;
+		        shift;
+		        ;;
+	        -d)
+		        DOCKER_IMAGE_DIR="$2"
+		        shift;
+		        shift;
+		        ;;
+	        -n)
+		        INTERNET="0"
+		        shift;
+		        ;;
+	        -i)
+		        INTERNET="1"
+		        shift;
+		        ;;
+	        -c)
+		        COMPLETED_APT_DOWNLOAD="1"
+		        shift;
+		        ;;
+	        --)
                 shift
                 break
                 ;;
@@ -125,7 +142,7 @@ if which getopt > /dev/null 2>&1; then
                 exit 1
                 ;;
 
-	esac
+	    esac
     done
 fi
 
@@ -144,7 +161,7 @@ getNeededAptPackages
 
 getAllNeededDockerImages
 
-install_scrpts
+install_scripts
 
 ${RM} -rf ${TEMP_DIR}
 

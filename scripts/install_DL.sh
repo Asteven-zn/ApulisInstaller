@@ -33,7 +33,12 @@ install_dlws_admin_ubuntu () {
     esac
 
     printf "Done to crate 'dlwsadmin'\n"
-    
+
+    mkdir -p ${DLWS_HOME}
+    chown -R dlwsadmin:dlwsadmin ${DLWS_HOME}
+    echo "dlwsadmin ALL = (root) NOPASSWD:ALL" | tee /etc/sudoers.d/cephuser
+    chmod 0440 /etc/sudoers.d/dlwsadmin
+    sed -i s'/Defaults requiretty/#Defaults requiretty'/g /etc/sudoers
 }
 
 usage() {
@@ -45,11 +50,11 @@ EOF
 check_docker_installation() {
     ER=$(which docker)
     if [ x"${ER}" = "x" ]; then
-	printf "Docker Not Found. Will install later...\n"
-	NO_DOCKER=1
+	    printf "Docker Not Found. Will install later...\n"
+	    NO_DOCKER=1
     else
-	printf "Docker Found at ${ER} \n"
-	NO_DOCKER=0
+	    printf "Docker Found at ${ER} \n"
+	    NO_DOCKER=0
     fi
 
 }
@@ -57,20 +62,20 @@ check_docker_installation() {
 check_k8s_installation() {
     ER=$(which kubectl)
     if [ x"${ER}" = "x" ]; then
-	printf "kubectl Not Found. Will install later...\n"
-	NO_KUBECTL=1
+	    printf "kubectl Not Found. Will install later...\n"
+	    NO_KUBECTL=1
     else
-	printf "kubectl Found at ${ER} \n"
-	NO_KUBECTL=0
+	    printf "kubectl Found at ${ER} \n"
+	    NO_KUBECTL=0
     fi
 
     ER=$(which kubeadm)
     if [ x"${ER}" = "x" ]; then
-	printf "kubeadm Not Found. Will install later...\n"
-	NO_KUBEADM=1
+	    printf "kubeadm Not Found. Will install later...\n"
+	    NO_KUBEADM=1
     else
-	printf "kubeadm Found at ${ER} \n"
-	NO_KUBEADM=0
+	    printf "kubeadm Found at ${ER} \n"
+	    NO_KUBEADM=0
     fi
 
 }
@@ -112,34 +117,72 @@ install_1st_necessary_packages () {
     set +x
 
     if [ ${NO_KUBEADM} = 1 ] && [ ${NO_KUBECTL} = 1 ]; then
-	printf "Install Kubenetes components... \n"
+	    printf "Install Kubenetes components... \n"
 	
-	curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-	cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-	deb https://apt.kubernetes.io/ kubernetes-xenial main
+	    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+	    cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+	    deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 
-	k8s_version="1.18.0-00"
-	
-	sudo apt-get update
-	sudo apt-get install -y kubelet kubeadm kubectl
-	#sudo apt-mark hold kubelet kubeadm kubectl
+	    k8s_version="1.18.0-00"
+
+	    sudo apt-get update
+	    sudo apt-get install -y kubelet kubeadm kubectl
+	    #sudo apt-mark hold kubelet kubeadm kubectl
 	
     else
-	printf "Kubectl and Kubeadm are already installed. Will confiure later...\n"
+	    printf "Kubectl and Kubeadm are already installed. Will confiure later...\n"
     fi
     
     
 			 
 }
 
+
+
+install_necessary_packages () {
+
+    TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
+
+    TEMP_DIR="/tmp/install_ytung_apt".${TIMESTAMP}
+    mkdir -p ${TEMP_DIR}
+
+
+    for entry in apt/${ARCH}/*.deb
+    do
+        echo "$entry"
+        filename=$(basename $entry)
+        IFS='_' read -ra package <<< "$filename"
+
+        INFO=$(dpkg -l ${package[0]} )
+        RETURN_CODE=$?
+
+        if [ ${RETURN_CODE} = 1 ]; then
+	       echo "Looks like ${package[0]} has not been installed. Let's Install ...";
+	       cp ${entry} $TEMP_DIR
+        else
+            INFO2=$(echo ${INFO##*$'\n'})
+        	IFS=' ' read -ra detail <<< "$INFO2"
+	        if [ ${detail[0]} = "ii" ] ; then
+	            echo "Looks like ${package[0]} has been installed. Skip ...";
+	        else
+	            echo "Looks like ${package[0]} has not been installed yet. Let's Install ...";
+	            cp $entry $TEMP_DIR
+	        fi
+        fi
+    done
+
+    dpkg -i ${TEMP_DIR}/*
+
+}
+
 install_source_dir () {
 
     if [ ! -f "${INSTALLED_DIR}" ]; then
-	mkdir -p ${INSTALLED_DIR}
+	    mkdir -p ${INSTALLED_DIR}
     fi
     
-    tar -xvf ./YTung.tar -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
+    tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 }
 
@@ -149,18 +192,18 @@ set_up_password_less () {
 
     echo "Test: ${ID_DIR}"
     if [ -f "${ID_DIR}" ]; then
-	printf "${ID_DIR} exists. \n"
+	    printf "${ID_DIR} exists. \n"
     else
-	printf "Create Directory: ${ID_DIR} \n"
-	runuser dlwsadmin -c "mkdir ${DLWS_HOME}/.ssh"
+	    printf "Create Directory: ${ID_DIR} \n"
+	    runuser dlwsadmin -c "mkdir ${DLWS_HOME}/.ssh"
     fi
     
     ID_FILE="${ID_DIR}/id_rsa"
     if [ -f "${ID_FILE}" ]; then	
-	echo "User 'dlwsadmin' has set up the key. Set up the local passwordless access..."
+	    echo "User 'dlwsadmin' has set up the key. Set up the local passwordless access..."
     else
-	printf "Create SSH Key ...\n"
-	runuser dlwsadmin -c "ssh-keygen -t rsa -P '' -f ${ID_FILE}"
+	    printf "Create SSH Key ...\n"
+	    runuser dlwsadmin -c "ssh-keygen -t rsa -P '' -f ${ID_FILE}"
     fi
 
     runuser dlwsadmin -c "cat ${ID_DIR}/id_rsa.pub >> ${ID_DIR}/authorized_keys"
@@ -170,27 +213,25 @@ set_up_password_less () {
 
 load_docker_images () {
     if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
-	printf "Copy docker images from source\n"
-	DOCKER_IMAGE_DIRECTORY="${INSTALLED_DIR}/docker-images"
+	    printf "Copy docker images from source\n"
+	    DOCKER_IMAGE_DIRECTORY="${INSTALLED_DIR}/docker-images/${ARCH}/"
 
-	DIR="/tmp/*.tar"
-	for file in $DIR
-	do
-	    printf "Load docker image file: $file\n"
-	    docker load -i $file
-	done
+	    for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
+	    do
+	        printf "Load docker image file: $file\n"
+	        docker load -i $file
+	    done
 	
     else
-	printf "Pull docker images from Docker Hub...\n"
+	    printf "Pull docker images from Docker Hub...\n"
 
-	############ Will implement later ##################################
+	    ############ Will implement later ##################################
 
     fi
 }
 
 set_up_k8s_cluster () {
     echo "The Cluster Name will be set to: ${CLUSTER_NAME}"
-
     
     swapoff -a
     sed -e '/[ \t].swap[\t ]./ s/^#*/#/' -i /etc/fstab
@@ -266,31 +307,31 @@ if which getopt > /dev/null 2>&1; then
                 printf "%s\\n" "$USAGE"
                 exit 2
                 ;;
-	    -d)
-		INSTALLED_DIR="$2"
-		shift;
-		shift;
-		;;
-	    -n)
-		CLUSTER_NAME="$2"
-		shift;
-		shift;
-		;;
-	    -u)
-		HUAWEI_NPU=1
-		shift;
-		;;
-	    -f)
-		COPY_DOCKER_IMAGE=1
-		shift;
-		;;
-	    -r)
-		COPY_DOCKER_IMAGE=0
-		DOCKER_REGISTRY="$2"
-		shift;
-		shift;
-		;;
-	    --)
+	        -d)
+		        INSTALLED_DIR="$2"
+		        shift;
+		        shift;
+		        ;;
+	        -n)
+		        CLUSTER_NAME="$2"
+		        shift;
+		        shift;
+		        ;;
+	        -u)
+		        HUAWEI_NPU=1
+		        shift;
+		        ;;
+	        -f)
+		        COPY_DOCKER_IMAGE=1
+		        shift;
+		        ;;
+	        -r)
+		        COPY_DOCKER_IMAGE=0
+		        DOCKER_REGISTRY="$2"
+		        shift;
+		        shift;
+		        ;;
+	        --)
                 shift
                 break
                 ;;
@@ -299,7 +340,7 @@ if which getopt > /dev/null 2>&1; then
                 exit 1
                 ;;
 
-	esac
+	    esac
     done
 fi
 
@@ -347,21 +388,16 @@ if [ "${INSTALL_OS}" = "ubuntu" ] ||  [ "${INSTALL_OS}" = "linuxmint" ] ;
 then
     printf "Install DLWS On Ubuntu...\n"
     if [ "${OS_RELEASE}" != "18.04" ]; then
-	printf "WARNING: \n"
-	printf "       DLWorkspace is only certified on 18.04, 19.04, 19.10\n"
+	    printf "WARNING: \n"
+	    printf "       DLWorkspace is only certified on 18.04, 19.04, 19.10\n"
     fi
 
     check_docker_installation
     check_k8s_installation
+    
+    #install_1st_necessary_packages
+    install_necessary_packages
 
-    ############# stop here for testing ################################################
-    #if [ "x" = "x" ]; then
-    #	echo "Exit for Now ..."
-    #	exit 0;
-    #fi
-    
-    install_1st_necessary_packages
-    
     install_dlws_admin_ubuntu
 
     set_up_password_less
@@ -379,19 +415,24 @@ then
     
     #### check if A910 is presented ########################################
     if [ -f "/dev/davinci0" && -f "/dev/davinci_manager" && -f "/dev/hisi_hdc" ]; then
-	echo "Load A910 device plugin images ..."
-	if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
-	    gzip "${INSTALLED_DIR}/docker-images/A910_driver/${ARCH}/device-plugin.tar.gz" | docker load 
-	else
-	    echo "Build Device Plugin images ..."
-	    # docker build ...
-	fi	
+	    echo "Load A910 device plugin images ..."
+	    if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
+	        gzip "${INSTALLED_DIR}/docker-images/A910_driver/${ARCH}/device-plugin.tar.gz" | docker load
+	    else
+	        echo "Build Device Plugin images ..."
+	        # docker build ...
+	    fi
     fi
-    
 
-        
     #### Now, this is the configuration of K8s services ####################
     set_up_k8s_cluster
+
+    ############# stop here for testing ################################################
+    if [ "x" = "x" ]; then
+    	echo "Exit for Now ..."
+    	exit 0;
+    fi
+
 
     
     ${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push backendbase
