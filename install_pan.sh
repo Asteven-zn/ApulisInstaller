@@ -20,7 +20,10 @@
 getDLWorkspace () {
 
   ##################### Get DL Source Code ##############################################
-  git clone --single-branch --branch poc_distributed_job git@github.com:apulis/DLWorkspace.git ${TEMP_DIR}/YTung
+  #git clone --single-branch --branch poc_distributed_job git@github.com:apulis/DLWorkspace.git ${TEMP_DIR}/YTung
+
+  ############## Use Https instead of ssh #################################################
+  git clone --single-branch --branch poc_distributed_job https://github.com/apulis/DLWorkspace.git ${TEMP_DIR}/YTung
 
   (cd ${TEMP_DIR}; tar -cvzf ../${INSTALLED_DIR}/YTung.tar.gz ./YTung --exclude "./YTung/.git" )
 
@@ -153,7 +156,7 @@ mkdir -p ${TEMP_DIR}
 mkdir -p ${INSTALLED_DIR}
 
 
-INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/docker-images/${ARCH}
+INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/docker-images/common/${ARCH}
 
 getDLWorkspace
 

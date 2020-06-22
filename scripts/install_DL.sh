@@ -414,7 +414,7 @@ then
     load_docker_images
     
     #### check if A910 is presented ########################################
-    if [ -f "/dev/davinci0" && -f "/dev/davinci_manager" && -f "/dev/hisi_hdc" ]; then
+    if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
 	    echo "Load A910 device plugin images ..."
 	    if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
 	        gzip "${INSTALLED_DIR}/docker-images/A910_driver/${ARCH}/device-plugin.tar.gz" | docker load
