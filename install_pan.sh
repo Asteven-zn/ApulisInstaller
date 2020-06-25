@@ -53,7 +53,7 @@ install_scripts () {
 
   #####################  Install Scripts  ##########################
   /usr/bin/install scripts/install_DL.sh ${INSTALLED_DIR}/install_DL.sh
-
+  /usr/bin/install scripts/install_worknode.sh ${INSTALLED_DIR}/install_worknode.sh
   #cp  ${DOCKER_IMAGE_DIR}/* ${INSTALLED_DOCKER_IMAGE_PATH}
 }
 

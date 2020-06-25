@@ -142,8 +142,6 @@ EOF
 
 install_necessary_packages () {
 
-    TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
-
     TEMP_DIR="/tmp/install_ytung_apt".${TIMESTAMP}
     mkdir -p ${TEMP_DIR}
 
@@ -242,6 +240,9 @@ setup_user_on_node() {
 
     local node=$1
 
+    if [ x"${SUDO_USER}" != "x" ]; then
+	node=${SUDO_USER}@$node
+    fi
     echo "Node is: ", ${node}
     ssh -t ${node}  "(sudo useradd -d ${DLWS_HOME} -s /bin/bash dlwsadmin; echo \"dlwsadmin:dlwsadmin\" | sudo chpasswd ; \\
 sudo mkdir -p ${DLWS_HOME}; sudo mkdir -p ${DLWS_HOME}/.ssh && sudo chown -R dlwsadmin:dlwsadmin ${DLWS_HOME}) && sudo runuser dlwsadmin -c \"ssh-keygen -t rsa -P '' -f ${DLWS_HOME}/.ssh/id_rsa\" \\
@@ -440,6 +441,8 @@ echo "!   Start to work on the master. Hostname is: " $(hostname)
 echo "!"
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
+TIMESTAMP=$(date "+%Y%m%d-%H:%M:%S")
+
 if [ "${INSTALL_OS}" = "ubuntu" ] ||  [ "${INSTALL_OS}" = "linuxmint" ] ;
 then
     printf "Install DLWS On Ubuntu...\n"
@@ -463,7 +466,7 @@ then
     install_source_dir && echo "Successfully installed source tree..."
 
     #### check if there are nVidia Cards ###################################
-    ${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
+    #${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
 
     #### load/copy docker images ###########################################
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
@@ -541,7 +544,11 @@ done
 echo ${nodes[@]}
 printf "Total number of nodes: ${#nodes[@]} \\n"
 
-########### setting up for master ###########################################
+########### setting up for master, also copy the package files and docker images files ###########################################
+REMOTE_INSTALL_DIR="/tmp/install_YTung.$TIMESTAMP"
+REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${ARCH}"
+REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/dock-images/${ARCH}"
+
 runuser dlwsadmin -c "ssh-keyscan ${nodes[@]} >> ~/.ssh/known_hosts"
 for worknode in "${nodes[@]}"
 do
@@ -550,4 +557,17 @@ do
     ######### set up passwordless access from Node to Master ################################
     sshpass -p dlwsadmin ssh dlwsadmin@$worknode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
 
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}"
+
+    sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$worknode:${REMOTE_APT_DIR}
+
+    sshpass -p dlwsadmin scp docker-images/${ARCH}/* dlwsadmin@$worknode:${REMOTE_IMAGE_DIR}
+
+    sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
+
+    sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
+
+    ########################### Install on remote node ######################################
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "sudo ${REMOTE_INSTALL_DIR}/install_worknode.sh"
 done
+
