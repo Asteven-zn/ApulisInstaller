@@ -78,7 +78,7 @@ THIS_PATH="$THIS_DIR/$THIS_FILE"
 DOCKER_IMAGE_DIR=/home/andrew/install-test/docker-images/x86
 RM="/bin/rm"
 
-NEEDED_PACKAGES="kubeadm kubectl docker.io ssh build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget vim"
+NEEDED_PACKAGES="kubeadm kubectl docker.io ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget vim"
 COMPLETED_APT_DOWNLOAD=0
 
 TEMP_DIR=.temp

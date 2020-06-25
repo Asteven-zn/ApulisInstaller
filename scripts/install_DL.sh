@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright 2020 Apulis Inc. All Rights Reserved.
 #
@@ -36,7 +36,7 @@ install_dlws_admin_ubuntu () {
 
     mkdir -p ${DLWS_HOME}
     chown -R dlwsadmin:dlwsadmin ${DLWS_HOME}
-    echo "dlwsadmin ALL = (root) NOPASSWD:ALL" | tee /etc/sudoers.d/cephuser
+    echo "dlwsadmin ALL = (root) NOPASSWD:ALL" | tee /etc/sudoers.d/dlwsadmin
     chmod 0440 /etc/sudoers.d/dlwsadmin
     sed -i s'/Defaults requiretty/#Defaults requiretty'/g /etc/sudoers
 }
@@ -238,6 +238,18 @@ set_up_k8s_cluster () {
 
 }
 
+setup_user_on_node() {
+
+    local node=$1
+
+    echo "Node is: ", ${node}
+    ssh -t ${node}  "(sudo useradd -d ${DLWS_HOME} -s /bin/bash dlwsadmin; echo \"dlwsadmin:dlwsadmin\" | sudo chpasswd ; \\
+sudo mkdir -p ${DLWS_HOME}; sudo mkdir -p ${DLWS_HOME}/.ssh && sudo chown -R dlwsadmin:dlwsadmin ${DLWS_HOME}) && sudo runuser dlwsadmin -c \"ssh-keygen -t rsa -P '' -f ${DLWS_HOME}/.ssh/id_rsa\" \\
+&& echo \"dlwsadmin ALL = (root) NOPASSWD:ALL\" | sudo tee /etc/sudoers.d/dlwsadmin && sudo chmod 0440 /etc/sudoers.d/dlwsadmin && sudo sed -i s'/Defaults requiretty/#Defaults requiretty'/g /etc/sudoers  "
+
+    return $?
+
+}
 
 
 
@@ -383,7 +395,51 @@ then
     fi
 fi	
 
-    
+    printf "\\n"
+    printf "Welcome to DLWorkspace 2020.06\\n"
+    printf "\\n"
+    printf "In order to continue the installation process, please review the license\\n"
+    printf "agreement.\\n"
+    printf "Please, press ENTER to continue\\n"
+    printf ">>> "
+    read -r dummy
+    pager="cat"
+    if command -v "more" > /dev/null 2>&1; then
+      pager="more"
+    fi
+    "$pager" <<EOF
+===================================
+End User License Agreement - Apulis
+===================================
+
+Copyright 2019-2020, Apulis, Inc.
+
+All rights reserved under the MIT License:
+EOF
+
+    printf "\\n"
+    printf "Do you accept the license terms? [yes|no]\\n"
+    printf "[no] >>> "
+    read -r ans
+    while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+          [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+    do
+        printf "Please answer 'yes' or 'no':'\\n"
+        printf ">>> "
+        read -r ans
+    done
+    if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
+    then
+        printf "The license agreement wasn't approved, aborting installation.\\n"
+        exit 2
+    fi
+
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!"
+echo "!   Start to work on the master. Hostname is: " $(hostname)
+echo "!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
 if [ "${INSTALL_OS}" = "ubuntu" ] ||  [ "${INSTALL_OS}" = "linuxmint" ] ;
 then
     printf "Install DLWS On Ubuntu...\n"
@@ -391,6 +447,7 @@ then
 	    printf "WARNING: \n"
 	    printf "       DLWorkspace is only certified on 18.04, 19.04, 19.10\n"
     fi
+
 
     check_docker_installation
     check_k8s_installation
@@ -406,7 +463,7 @@ then
     install_source_dir && echo "Successfully installed source tree..."
 
     #### check if there are nVidia Cards ###################################
-    #${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
+    ${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
 
     #### load/copy docker images ###########################################
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
@@ -427,31 +484,70 @@ then
     #### Now, this is the configuration of K8s services ####################
     set_up_k8s_cluster
 
-    ############# stop here for testing ################################################
-    if [ "x" = "x" ]; then
-    	echo "Exit for Now ..."
-    	exit 0;
-    fi
 
 
     
-    ${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push backendbase
-    ${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push restfulapi2
-    ${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push webui3
+    #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push backendbase
+    #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push restfulapi2
+    #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push webui3
 
 
-    ${INSTALLED_DIR}/deploy.py --verbose webui
+    #${INSTALLED_DIR}/deploy.py --verbose webui
     
 
-    ${INSTALLED_DIR}/deploy.py --verbose nginx fqdn
-    ${INSTALLED_DIR}/deploy.py --verbose nginx config
+    #${INSTALLED_DIR}/deploy.py --verbose nginx fqdn
+    #${INSTALLED_DIR}/deploy.py --verbose nginx config
 
     #### label
-    ${INSTALLED_DIR}/deploy.py --verbose kubernetes uncordon
-    ${INSTALLED_DIR}/deploy.py --verbose kubernetes labelservice
-    ${INSTALLED_DIR}/deploy.py --verbose labelworker
+    #${INSTALLED_DIR}/deploy.py --verbose kubernetes uncordon
+    #${INSTALLED_DIR}/deploy.py --verbose kubernetes labelservice
+    #${INSTALLED_DIR}/deploy.py --verbose labelworker
 
 
 fi
 
+#################### Now, deploy node #########################################################################
 
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!"
+echo "!   Start to work on node. "
+echo "!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+declare -a nodes=()
+node_number=1
+
+while [ ${node_number} -le 5 ]
+do
+    printf "\\n"
+    printf "Add More Node in the cluster"
+    printf "\\n"
+    printf "Please enter the hostname of node (Node Number: ${node_number} ). \\n"
+    printf ">>> "
+    read -r nodename
+    if [ $nodename = "quit" ]; then
+        printf "No more node is need to set up. \\n"
+        break;
+    else
+        printf "Set up node ...\\n"
+        setup_user_on_node $nodename
+        if [ $? = 0 ]; then
+            nodes[ $(( ${node_number} - 1 )) ]=${nodename}
+            node_number=$(( ${node_number} + 1 ))
+        fi
+    fi
+done
+
+echo ${nodes[@]}
+printf "Total number of nodes: ${#nodes[@]} \\n"
+
+########### setting up for master ###########################################
+runuser dlwsadmin -c "ssh-keyscan ${nodes[@]} >> ~/.ssh/known_hosts"
+for worknode in "${nodes[@]}"
+do
+    ######### set up passwordless access from Master to Node ################################
+    cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$worknode 'cat >> .ssh/authorized_keys'
+    ######### set up passwordless access from Node to Master ################################
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
+
+done
