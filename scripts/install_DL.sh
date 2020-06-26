@@ -547,7 +547,7 @@ printf "Total number of nodes: ${#nodes[@]} \\n"
 ########### setting up for master, also copy the package files and docker images files ###########################################
 REMOTE_INSTALL_DIR="/tmp/install_YTung.$TIMESTAMP"
 REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${ARCH}"
-REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/dock-images/${ARCH}"
+REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${ARCH}"
 
 runuser dlwsadmin -c "ssh-keyscan ${nodes[@]} >> ~/.ssh/known_hosts"
 for worknode in "${nodes[@]}"
@@ -568,6 +568,6 @@ do
     sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
     ########################### Install on remote node ######################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "sudo ${REMOTE_INSTALL_DIR}/install_worknode.sh"
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "cd ${REMOTE_INSTALL_DIR}; sudo ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
 done
 

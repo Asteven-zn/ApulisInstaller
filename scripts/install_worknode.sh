@@ -127,7 +127,7 @@ set_up_password_less () {
 load_docker_images () {
     if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
 	    printf "Copy docker images from source\n"
-	    DOCKER_IMAGE_DIRECTORY="${INSTALLED_DIR}/docker-images/${ARCH}"
+	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images/${ARCH}"
 
 	    for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
 	    do
@@ -167,7 +167,7 @@ DOCKER_REGISTRY=
 INSTALLED_DIR="/home/dlwsadmin/DLWorkspace"
 
 CLUSTER_NAME="DLWorkspace"
-
+TIMESTAMP=$(date "+%Y%m%d-%H:%M:%S")
 
 ############# Don't source the install file. Run it in sh or bash ##########
 if ! echo "$0" | grep '\.sh$' > /dev/null; then
@@ -216,14 +216,7 @@ then
 
     install_necessary_packages
 
-    #install_dlws_admin_ubuntu
-
-    set_up_password_less
-    #### set up DLWorkspace source tree ####################################
     install_source_dir && echo "Successfully installed source tree..."
-
-    #### check if there are nVidia Cards ###################################
-    #${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
 
     #### load/copy docker images ###########################################
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
