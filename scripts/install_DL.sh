@@ -13,7 +13,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+config_k8s_cluster() {
+    IMAGE_DIR="${INSTALLED_DIR}/docker-images/${ARCH}"
+    TEMP_CONFIG_NAME="temp.config"
+    kubeadm config print init-defaults > $TEMP_CONFIG_NAME
+    sed -i "s/clusterName.*/clusterName: ${CLUSTER_NAME}/g" $TEMP_CONFIG_NAME
+    sed -i 's/.*kubernetesVersion.*/kubernetesVersion: v1.18.2/g' $TEMP_CONFIG_NAME
+    #sed -i "s|.*imageRepository.*|imageRepository: ${IMAGE_DIR}|g" $TEMP_CONFIG_NAME
+    sed -i "/dnsDomain/a\  podSubnet: \"10.244.0.0/16\"" $TEMP_CONFIG_NAME
+    echo 'Please select a IP address and input'
+    /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v 172|grep -v inet6|awk '{print $2}'|tr -d "addr:"
+    echo 'Input target ip address:'
+    read -r IP_ADDRESS
+    echo $IP_ADDRESS
+    sed -i "s/.*advertiseAddress.*/  advertiseAddress: $IP_ADDRESS/g" $TEMP_CONFIG_NAME
+    cat $TEMP_CONFIG_NAME
 
+    JOIN_COMMAND=`kubeadm init --config $TEMP_CONFIG_NAME | grep -A 1 kubeadm\ join`
+    mkdir -p $HOME/.kube
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    echo $JOIN_COMMAND > join-command
+
+}
 install_dlws_admin_ubuntu () {
     useradd -d ${DLWS_HOME} -s /bin/bash dlwsadmin
     RC=$?
@@ -486,7 +508,8 @@ then
 
     #### Now, this is the configuration of K8s services ####################
     set_up_k8s_cluster
-
+    JOIN_COMMAND
+    config_k8s_cluster
 
 
     
