@@ -568,6 +568,6 @@ do
     sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
     ########################### Install on remote node ######################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "cd ${REMOTE_INSTALL_DIR}; sudo ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
 done
 
