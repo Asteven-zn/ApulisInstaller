@@ -24,7 +24,7 @@ config_k8s_cluster() {
     #sed -i "s|.*imageRepository.*|imageRepository: ${IMAGE_DIR}|g" $TEMP_CONFIG_NAME
     sed -i "/dnsDomain/a\  podSubnet: \"10.244.0.0/16\"" $TEMP_CONFIG_NAME
     echo 'Please select a IP address and input'
-    /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v 172|grep -v inet6|awk '{print $2}'|tr -d "addr:"
+    /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v 172.17.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"
     echo 'Input target ip address:'
     read -r IP_ADDRESS
     echo $IP_ADDRESS
