@@ -16,27 +16,27 @@
 
 
 config_k8s_cluster() {
+    ###### init kubernetes cluster config file
     IMAGE_DIR="${INSTALLED_DIR}/docker-images/${ARCH}"
     TEMP_CONFIG_NAME="temp.config"
     kubeadm config print init-defaults > $TEMP_CONFIG_NAME
     sed -i "s/clusterName.*/clusterName: ${CLUSTER_NAME}/g" $TEMP_CONFIG_NAME
     sed -i 's/.*kubernetesVersion.*/kubernetesVersion: v1.18.2/g' $TEMP_CONFIG_NAME
-    #sed -i "s|.*imageRepository.*|imageRepository: ${IMAGE_DIR}|g" $TEMP_CONFIG_NAME
     sed -i "/dnsDomain/a\  podSubnet: \"10.244.0.0/16\"" $TEMP_CONFIG_NAME
     echo 'Please select a IP address and input'
-    /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v 172|grep -v inet6|awk '{print $2}'|tr -d "addr:"
+    /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v 172.17.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"
     echo 'Input target ip address:'
     read -r IP_ADDRESS
     echo $IP_ADDRESS
     sed -i "s/.*advertiseAddress.*/  advertiseAddress: $IP_ADDRESS/g" $TEMP_CONFIG_NAME
     cat $TEMP_CONFIG_NAME
-
+    ###### init kubernetes cluster and save join command
     JOIN_COMMAND=`kubeadm init --config $TEMP_CONFIG_NAME | grep -A 1 kubeadm\ join`
     mkdir -p $HOME/.kube
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
     echo $JOIN_COMMAND > join-command
-
+    sed -i 's/\\//g' join-command
 }
 
 install_dlws_admin_ubuntu () {
@@ -550,7 +550,6 @@ then
 
     #### Now, this is the configuration of K8s services ####################
     set_up_k8s_cluster
-    JOIN_COMMAND
     config_k8s_cluster
 
 
@@ -613,6 +612,7 @@ printf "Total number of nodes: ${#nodes[@]} \\n"
 REMOTE_INSTALL_DIR="/tmp/install_YTung.$TIMESTAMP"
 REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${ARCH}"
 REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${ARCH}"
+REMOTE_CONFIG_DIR="${REMOTE_INSTALL_DIR}/config"
 
 runuser dlwsadmin -c "ssh-keyscan ${nodes[@]} >> ~/.ssh/known_hosts"
 
@@ -628,13 +628,17 @@ do
     ######### set up passwordless access from Node to Master ################################
     sshpass -p dlwsadmin ssh dlwsadmin@$worknode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
 
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}"
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}"
 
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$worknode:${REMOTE_APT_DIR}
 
     sshpass -p dlwsadmin scp docker-images/${ARCH}/* dlwsadmin@$worknode:${REMOTE_IMAGE_DIR}
 
+    sshpass -p dlwsadmin scp config/* dlwsadmin@$worknode:${REMOTE_CONFIG_DIR}
+
     sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
+
+    sshpass -p dlwsadmin scp join-command dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
@@ -650,3 +654,5 @@ do
 
 done
 
+###### apply weave network ###################################################################
+kubectl apply -f config/weave-net.yaml

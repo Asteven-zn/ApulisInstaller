@@ -224,3 +224,9 @@ then
     load_docker_images
 
 fi
+
+########### Then, join in kubernetes cluster and apply weave net ###############################
+
+JOIN_COMMAND=`cat join-command`
+
+sudo $JOIN_COMMAND
