@@ -13,6 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
 config_k8s_cluster() {
     IMAGE_DIR="${INSTALLED_DIR}/docker-images/${ARCH}"
     TEMP_CONFIG_NAME="temp.config"
@@ -36,6 +38,7 @@ config_k8s_cluster() {
     echo $JOIN_COMMAND > join-command
 
 }
+
 install_dlws_admin_ubuntu () {
     useradd -d ${DLWS_HOME} -s /bin/bash dlwsadmin
     RC=$?
@@ -274,7 +277,27 @@ sudo mkdir -p ${DLWS_HOME}; sudo mkdir -p ${DLWS_HOME}/.ssh && sudo chown -R dlw
 
 }
 
+create_nfs_share() {
 
+    mkdir -p $NFS_MOUNT_POINT
+
+    if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
+        chown -R nobody:nogroup $NFS_MOUNT_POINT
+        chmod 777 $NFS_MOUNT_POINT
+
+        ############ /etc/exports will only open to the nodes client. ###############################################
+        for worknode in "${nodes[@]}"
+        do
+           echo "$NFS_MOUNT_POINT  $worknode   (re,sync,no_subtree_check)" | tee -a /etc/exports
+        done
+
+        exportfs -a
+        systemctl restart nfs-kernel-server
+    else
+        echo "${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs        auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 " | tee -a /etc/fstab
+        mount ${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}
+    fi
+}
 
 ############################################################################
 #
@@ -290,6 +313,10 @@ HUAWEI_NPU="False"
 COPY_DOCKER_IMAGE=1
 DOCKER_REGISTRY=
 INSTALLED_DIR="/home/dlwsadmin/DLWorkspace"
+NO_NFS=1
+EXTERNAL_NFS_MOUNT=0
+EXTERNAL_MOUNT_POINT=
+NFS_MOUNT_POINT="/mnt/nfs_share"
 
 CLUSTER_NAME="DLWorkspace"
 
@@ -328,7 +355,7 @@ Installs YTung AI Workspace 2020.06
 "
 
 if which getopt > /dev/null 2>&1; then
-    OPTS=$(getopt d:n:r:ulh "$*" 2>/dev/null)
+    OPTS=$(getopt d:n:r:m:ulhez "$*" 2>/dev/null)
     if [ ! $? ]; then
         printf "%s\\n" "$USAGE"
         exit 2
@@ -364,6 +391,21 @@ if which getopt > /dev/null 2>&1; then
 		        COPY_DOCKER_IMAGE=0
 		        DOCKER_REGISTRY="$2"
 		        shift;
+		        shift;
+		        ;;
+	        -e)
+		        EXTERNAL_NFS_MOUNT=1
+		        EXTERNAL_MOUNT_POINT="$2"
+		        shift;
+		        shift;
+		        ;;
+		    -m)
+		        NFS_MOUNT_POINT="$2"
+		        shift;
+		        shift;
+		        ;;
+		    -z)
+		        NO_NFS=0
 		        shift;
 		        ;;
 	        --)
@@ -494,7 +536,7 @@ then
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 
     load_docker_images
-    
+
     #### check if A910 is presented ########################################
     if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
 	    echo "Load A910 device plugin images ..."
@@ -570,9 +612,15 @@ printf "Total number of nodes: ${#nodes[@]} \\n"
 ########### setting up for master, also copy the package files and docker images files ###########################################
 REMOTE_INSTALL_DIR="/tmp/install_YTung.$TIMESTAMP"
 REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${ARCH}"
-REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/dock-images/${ARCH}"
+REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${ARCH}"
 
 runuser dlwsadmin -c "ssh-keyscan ${nodes[@]} >> ~/.ssh/known_hosts"
+
+############# Create NFS share ###################################################################
+if [ ${NO_NFS} = 0 ]; then
+   create_nfs_share
+fi
+
 for worknode in "${nodes[@]}"
 do
     ######### set up passwordless access from Master to Node ################################
@@ -591,6 +639,14 @@ do
     sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
     ########################### Install on remote node ######################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "sudo ${REMOTE_INSTALL_DIR}/install_worknode.sh"
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
+
+    if [ ${NO_NFS} = 0 ]; then
+       if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
+           EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
+       fi
+       sshpass -p dlwsadmin ssh dlwsadmin@$worknode "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
+    fi
+
 done
 
