@@ -36,9 +36,7 @@ config_k8s_cluster() {
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
     echo $JOIN_COMMAND > join-command
-    sed -i "s/\\//g" join-command
-    ###### apply weave network
-    kubectl apply -f config/weave-net.yaml
+    sed -i 's/\\//g' join-command
 }
 
 install_dlws_admin_ubuntu () {
@@ -656,3 +654,5 @@ do
 
 done
 
+###### apply weave network ###################################################################
+kubectl apply -f config/weave-net.yaml

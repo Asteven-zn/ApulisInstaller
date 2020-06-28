@@ -230,5 +230,3 @@ fi
 JOIN_COMMAND=`cat join-command`
 
 sudo $JOIN_COMMAND
-
-kubectl apply -f weave-net.yaml
