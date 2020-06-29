@@ -43,10 +43,18 @@ getNeededAptPackages () {
 
 getAllNeededDockerImages () {
     
-  #####################  Create Installation Disk apt packages ##########################
+  #####################  Copy docker images ##########################
   mkdir -p ${INSTALLED_DOCKER_IMAGE_PATH}
 
   cp  ${DOCKER_IMAGE_DIR}/* ${INSTALLED_DOCKER_IMAGE_PATH}
+}
+
+getAllNeededConfigs () {
+    
+  #####################  Copy config file ##########################
+  mkdir -p ${INSTALLED_CONFIG_PATH}
+
+  cp  ${CONFIG_DIR}/* ${INSTALLED_CONFIG_PATH}
 }
 
 install_scripts () {
@@ -76,6 +84,7 @@ THIS_DIR=$(DIRNAME=$(dirname "$0"); cd "$DIRNAME"; pwd)
 THIS_FILE=$(basename "$0")
 THIS_PATH="$THIS_DIR/$THIS_FILE"
 DOCKER_IMAGE_DIR=/home/andrew/install-test/docker-images/x86
+CONFIG_DIR=./config
 RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
@@ -160,11 +169,15 @@ mkdir -p ${INSTALLED_DIR}
 
 INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/docker-images/${ARCH}
 
+INSTALLED_CONFIG_PATH=${INSTALLED_DIR}/config
+
 getDLWorkspace
 
 getNeededAptPackages
 
 getAllNeededDockerImages
+
+getAllNeededConfigs
 
 install_scripts
 
