@@ -213,7 +213,8 @@ then
 
     check_docker_installation
     check_k8s_installation
-
+    set_up_k8s_cluster
+    
     install_necessary_packages
 
     install_source_dir && echo "Successfully installed source tree..."
