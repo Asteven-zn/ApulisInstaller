@@ -171,7 +171,7 @@ install_necessary_packages () {
     mkdir -p ${TEMP_DIR}
 
 
-    for entry in apt/${ARCH}/*.deb
+    for entry in ${THIS_DIR}/apt/${ARCH}/*.deb
     do
         echo "$entry"
         filename=$(basename $entry)
@@ -237,7 +237,7 @@ set_up_password_less () {
 load_docker_images () {
     if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
 	    printf "Copy docker images from source\n"
-	    DOCKER_IMAGE_DIRECTORY="${INSTALLED_DIR}/docker-images/${ARCH}"
+	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images/${ARCH}"
 
 	    for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
 	    do
@@ -634,7 +634,6 @@ do
 
     sshpass -p dlwsadmin scp docker-images/${ARCH}/* dlwsadmin@$worknode:${REMOTE_IMAGE_DIR}
 
-    sshpass -p dlwsadmin scp config/* dlwsadmin@$worknode:${REMOTE_CONFIG_DIR}
 
     sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
