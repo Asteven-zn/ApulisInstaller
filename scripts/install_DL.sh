@@ -197,6 +197,8 @@ install_necessary_packages () {
 
     dpkg -i ${TEMP_DIR}/*
 
+    #### enable nfs server ###########################################
+    systemctl enable nfs-kernel-server
 }
 
 install_source_dir () {
@@ -559,9 +561,6 @@ then
 	        # docker build ...
 	    fi
     fi
-
-    #### enable nfs server ###########################################
-    systemctl enable nfs-kernel-server
 
     #### Now, this is the configuration of K8s services ####################
     set_up_k8s_cluster
