@@ -206,6 +206,13 @@ install_source_dir () {
     fi
     
     tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
+
+    (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
+    source ${INSTALLED_DIR}/python2.7-venv/bin/activate
+
+    (cd python2.7; pip install *.whl; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
+
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 }
 
@@ -552,8 +559,6 @@ then
     set_up_k8s_cluster
     config_k8s_cluster
 
-
-    
     #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push backendbase
     #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push restfulapi2
     #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push webui3
@@ -613,6 +618,7 @@ REMOTE_INSTALL_DIR="/tmp/install_YTung.$TIMESTAMP"
 REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${ARCH}"
 REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${ARCH}"
 REMOTE_CONFIG_DIR="${REMOTE_INSTALL_DIR}/config"
+REMOTE_PYTHON_DIR="${REMOTE_INSTALL_DIR}/python2.7"
 
 runuser dlwsadmin -c "ssh-keyscan ${nodes[@]} >> ~/.ssh/known_hosts"
 
@@ -628,7 +634,7 @@ do
     ######### set up passwordless access from Node to Master ################################
     sshpass -p dlwsadmin ssh dlwsadmin@$worknode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
 
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}"
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
 
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$worknode:${REMOTE_APT_DIR}
 
@@ -640,6 +646,8 @@ do
     sshpass -p dlwsadmin scp join-command dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
+
+    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}/python2.7
 
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@$worknode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
