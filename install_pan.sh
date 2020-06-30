@@ -23,7 +23,7 @@ getDLWorkspace () {
   #git clone --single-branch --branch poc_distributed_job git@github.com:apulis/DLWorkspace.git ${TEMP_DIR}/YTung
 
   ############## Use Https instead of ssh #################################################
-  git clone --single-branch --branch poc_distributed_job https://github.com/apulis/DLWorkspace.git ${TEMP_DIR}/YTung
+  git clone --single-branch --branch no_network https://github.com/apulis/DLWorkspace.git ${TEMP_DIR}/YTung
 
   (cd ${TEMP_DIR}; tar -cvzf ${INSTALLED_DIR}/YTung.tar.gz ./YTung --exclude "./YTung/.git" )
 
@@ -102,7 +102,7 @@ CONFIG_DIR=./config
 RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
-NEEDED_PACKAGES="kubeadm kubectl docker.io ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget \\
+NEEDED_PACKAGES="nfs-kernel-server kubeadm kubectl docker.io ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget \\
   python python-pip virtualenv "
 COMPLETED_APT_DOWNLOAD=0
 
