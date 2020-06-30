@@ -538,11 +538,16 @@ then
 
     #### check if there are nVidia Cards ###################################
     #${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
-
+        
     #### load/copy docker images ###########################################
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 
     load_docker_images
+
+    #### copy config ###########################################
+    TEMP_CONFIG_DIR=${INSTALLED_DIR}/temp-config
+    mkdir -p $TEMP_CONFIG_DIR
+    cp config/* $TEMP_CONFIG_DIR
 
     #### check if A910 is presented ########################################
     if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
@@ -685,4 +690,4 @@ do
 done
 
 ###### apply weave network ###################################################################
-kubectl apply -f config/weave-net.yaml
+# kubectl apply -f config/weave-net.yaml
