@@ -696,6 +696,28 @@ do
 done
 
 ###### apply weave network ###################################################################
-# kubectl apply -f config/weave-net.yaml
+# kubectl apply -f config/weave-net.yaml # don't apply on command, deploy.py will handle the job
 
 source ${INSTALLED_DIR}/python2.7-venv/bin/activate
+
+###### deploy with deploy.py ###################################################################
+cd ${INSTALLED_DIR}/Ytung/src/ClusterBootstrap # enter into deploy.py directory
+
+./deploy.py --verbose -y build 
+
+cd deploy/sshkey
+echo "dlwsadmin" > "rootuser"
+echo "dlwsadmin" > "rootpasswd"
+cd ../..
+
+./deploy.py --verbose sshkey install
+
+cp /etc/hosts ./deploy/etc/hosts
+./deploy.py --verbose copytoall ./deploy/etc/hosts  /etc/hosts
+
+./deploy.py --verbose kubeadm init
+./deploy.py --verbose copytoall ./deploy/sshkey/admin.conf /root/.kube/config
+
+./deploy.py --verbose kubeadm join
+./deploy.py --verbose -y kubernetes labelservice
+./deploy.py --verbose -y labelworker
