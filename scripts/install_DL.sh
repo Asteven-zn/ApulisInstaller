@@ -560,6 +560,9 @@ then
 	    fi
     fi
 
+    #### enable nfs server ###########################################
+    systemctl enable nfs-kernel-server
+
     #### Now, this is the configuration of K8s services ####################
     set_up_k8s_cluster
     #config_k8s_cluster
@@ -680,6 +683,9 @@ do
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@$worknode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
 
+    #### enable nfs server ###########################################
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "sudo systemctl enable nfs-kernel-server"
+    
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
            EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
