@@ -586,6 +586,29 @@ echo "!   Start to work on node. "
 echo "!"
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
+printf "\\n"
+printf "Do you want to use master as worknode? [yes|no] \\n"
+printf "[no] >>> "
+
+  read -r ans
+  while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+        [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+  do
+      printf "Please answer 'yes' or 'no':'\\n"
+      printf ">>> "
+      read -r ans
+  done
+
+if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
+  then
+    printf "Setup Up Master as a worknode.\\n"
+
+    ################## We Need To Set Up worknode on master ###################################################
+
+    exit 2
+fi
+
+
 declare -a nodes=()
 node_number=1
 
