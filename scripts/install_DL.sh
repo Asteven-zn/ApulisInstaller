@@ -562,7 +562,7 @@ then
 
     #### Now, this is the configuration of K8s services ####################
     set_up_k8s_cluster
-    config_k8s_cluster
+    #config_k8s_cluster
 
     #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push backendbase
     #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push restfulapi2
@@ -671,7 +671,7 @@ do
 
     sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp join-command dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
+    #sshpass -p dlwsadmin scp join-command dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
@@ -691,3 +691,5 @@ done
 
 ###### apply weave network ###################################################################
 # kubectl apply -f config/weave-net.yaml
+
+source ${INSTALLED_DIR}/python2.7-venv/bin/activate

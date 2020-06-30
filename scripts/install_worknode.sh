@@ -97,11 +97,11 @@ install_source_dir () {
 
     tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
 
-    (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
-    source ${INSTALLED_DIR}/python2.7-venv/bin/activate
+    # (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
+    # source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
-    (cd python2.7; pip install *.whl; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
-    (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
+    # (cd python2.7; pip install *.whl; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    # (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 }
@@ -235,6 +235,6 @@ fi
 
 ########### Then, join in kubernetes cluster and apply weave net ###############################
 
-JOIN_COMMAND=`cat join-command`
+# JOIN_COMMAND=`cat join-command`
 
-sudo $JOIN_COMMAND
+# sudo $JOIN_COMMAND
