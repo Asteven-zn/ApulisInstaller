@@ -722,7 +722,12 @@ cd ${INSTALLED_DIR}/Ytung/src/ClusterBootstrap # enter into deploy.py directory
 
 ###### generate config.yaml ####################################################################
 generate_config() {
+
     # get host ip as master
+    master_hosname=`hostname`
+    master_ip=`grep -E '(^| )master_hosname( |$)' /etc/hosts | awk '{print $1}'`
+
+    # write basic info
     cat << EOF > config.yaml
 cluster_name: DLWorkspace
 
@@ -739,20 +744,6 @@ mysql_password: apulis#2019#wednesday
 webuiport: 3081
 useclusterfile : true
 
-machines:
-  master:
-    role: infrastructure
-    private-ip: 10.31.3.188
-    archtype: amd64
-    type: gpu
-    vendor: nvidia
-  worker:
-    role: worker
-    private-ip: 10.31.3.187
-    archtype: amd64
-    type: gpu
-    vendor: nvidia
-
 admin_username: dlwsadmin
 
 # settings for docker
@@ -761,10 +752,8 @@ dockers:
   hub: apulistech/
   tag: "1.9"
  
-
 custom_mounts: []
 admin_username: dlwsadmin
-
 
 custom_mounts: []
 data-disk: /dev/[sh]d[^a]
@@ -815,7 +804,29 @@ k8s-gitbranch: v1.18.2
 deploy_method: kubeadm
 
 enable_custom_registry_secrets: True
+
+machines:
+  ${master_hosname}:
+    role: infrastructure
+    private-ip: ${master_ip}
+    archtype: amd64
+    type: cpu
 EOF
+ 
+   # write worker nodes info
+for i in "${nodes[@]}"
+do
+   cat << EOF >> config.yaml
+
+  ${worker_list[$i]}:
+    role: worker
+    archtype: amd64
+    type: gpu
+    vender: nvidia
+    os: ubuntu
+
+EOF
+done
 }
 
 
