@@ -20,19 +20,23 @@ config_k8s_cluster() {
     IMAGE_DIR="${INSTALLED_DIR}/docker-images/${ARCH}"
     TEMP_CONFIG_NAME="temp.config"
     kubeadm config print init-defaults > $TEMP_CONFIG_NAME
+
     sed -i "s/clusterName.*/clusterName: ${CLUSTER_NAME}/g" $TEMP_CONFIG_NAME
     sed -i 's/.*kubernetesVersion.*/kubernetesVersion: v1.18.2/g' $TEMP_CONFIG_NAME
     sed -i "/dnsDomain/a\  podSubnet: \"10.244.0.0/16\"" $TEMP_CONFIG_NAME
     echo 'Please select a IP address and input'
     /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v 172.17.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"
+
     echo 'Input target ip address:'
     read -r IP_ADDRESS
     echo $IP_ADDRESS
     sed -i "s/.*advertiseAddress.*/  advertiseAddress: $IP_ADDRESS/g" $TEMP_CONFIG_NAME
     cat $TEMP_CONFIG_NAME
+
     ###### init kubernetes cluster and save join command
     JOIN_COMMAND=`kubeadm init --config $TEMP_CONFIG_NAME | grep -A 1 kubeadm\ join`
     mkdir -p $HOME/.kube
+
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
     echo $JOIN_COMMAND > join-command
@@ -264,8 +268,7 @@ set_up_k8s_cluster () {
     echo "The Cluster Name will be set to: ${CLUSTER_NAME}"
     
     swapoff -a
-    sed -e '/[ \t].swap[\t ]./ s/^#*/#/' -i /etc/fstab
-
+    sed -i '/[ \t]swap[ \t]/ s/^\(.*\)$/#\1/g' /etc/fstab
 }
 
 setup_user_on_node() {
@@ -482,6 +485,19 @@ fi
     "$pager" <<EOF
 ===================================
 End User License Agreement - Apulis
+
+请务必仔细阅读和理解此Apulis Platform软件最终用户许可协议（“本《协议》”）中规定的所有权利和限制。 
+在安装本“软件”时，您需要仔细阅读并决定接受或不接受本《协议》的条款。除非或直至您接受本《协议》的全
+部条款，否则您不得将本“软件”安装在任何计算机上。本《协议》是您与依瞳科技之间有关本“软件”的法律协议。
+本“软件”包括随附的计算机软件，并可能包括计算机软件相关载体、相关文档电子或印刷材料。除非另附单独的
+最终用户许可协议或使用条件说明，否则本“软件”还包括在您获得本“软件”后由依瞳科技不时有选择所提供的任
+何本“软件”升级版本、修正程序、修订、附加成分和补充内容。您一旦安装本“软件”，即表示您同意接受本《协
+议》各项条款的约束。如您不同意本《协议》中的条款，您则不可以安装或使用本“软件”。 
+
+本“软件”受中华人民共和国著作权法及国际著作权条约和其它知识产权法和条约的保护。本“软件”权利只许可使
+用，而不出售。 
+
+至此，您肯定已经详细阅读并已理解本《协议》，并同意严格遵守各条款和条件。 
 ===================================
 
 Copyright 2019-2020, Apulis, Inc.
@@ -625,7 +641,8 @@ do
     printf "\\n"
     printf "Add More Node in the cluster"
     printf "\\n"
-    printf "Please enter the hostname of node (Node Number: ${node_number} ). \\n"
+    printf "Please enter quit and finish setting hostname \\n"
+    printf "Or enter the hostname of node (Node Number: ${node_number} ). \\n"
     printf ">>> "
     read -r nodename
     if [ $nodename = "quit" ]; then
@@ -703,6 +720,106 @@ source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 ###### deploy with deploy.py ###################################################################
 cd ${INSTALLED_DIR}/Ytung/src/ClusterBootstrap # enter into deploy.py directory
 
+###### generate config.yaml ####################################################################
+generate_config() {
+    # get host ip as master
+    cat << EOF > config.yaml
+cluster_name: DLWorkspace
+
+network:
+  domain: sigsus.cn
+  container-network-iprange: "10.0.0.0/8"
+
+etcd_node_num: 1
+mounthomefolder : True
+kubepresleep: 1
+
+datasource: MySQL
+mysql_password: apulis#2019#wednesday
+webuiport: 3081
+useclusterfile : true
+
+machines:
+  master:
+    role: infrastructure
+    private-ip: 10.31.3.188
+    archtype: amd64
+    type: gpu
+    vendor: nvidia
+  worker:
+    role: worker
+    private-ip: 10.31.3.187
+    archtype: amd64
+    type: gpu
+    vendor: nvidia
+
+admin_username: dlwsadmin
+
+# settings for docker
+dockerregistry: apulistech/
+dockers:
+  hub: apulistech/
+  tag: "1.9"
+ 
+
+custom_mounts: []
+admin_username: dlwsadmin
+
+
+custom_mounts: []
+data-disk: /dev/[sh]d[^a]
+dataFolderAccessPoint: ''
+
+datasource: MySQL
+defalt_virtual_cluster_name: platform
+default-storage-folders:
+- jobfiles
+- storage
+- work
+- namenodeshare
+
+deploymounts: []
+
+discoverserver: 4.2.2.1
+dltsdata-atorage-mount-path: /dltsdata
+dns_server:
+  azure_cluster: 8.8.8.8
+  onpremise: 10.50.10.50
+  
+Authentications:
+  Wechat:
+    AppId: "wx403e175ad2bf1d2d"
+    AppSecret: "dc8cb2946b1d8fe6256d49d63cd776d0"
+
+supported_platform:  ["onpremise"]
+onpremise_cluster:
+  worker_node_num:    1
+  gpu_count_per_node: 1
+  gpu_type:           nvidia
+
+mountpoints:
+  nfsshare1:
+    type: nfs
+    server: master
+    filesharename: /mnt/local
+    curphysicalmountpoint: /mntdlws
+    mountpoints: ""
+
+jwt:
+  secret_key: "Sign key for JWT"
+  algorithm: HS256
+  token_ttl: 86400
+
+k8sAPIport: 6443
+k8s-gitbranch: v1.18.2
+deploy_method: kubeadm
+
+enable_custom_registry_secrets: True
+EOF
+}
+
+
+###### start building cluster ####################################################################
 ./deploy.py --verbose -y build 
 
 cd deploy/sshkey
@@ -721,3 +838,14 @@ cp /etc/hosts ./deploy/etc/hosts
 ./deploy.py --verbose kubeadm join
 ./deploy.py --verbose -y kubernetes labelservice
 ./deploy.py --verbose -y labelworker
+
+./deploy.py --verbose nginx fqdn
+./deploy.py --verbose nginx config
+
+./deploy.py --verbose kubernetes start mysql
+./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
+./deploy.py --verbose kubernetes start monitor
+
+./deploy.py --verbose nginx webui3
+./deploy.py --verbose kubernetes start webui3
+./deploy.py kubernetes start custom-user-dashboard
