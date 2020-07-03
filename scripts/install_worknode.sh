@@ -97,6 +97,8 @@ install_source_dir () {
 
     tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
 
+    # there is no need to run python virtual env on work node
+    # python virtual env is prepared for deploy.py which only run on master
     # (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
     # source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 

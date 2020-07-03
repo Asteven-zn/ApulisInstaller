@@ -562,26 +562,9 @@ then
 	    fi
     fi
 
-    #### Now, this is the configuration of K8s services ####################
+    #### Now, this is basic setting of K8s services ####################
     set_up_k8s_cluster
     #config_k8s_cluster
-
-    #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push backendbase
-    #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push restfulapi2
-    #${INSTALLED_DIR}/deploy.py --verbose --archtype arm64 docker push webui3
-
-
-    #${INSTALLED_DIR}/deploy.py --verbose webui
-    
-
-    #${INSTALLED_DIR}/deploy.py --verbose nginx fqdn
-    #${INSTALLED_DIR}/deploy.py --verbose nginx config
-
-    #### label
-    #${INSTALLED_DIR}/deploy.py --verbose kubernetes uncordon
-    #${INSTALLED_DIR}/deploy.py --verbose kubernetes labelservice
-    #${INSTALLED_DIR}/deploy.py --verbose labelworker
-
 
 fi
 
