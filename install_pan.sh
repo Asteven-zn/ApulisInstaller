@@ -102,8 +102,8 @@ CONFIG_DIR=./config
 RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
-NEEDED_PACKAGES="nfs-kernel-server kubeadm kubectl docker.io ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget \\
-  python-dev python-pip virtualenv "
+NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server kubeadm kubectl docker.io ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget \\
+  python-dev python-pip virtualenv nvidia-driver-430"
 COMPLETED_APT_DOWNLOAD=0
 
 TEMP_DIR=.temp
@@ -141,7 +141,7 @@ if which getopt > /dev/null 2>&1; then
                 ;;
 	        -p)
 		        INSTALLED_DIR="$2"
-		        shift;
+		        shift;                                                                                                                                                  
 		        shift;
 		        ;;
 	        -d)

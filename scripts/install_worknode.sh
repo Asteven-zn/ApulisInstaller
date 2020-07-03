@@ -132,6 +132,22 @@ set_up_password_less () {
 
 }
 
+set_docker_config() {
+    cat << EOF > /etc/docker/daemon.json
+        {
+        "default-runtime": "nvidia",
+        "runtimes": {
+            "nvidia": {
+                "path": "nvidia-container-runtime",
+                "runtimeArgs": []
+            }
+        }
+    }
+EOF
+
+    systemctl daemon-reload
+    systemctl restart docker
+}
 
 load_docker_images () {
     if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
@@ -156,7 +172,7 @@ set_up_k8s_cluster () {
     echo "The Cluster Name will be set to: ${CLUSTER_NAME}"
 
     swapoff -a
-    sed -e '/[ \t].swap[\t ]./ s/^#*/#/' -i /etc/fstab
+    sed -i '/[ \t]swap[ \t]/ s/^\(.*\)$/#\1/g' /etc/fstab
 
 }
 
@@ -231,6 +247,7 @@ then
     #### load/copy docker images ###########################################
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 
+    set_docker_config
     load_docker_images
 
 fi
