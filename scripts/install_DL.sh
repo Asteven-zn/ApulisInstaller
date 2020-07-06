@@ -329,6 +329,7 @@ NO_NFS=1
 EXTERNAL_NFS_MOUNT=0
 EXTERNAL_MOUNT_POINT=
 NFS_MOUNT_POINT="/mnt/nfs_share"
+USE_MASTER_NODE_AS_WORKER=1
 
 CLUSTER_NAME="DLWorkspace"
 
@@ -607,11 +608,9 @@ printf "[no] >>> "
 
 if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
   then
-    printf "Setup Up Master as a worknode.\\n"
+    printf "Not setup Up Master as a worknode.\\n"
 
-    ################## We Need To Set Up worknode on master ###################################################
-
-    exit 2
+    USE_MASTER_NODE_AS_WORKER=0
 fi
 
 
@@ -827,6 +826,10 @@ cp /etc/hosts ./deploy/etc/hosts
 
 ./deploy.py --verbose kubeadm init
 ./deploy.py --verbose copytoall ./deploy/sshkey/admin.conf /root/.kube/config
+
+if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
+    ./deploy.py --verbose kubernetes uncordon 
+fi
 
 ./deploy.py --verbose kubeadm join
 ./deploy.py --verbose -y kubernetes labelservice
