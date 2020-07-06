@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 config_k8s_cluster() {
     ###### init kubernetes cluster config file
     IMAGE_DIR="${INSTALLED_DIR}/docker-images/${ARCH}"
@@ -309,6 +308,116 @@ create_nfs_share() {
         echo "${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs        auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 " | tee -a /etc/fstab
         mount ${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}
     fi
+}
+
+
+###### generate config.yaml ####################################################################
+generate_config() {
+
+    # get host ip as master
+    master_hosname=`hostname`
+    master_ip=`grep -E '(^| )${master_hosname}( |$)' /etc/hosts | awk '{print $1}'`
+
+    # write basic info
+    cat << EOF > config.yaml
+cluster_name: DLWorkspace
+
+network:
+  domain: sigsus.cn
+  container-network-iprange: "10.0.0.0/8"
+
+etcd_node_num: 1
+mounthomefolder : True
+kubepresleep: 1
+
+datasource: MySQL
+mysql_password: apulis#2019#wednesday
+webuiport: 3081
+useclusterfile : true
+
+admin_username: dlwsadmin
+
+# settings for docker
+dockerregistry: apulistech/
+dockers:
+  hub: apulistech/
+  tag: "1.9"
+ 
+custom_mounts: []
+admin_username: dlwsadmin
+
+custom_mounts: []
+data-disk: /dev/[sh]d[^a]
+dataFolderAccessPoint: ''
+
+datasource: MySQL
+defalt_virtual_cluster_name: platform
+default-storage-folders:
+- jobfiles
+- storage
+- work
+- namenodeshare
+
+deploymounts: []
+
+discoverserver: 4.2.2.1
+dltsdata-atorage-mount-path: /dltsdata
+dns_server:
+  azure_cluster: 8.8.8.8
+  onpremise: 10.50.10.50
+  
+Authentications:
+  Wechat:
+    AppId: "wx403e175ad2bf1d2d"
+    AppSecret: "dc8cb2946b1d8fe6256d49d63cd776d0"
+
+supported_platform:  ["onpremise"]
+onpremise_cluster:
+  worker_node_num:    1
+  gpu_count_per_node: 1
+  gpu_type:           nvidia
+
+mountpoints:
+  nfsshare1:
+    type: nfs
+    server: master
+    filesharename: /mnt/local
+    curphysicalmountpoint: /mntdlws
+    mountpoints: ""
+
+jwt:
+  secret_key: "Sign key for JWT"
+  algorithm: HS256
+  token_ttl: 86400
+
+k8sAPIport: 6443
+k8s-gitbranch: v1.18.2
+deploy_method: kubeadm
+
+enable_custom_registry_secrets: True
+
+machines:
+  ${master_hosname}:
+    role: infrastructure
+    private-ip: ${master_ip}
+    archtype: amd64
+    type: cpu
+EOF
+ 
+   # write worker nodes info
+for i in "${nodes[@]}"
+do
+   cat << EOF >> config.yaml
+
+  ${nodes[$i]}:
+    role: worker
+    archtype: amd64
+    type: gpu
+    vender: nvidia
+    os: ubuntu
+
+EOF
+done
 }
 
 ############################################################################
@@ -699,122 +808,17 @@ done
 source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
 ###### deploy with deploy.py ###################################################################
-cd ${INSTALLED_DIR}/Ytung/src/ClusterBootstrap # enter into deploy.py directory
-
-###### generate config.yaml ####################################################################
-generate_config() {
-
-    # get host ip as master
-    master_hosname=`hostname`
-    master_ip=`grep -E '(^| )${master_hosname}( |$)' /etc/hosts | awk '{print $1}'`
-
-    # write basic info
-    cat << EOF > config.yaml
-cluster_name: DLWorkspace
-
-network:
-  domain: sigsus.cn
-  container-network-iprange: "10.0.0.0/8"
-
-etcd_node_num: 1
-mounthomefolder : True
-kubepresleep: 1
-
-datasource: MySQL
-mysql_password: apulis#2019#wednesday
-webuiport: 3081
-useclusterfile : true
-
-admin_username: dlwsadmin
-
-# settings for docker
-dockerregistry: apulistech/
-dockers:
-  hub: apulistech/
-  tag: "1.9"
- 
-custom_mounts: []
-admin_username: dlwsadmin
-
-custom_mounts: []
-data-disk: /dev/[sh]d[^a]
-dataFolderAccessPoint: ''
-
-datasource: MySQL
-defalt_virtual_cluster_name: platform
-default-storage-folders:
-- jobfiles
-- storage
-- work
-- namenodeshare
-
-deploymounts: []
-
-discoverserver: 4.2.2.1
-dltsdata-atorage-mount-path: /dltsdata
-dns_server:
-  azure_cluster: 8.8.8.8
-  onpremise: 10.50.10.50
-  
-Authentications:
-  Wechat:
-    AppId: "wx403e175ad2bf1d2d"
-    AppSecret: "dc8cb2946b1d8fe6256d49d63cd776d0"
-
-supported_platform:  ["onpremise"]
-onpremise_cluster:
-  worker_node_num:    1
-  gpu_count_per_node: 1
-  gpu_type:           nvidia
-
-mountpoints:
-  nfsshare1:
-    type: nfs
-    server: master
-    filesharename: /mnt/local
-    curphysicalmountpoint: /mntdlws
-    mountpoints: ""
-
-jwt:
-  secret_key: "Sign key for JWT"
-  algorithm: HS256
-  token_ttl: 86400
-
-k8sAPIport: 6443
-k8s-gitbranch: v1.18.2
-deploy_method: kubeadm
-
-enable_custom_registry_secrets: True
-
-machines:
-  ${master_hosname}:
-    role: infrastructure
-    private-ip: ${master_ip}
-    archtype: amd64
-    type: cpu
-EOF
- 
-   # write worker nodes info
-for i in "${nodes[@]}"
-do
-   cat << EOF >> config.yaml
-
-  ${worker_list[$i]}:
-    role: worker
-    archtype: amd64
-    type: gpu
-    vender: nvidia
-    os: ubuntu
-
-EOF
-done
-}
+cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap # enter into deploy.py directory
 
 
 ###### start building cluster ####################################################################
+generate_config
+
 ./deploy.py --verbose -y build 
 
+mkdir -p deploy/sshkey
 cd deploy/sshkey
+
 echo "dlwsadmin" > "rootuser"
 echo "dlwsadmin" > "rootpasswd"
 cd ../..
