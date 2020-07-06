@@ -396,6 +396,33 @@ deploy_method: kubeadm
 
 enable_custom_registry_secrets: True
 
+WebUIadminGroups:
+    - DLWSAdmins
+
+WebUIauthorizedGroups:
+    - DLWSAdmins
+
+WebUIregisterGroups:
+    - DLWSRegister
+
+UserGroups:
+  DLWSAdmins:
+    Allowed:
+    - jinlmsft@hotmail.com
+    - jinli.ccs@gmail.com
+    - jin.li@apulis.com
+    gid: "20001"
+    uid: "20000"
+  DLWSRegister:
+    Allowed:
+    - '@gmail.com'
+    - '@live.com'
+    - '@outlook.com'
+    - '@hotmail.com'
+    - '@apulis.com'
+    gid: "20001"
+    uid: 20001-29999
+
 machines:
   ${master_hosname}:
     role: infrastructure
@@ -838,6 +865,9 @@ fi
 ./deploy.py --verbose kubeadm join
 ./deploy.py --verbose -y kubernetes labelservice
 ./deploy.py --verbose -y labelworker
+
+./deploy.py --verbose renderservice
+./deploy.py --verbose webui  
 
 ./deploy.py --verbose nginx fqdn
 ./deploy.py --verbose nginx config
