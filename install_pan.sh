@@ -15,6 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+getCudaPackage() {
+  mkdir -p ${CUDA_PACKAGE_PATH}
+  cd ${CUDA_PACKAGE_PATH}
+
+  wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
+}
 
 getNvidiaDriver() {
   sudo add-apt-repository -y ppa:graphics-drivers/ppa
@@ -198,6 +204,8 @@ INSTALLED_CONFIG_PATH=${INSTALLED_DIR}/config
 
 NVIDIA_package_PATH=${INSTALLED_DIR}/nvidia-driver
 
+CUDA_PACKAGE_PATH=${INSTALLED_DIR}/cuda
+
 getDLWorkspace
 
 getNeededAptPackages
@@ -207,6 +215,8 @@ getAllNeededDockerImages
 getAllNeededConfigs
 
 getNvidiaDriver
+
+getCudaPackage
 
 install_scripts
 
