@@ -15,7 +15,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+getCudaPackage() {
+  mkdir -p ${CUDA_PACKAGE_PATH}
+  cd ${CUDA_PACKAGE_PATH}
 
+  wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
+}
+
+getNvidiaDriver() {
+  sudo add-apt-repository -y ppa:graphics-drivers/ppa
+  sudo apt-get purge -y nvidia*
+  sudo apt-get update -y
+  
+  mkdir -p ${NVIDIA_package_PATH}
+  cd ${NVIDIA_package_PATH}
+  apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances nvidia-driver-440 | grep "^\w" | sort -u)
+}
 
 getDLWorkspace () {
 
@@ -187,6 +202,10 @@ INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/docker-images/${ARCH}
 
 INSTALLED_CONFIG_PATH=${INSTALLED_DIR}/config
 
+NVIDIA_package_PATH=${INSTALLED_DIR}/nvidia-driver
+
+CUDA_PACKAGE_PATH=${INSTALLED_DIR}/cuda
+
 getDLWorkspace
 
 getNeededAptPackages
@@ -194,6 +213,10 @@ getNeededAptPackages
 getAllNeededDockerImages
 
 getAllNeededConfigs
+
+getNvidiaDriver
+
+getCudaPackage
 
 install_scripts
 
