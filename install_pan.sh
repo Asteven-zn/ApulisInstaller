@@ -25,7 +25,7 @@ getCudaPackage() {
 getNvidiaDriver() {
   sudo add-apt-repository -y ppa:graphics-drivers/ppa
   sudo apt-get purge -y nvidia*
-  sudo apt-get update
+  sudo apt-get update -y
   
   mkdir -p ${NVIDIA_package_PATH}
   cd ${NVIDIA_package_PATH}
