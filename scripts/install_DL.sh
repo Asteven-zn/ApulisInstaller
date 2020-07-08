@@ -868,7 +868,9 @@ fi
 ./deploy.py --verbose -y labelworker
 
 ./deploy.py --verbose renderservice
+./deploy.py --verbose renderimage
 ./deploy.py --verbose webui  
+./deploy.py --verbose nginx webui3
 
 ./deploy.py --verbose nginx fqdn
 ./deploy.py --verbose nginx config
@@ -876,9 +878,6 @@ fi
 ./deploy.py --verbose kubernetes start mysql
 ./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
 ./deploy.py --verbose kubernetes start monitor
-
-./deploy.py --verbose renderimage
-./deploy.py --verbose nginx webui3
 
 ./deploy.py --verbose kubernetes start webui3
 ./deploy.py kubernetes start custom-user-dashboard
