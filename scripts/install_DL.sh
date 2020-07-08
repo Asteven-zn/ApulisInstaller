@@ -852,6 +852,7 @@ cd ../..
 
 ./deploy.py --verbose sshkey install
 
+mkdir -p ./deploy/etc
 cp /etc/hosts ./deploy/etc/hosts
 ./deploy.py --verbose copytoall ./deploy/etc/hosts  /etc/hosts
 
