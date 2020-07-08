@@ -423,6 +423,17 @@ UserGroups:
     gid: "20001"
     uid: 20001-29999
 
+repair-manager:
+  cluster_name: "DLWorkspace"
+  ecc_rule:
+    cordon_dry_run: True
+  alert:
+    smtp_url: smtp.qq.com
+    login: 1023950387@qq.com
+    password: vtguxryxqyrkbfdd
+    sender: 1023950387@qq.com
+    receiver: ["1023950387@qq.com"]
+
 machines:
   ${master_hosname}:
     role: infrastructure
