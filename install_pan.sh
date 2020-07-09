@@ -118,12 +118,14 @@ RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
 NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server kubeadm kubectl docker.io ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget \\
-  python-dev python-pip virtualenv nvidia-driver-430"
+  python-dev python-pip virtualenv "
 COMPLETED_APT_DOWNLOAD=0
 
 TEMP_DIR=.temp
 INSTALLED_DIR="target"
 INTERNET="1"
+IS_DOWNLOAD_NVIDIA="1"
+IS_DOWNLOAD_CUDA="1"
 
 USAGE="
 usage: $0 [options]
@@ -189,8 +191,37 @@ if which getopt > /dev/null 2>&1; then
     done
 fi
 
-INSTALL_DIR=
+printf "Download nvidia driver?\\n"
+printf "[no]>>>"
+read -r ans
+while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+      [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+do
+  printf "Please answer 'yes' or 'no':'\\n"
+  printf ">>> "
+  read -r ans
+done
+if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
+then
+  IS_DOWNLOAD_NVIDIA="0"
+fi
 
+printf "Download CUDA 10.2?\\n"
+printf "[no]>>>"
+read -r ans
+while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+      [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+do
+  printf "Please answer 'yes' or 'no':'\\n"
+  printf ">>> "
+  read -r ans
+done
+if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
+then
+  IS_DOWNLOAD_CUDA="0"
+fi
+
+INSTALL_DIR=
 printf "Installed Directory: ${INSTALLED_DIR} \n"
 
 mkdir -p ${TEMP_DIR}
@@ -214,9 +245,16 @@ getAllNeededDockerImages
 
 getAllNeededConfigs
 
-getNvidiaDriver
+if [ "${IS_DOWNLOAD_NVIDIA}" != 0]; then
+  printf "Downloading NVIDIA......\\n"
+  getNvidiaDriver
+fi
 
-getCudaPackage
+if [ "${IS_DOWNLOAD_CUDA}" != 0]; then
+  printf "Downloading CUDA 10.2......\\n"
+  getCudaPackage
+fi
+
 
 install_scripts
 
