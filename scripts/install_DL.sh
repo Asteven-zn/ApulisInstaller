@@ -215,7 +215,7 @@ install_source_dir () {
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
     source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
-    (cd python2.7; pip install *.whl; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd python2.7; pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
@@ -422,6 +422,17 @@ UserGroups:
     - '@apulis.com'
     gid: "20001"
     uid: 20001-29999
+
+repair-manager:
+  cluster_name: "DLWorkspace"
+  ecc_rule:
+    cordon_dry_run: True
+  alert:
+    smtp_url: smtp.qq.com
+    login: 1023950387@qq.com
+    password: vtguxryxqyrkbfdd
+    sender: 1023950387@qq.com
+    receiver: ["1023950387@qq.com"]
 
 machines:
   ${master_hosname}:
