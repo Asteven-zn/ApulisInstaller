@@ -315,8 +315,8 @@ create_nfs_share() {
 generate_config() {
 
     # get host ip as master
-    master_hosname=`hostname`
-    master_ip=`grep -E '(^| )${master_hosname}( |$)' /etc/hosts | awk '{print $1}'`
+    master_hostname=`hostname`
+    master_ip=`grep "${master_hostname}" /etc/hosts | grep -v 127 | grep -v ${master_hostname}\. | awk '{print $1}'`
 
     # write basic info
     cat << EOF > config.yaml
@@ -435,7 +435,7 @@ repair-manager:
     receiver: ["1023950387@qq.com"]
 
 machines:
-  ${master_hosname}:
+  ${master_hostname}:
     role: infrastructure
     private-ip: ${master_ip}
     archtype: amd64
