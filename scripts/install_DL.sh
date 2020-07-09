@@ -443,11 +443,11 @@ machines:
 EOF
  
    # write worker nodes info
-for i in "${nodes[@]}"
+for worknode in "${nodes[@]}"
 do
    cat << EOF >> config.yaml
 
-  ${nodes[$i]}:
+  ${worknode}:
     role: worker
     archtype: amd64
     type: gpu
