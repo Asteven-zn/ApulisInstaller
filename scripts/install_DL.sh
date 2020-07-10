@@ -451,7 +451,7 @@ do
     role: worker
     archtype: amd64
     type: gpu
-    vender: nvidia
+    vendor: nvidia
     os: ubuntu
 
 EOF
