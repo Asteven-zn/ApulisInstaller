@@ -878,6 +878,8 @@ fi
 ./deploy.py --verbose -y kubernetes labelservice
 ./deploy.py --verbose -y labelworker
 
+./deploy.py --verbose kubernetes start nvidia-device-plugin
+
 ./deploy.py --verbose renderservice
 ./deploy.py --verbose renderimage
 ./deploy.py --verbose webui  
