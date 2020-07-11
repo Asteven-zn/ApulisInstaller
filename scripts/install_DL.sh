@@ -456,6 +456,13 @@ do
 
 EOF
 done
+
+cat << EOF >> config.yaml
+
+extranet_protocol: http
+
+EOF
+
 }
 
 ############################################################################
