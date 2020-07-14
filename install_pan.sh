@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 
 # Copyright 2020 Apulis Inc. All Rights Reserved.
