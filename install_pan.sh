@@ -26,7 +26,7 @@ getNvidiaDriver() {
   sudo add-apt-repository -y ppa:graphics-drivers/ppa
   sudo apt-get purge -y nvidia*
   sudo apt-get update -y
-  
+
   mkdir -p ${NVIDIA_package_PATH}
   cd ${NVIDIA_package_PATH}
   apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances nvidia-driver-440 | grep "^\w" | sort -u)
@@ -57,7 +57,7 @@ getNeededAptPackages () {
 }
 
 getAllNeededDockerImages () {
-    
+
   #####################  Copy docker images ##########################
   mkdir -p ${INSTALLED_DOCKER_IMAGE_PATH}
 
@@ -65,7 +65,7 @@ getAllNeededDockerImages () {
 }
 
 getAllNeededConfigs () {
-    
+
   #####################  Copy config file ##########################
   mkdir -p ${INSTALLED_CONFIG_PATH}
 
@@ -107,7 +107,7 @@ printf "Hardware Architecture: ${ARCH}\n"
 
 ###########  Check Operation System ######################################
 INSTALL_OS=$(grep '^ID=' /etc/os-release | awk -F'=' '{print $2}')
-OS_RELEASE=$(grep '^VERSION_ID=' /etc/os-release | awk -F'=' '{print $2}') 
+OS_RELEASE=$(grep '^VERSION_ID=' /etc/os-release | awk -F'=' '{print $2}')
 
 THIS_DIR=$(DIRNAME=$(dirname "$0"); cd "$DIRNAME"; pwd)
 THIS_FILE=$(basename "$0")
@@ -117,7 +117,7 @@ CONFIG_DIR=./config
 RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
-NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server kubeadm kubectl docker.io ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget \\
+NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server kubeadm kubectl docker.io docker-compose pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget \\
   python-dev python-pip virtualenv "
 COMPLETED_APT_DOWNLOAD=0
 
@@ -158,7 +158,7 @@ if which getopt > /dev/null 2>&1; then
                 ;;
 	        -p)
 		        INSTALLED_DIR="$2"
-		        shift;                                                                                                                                                  
+		        shift;
 		        shift;
 		        ;;
 	        -d)
