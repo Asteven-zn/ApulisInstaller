@@ -114,13 +114,13 @@ install_1st_necessary_packages () {
     if [ ${NO_DOCKER} = 1 ]; then
 	PACKAGE_LIST="${PACKAGE_LIST} docker.io"
     fi
-    
+
     set -x
     case "${INSTALL_OS}" in
 	"ubuntu"|"linuxmint"|"debian")
 
 	    ###### make sure no apt process
-	    killall apt-get 
+	    killall apt-get
 	    killall dpkg
 	    killall apt
 	    dpkg --configure -a
@@ -130,9 +130,9 @@ install_1st_necessary_packages () {
 	    ;;
 	"centos"|"euleros")
 	    ###### make sure no yum process
-	    killall yum 
+	    killall yum
 	    killall rpm
-	    
+
 	    exec yum update && yum install -y ${PACKAGE_LIST}
 	    break;
 	    ;;
@@ -146,7 +146,7 @@ install_1st_necessary_packages () {
 
     if [ ${NO_KUBEADM} = 1 ] && [ ${NO_KUBECTL} = 1 ]; then
 	    printf "Install Kubenetes components... \n"
-	
+
 	    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 	    cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 	    deb https://apt.kubernetes.io/ kubernetes-xenial main
@@ -157,13 +157,13 @@ EOF
 	    sudo apt-get update
 	    sudo apt-get install -y kubelet kubeadm kubectl
 	    #sudo apt-mark hold kubelet kubeadm kubectl
-	
+
     else
 	    printf "Kubectl and Kubeadm are already installed. Will confiure later...\n"
     fi
-    
-    
-			 
+
+
+
 }
 
 
@@ -209,7 +209,7 @@ install_source_dir () {
     if [ ! -f "${INSTALLED_DIR}" ]; then
 	    mkdir -p ${INSTALLED_DIR}
     fi
-    
+
     tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
 
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
@@ -232,9 +232,9 @@ set_up_password_less () {
 	    printf "Create Directory: ${ID_DIR} \n"
 	    runuser dlwsadmin -c "mkdir ${DLWS_HOME}/.ssh"
     fi
-    
+
     ID_FILE="${ID_DIR}/id_rsa"
-    if [ -f "${ID_FILE}" ]; then	
+    if [ -f "${ID_FILE}" ]; then
 	    echo "User 'dlwsadmin' has set up the key. Set up the local passwordless access..."
     else
 	    printf "Create SSH Key ...\n"
@@ -242,7 +242,7 @@ set_up_password_less () {
     fi
 
     runuser dlwsadmin -c "cat ${ID_DIR}/id_rsa.pub >> ${ID_DIR}/authorized_keys"
-    
+
 }
 
 
@@ -256,7 +256,7 @@ load_docker_images () {
 	        printf "Load docker image file: $file\n"
 	        docker load -i $file
 	    done
-	
+
     else
 	    printf "Pull docker images from Docker Hub...\n"
 
@@ -267,7 +267,7 @@ load_docker_images () {
 
 set_up_k8s_cluster () {
     echo "The Cluster Name will be set to: ${CLUSTER_NAME}"
-    
+
     swapoff -a
     sed -i '/[ \t]swap[ \t]/ s/^\(.*\)$/#\1/g' /etc/fstab
 }
@@ -338,11 +338,12 @@ useclusterfile : true
 admin_username: dlwsadmin
 
 # settings for docker
+private_docker_registry: harbor.sigsus.cn/library/
 dockerregistry: apulistech/
 dockers:
   hub: apulistech/
   tag: "1.9"
- 
+
 custom_mounts: []
 admin_username: dlwsadmin
 
@@ -365,7 +366,7 @@ dltsdata-atorage-mount-path: /dltsdata
 dns_server:
   azure_cluster: 8.8.8.8
   onpremise: 10.50.10.50
-  
+
 Authentications:
   Wechat:
     AppId: "wx403e175ad2bf1d2d"
@@ -441,7 +442,7 @@ machines:
     archtype: amd64
     type: cpu
 EOF
- 
+
    # write worker nodes info
 for worknode in "${nodes[@]}"
 do
@@ -501,7 +502,7 @@ printf "Hardware Architecture: ${ARCH}\n"
 
 ###########  Check Operation System ######################################
 INSTALL_OS=$(grep '^ID=' /etc/os-release | awk -F'=' '{print $2}')
-OS_RELEASE=$(grep '^VERSION_ID=' /etc/os-release | awk -F'=' '{print $2}') 
+OS_RELEASE=$(grep '^VERSION_ID=' /etc/os-release | awk -F'=' '{print $2}')
 
 THIS_DIR=$(DIRNAME=$(dirname "$0"); cd "$DIRNAME"; pwd)
 THIS_FILE=$(basename "$0")
@@ -621,11 +622,11 @@ then
     if [ "$(uname)" != "Linux" ]; then
         printf "WARNING:\\n"
         printf "    Your operating system does not appear to be Linux, \\n"
-        printf "    But you are trying to install a Linux version of DLWorkspace\\n" 
+        printf "    But you are trying to install a Linux version of DLWorkspace\\n"
         printf "Aborting installation\\n"
         exit 2
     fi
-fi	
+fi
 
     printf "\\n"
     printf "Welcome to DLWorkspace 2020.06\\n"
@@ -643,18 +644,18 @@ fi
 ===================================
 End User License Agreement - Apulis
 
-请务必仔细阅读和理解此Apulis Platform软件最终用户许可协议（“本《协议》”）中规定的所有权利和限制。 
+请务必仔细阅读和理解此Apulis Platform软件最终用户许可协议（“本《协议》”）中规定的所有权利和限制。
 在安装本“软件”时，您需要仔细阅读并决定接受或不接受本《协议》的条款。除非或直至您接受本《协议》的全
 部条款，否则您不得将本“软件”安装在任何计算机上。本《协议》是您与依瞳科技之间有关本“软件”的法律协议。
 本“软件”包括随附的计算机软件，并可能包括计算机软件相关载体、相关文档电子或印刷材料。除非另附单独的
 最终用户许可协议或使用条件说明，否则本“软件”还包括在您获得本“软件”后由依瞳科技不时有选择所提供的任
 何本“软件”升级版本、修正程序、修订、附加成分和补充内容。您一旦安装本“软件”，即表示您同意接受本《协
-议》各项条款的约束。如您不同意本《协议》中的条款，您则不可以安装或使用本“软件”。 
+议》各项条款的约束。如您不同意本《协议》中的条款，您则不可以安装或使用本“软件”。
 
 本“软件”受中华人民共和国著作权法及国际著作权条约和其它知识产权法和条约的保护。本“软件”权利只许可使
-用，而不出售。 
+用，而不出售。
 
-至此，您肯定已经详细阅读并已理解本《协议》，并同意严格遵守各条款和条件。 
+至此，您肯定已经详细阅读并已理解本《协议》，并同意严格遵守各条款和条件。
 ===================================
 
 Copyright 2019-2020, Apulis, Inc.
@@ -698,7 +699,7 @@ then
 
     check_docker_installation
     check_k8s_installation
-    
+
     #install_1st_necessary_packages
     install_necessary_packages
 
@@ -711,7 +712,7 @@ then
 
     #### check if there are nVidia Cards ###################################
     #${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
-        
+
     #### load/copy docker images ###########################################
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 
@@ -837,7 +838,7 @@ do
 
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$worknode "sudo systemctl enable nfs-kernel-server"
-    
+
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
            EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
@@ -859,7 +860,7 @@ cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap # enter into deploy.py directory
 ###### start building cluster ####################################################################
 generate_config
 
-./deploy.py --verbose -y build 
+./deploy.py --verbose -y build
 
 mkdir -p deploy/sshkey
 cd deploy/sshkey
@@ -878,7 +879,7 @@ cp /etc/hosts ./deploy/etc/hosts
 ./deploy.py --verbose copytoall ./deploy/sshkey/admin.conf /root/.kube/config
 
 if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
-    ./deploy.py --verbose kubernetes uncordon 
+    ./deploy.py --verbose kubernetes uncordon
 fi
 
 ./deploy.py --verbose kubeadm join
@@ -889,7 +890,7 @@ fi
 
 ./deploy.py --verbose renderservice
 ./deploy.py --verbose renderimage
-./deploy.py --verbose webui  
+./deploy.py --verbose webui
 ./deploy.py --verbose nginx webui3
 
 ./deploy.py --verbose nginx fqdn
