@@ -56,6 +56,13 @@ getNeededAptPackages () {
   fi
 }
 
+getHarborPackages () {
+  #####################  Create Installation harbor packages ##########################
+  mkdir -p ${INSTALLED_DIR}/harbor
+  wget https://github.com/goharbor/harbor/releases/download/v2.0.1/harbor-offline-installer-v2.0.1.tgz -O ${INSTALLED_DIR}/harbor/harbor.tgz
+  wget "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -O ${INSTALLED_DIR}/harbor/docker-compose
+}
+
 getAllNeededDockerImages () {
 
   #####################  Copy docker images ##########################
@@ -69,7 +76,7 @@ getAllNeededConfigs () {
   #####################  Copy config file ##########################
   mkdir -p ${INSTALLED_CONFIG_PATH}
 
-  cp  ${CONFIG_DIR}/* ${INSTALLED_CONFIG_PATH}
+  cp -r ${CONFIG_DIR}/* ${INSTALLED_CONFIG_PATH}
 }
 
 install_scripts () {
@@ -117,7 +124,7 @@ CONFIG_DIR=./config
 RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
-NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server kubeadm kubectl docker.io docker-compose pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget \\
+NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server kubeadm kubectl docker.io pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget \\
   python-dev python-pip virtualenv "
 COMPLETED_APT_DOWNLOAD=0
 
@@ -237,20 +244,24 @@ NVIDIA_package_PATH=${INSTALLED_DIR}/nvidia-driver
 
 CUDA_PACKAGE_PATH=${INSTALLED_DIR}/cuda
 
-getDLWorkspace
+HARBOR_PACKAGE_PATH=${INSTALL_DIR}/harbor
+
+#getDLWorkspace
 
 getNeededAptPackages
+
+#getHarborPackages
 
 getAllNeededDockerImages
 
 getAllNeededConfigs
 
-if [ "${IS_DOWNLOAD_NVIDIA}" != 0]; then
+if [ "${IS_DOWNLOAD_NVIDIA}" != 0 ]; then
   printf "Downloading NVIDIA......\\n"
   getNvidiaDriver
 fi
 
-if [ "${IS_DOWNLOAD_CUDA}" != 0]; then
+if [ "${IS_DOWNLOAD_CUDA}" != 0 ]; then
   printf "Downloading CUDA 10.2......\\n"
   getCudaPackage
 fi
