@@ -204,6 +204,45 @@ install_necessary_packages () {
     systemctl enable nfs-kernel-server
 }
 
+install_harbor () {
+    #### prepare harbor dir
+    echo 'Input harbor storage path:'
+    read -r HARBOR_STORAGE_PATH
+    if [ -d "$HARBOR_STORAGE_PATH" ]; then
+      echo "$HARBOR_STORAGE_PATH exists"
+    else
+      echo "$HARBOR_STORAGE_PATH not exists"
+      exit 1
+    fi
+
+    HARBOR_DIR=/data/harbor
+    mkdir -p /data
+    rm -rf $HARBOR_DIR
+    ln -s $HARBOR_STORAGE_PATH $HARBOR_DIR
+
+    #### install docker-compose
+    echo "Installing docker-compose ..."
+    chmod +x ${THIS_DIR}/harbor/docker-compose
+    cp ${THIS_DIR}/harbor/docker-compose /usr/bin/docker-compose
+
+    #### prepare harbor
+    HARBOR_INSTALL_DIR="/opt"
+    mkdir -p ${HARBOR_INSTALL_DIR}
+    tar -zxvf ${THIS_DIR}/harbor/harbor.tgz -C $HARBOR_INSTALL_DIR
+    cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
+    cp -r ${THIS_DIR}/config/harbor/harbor-cert $HARBOR_INSTALL_DIR/harbor/cert
+    cp -r ${THIS_DIR}/config/harbor/docker-certs.d /etc/docker/certs.d
+    systemctl restart docker
+
+    #### install harbor
+    #$HARBOR_INSTALL_DIR/harbor/install.sh
+    HARBOR_REGISTRY=harbor.sigsus.cn
+    HARBOR_USERNAME=admin
+    HARBOR_PASSWORD=Harbor12345
+    echo "docker login $HARBOR_REGISTRY --username=$HARBOR_USERNAME --password=$HARBOR_PASSWORD"
+    docker login $HARBOR_REGISTRY --username=$HARBOR_USERNAME --password=$HARBOR_PASSWORD # TODO
+}
+
 install_source_dir () {
 
     if [ ! -f "${INSTALLED_DIR}" ]; then
@@ -699,6 +738,8 @@ then
 
     #install_1st_necessary_packages
     install_necessary_packages
+
+    install_harbor
 
     install_dlws_admin_ubuntu
 

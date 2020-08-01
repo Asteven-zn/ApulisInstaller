@@ -14,8 +14,8 @@ https:
   # https port for harbor, default is 443
   port: 443
   # The path of cert and key files for nginx
-  certificate: /data/harbor/cert/harbor.sigsus.cn.crt
-  private_key: /data/harbor/cert/harbor.sigsus.cn.key
+  certificate: /opt/harbor/cert/harbor.sigsus.cn.crt
+  private_key: /opt/harbor/cert/harbor.sigsus.cn.key
 
 # # Uncomment following will enable tls communication between all harbor components
 # internal_tls:
