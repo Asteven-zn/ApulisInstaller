@@ -215,9 +215,6 @@ install_source_dir () {
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
     source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
-    (cd python2.7; pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
-    (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
-
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 }
 
@@ -721,7 +718,7 @@ then
     #### copy config ###########################################
     TEMP_CONFIG_DIR=${INSTALLED_DIR}/temp-config
     mkdir -p $TEMP_CONFIG_DIR
-    cp config/* $TEMP_CONFIG_DIR
+    cp -r config/* $TEMP_CONFIG_DIR
 
     #### check if A910 is presented ########################################
     if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
