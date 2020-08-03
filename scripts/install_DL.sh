@@ -378,7 +378,7 @@ useclusterfile : true
 admin_username: dlwsadmin
 
 # settings for docker
-private_docker_registry: harbor.sigsus.cn/library/
+private_docker_registry: harbor.sigsus.cn:8443/library/
 dockerregistry: apulistech/
 dockers:
   hub: apulistech/
