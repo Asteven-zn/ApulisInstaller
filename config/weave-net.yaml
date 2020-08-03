@@ -173,7 +173,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: 'docker.io/weaveworks/weave-kube:2.6.5'
+              image: 'harbor.sigsus.cn:8443/library/weaveworks/weave-kube:2.6.5'
               readinessProbe:
                 httpGet:
                   host: 127.0.0.1
@@ -206,7 +206,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: 'docker.io/weaveworks/weave-npc:2.6.5'
+              image: 'harbor.sigsus.cn:8443/library/weaveworks/weave-npc:2.6.5'
               resources:
                 requests:
                   cpu: 10m

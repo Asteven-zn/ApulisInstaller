@@ -32,6 +32,33 @@ check_docker_installation() {
 
 }
 
+config_docker_harbor_certs() {
+  cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
+  systemctl restart docker
+  echo "Docker login harbor ..."
+  docker login $HARBOR_REGISTRY --username admin
+}
+
+prepare_k8s_images() {
+  harbor_prefix=harbor.sigsus.cn:8443/library/
+  k8s_url=k8s.gcr.io
+  k8s_version=v1.18.2
+  k8s_images=(
+    $k8s_url/kube-proxy:$k8s_version,
+    $k8s_url/kube-apiserver:$k8s_version,
+    $k8s_url/kube-controller-manager:$k8s_version,
+    $k8s_url/kube-scheduler:$k8s_version,
+    $k8s_url/pause:3.2,
+    $k8s_url/etcd:3.4.3-0,
+    $k8s_url/coredns:1.6.7
+  )
+  for image in k8s_images
+  do
+    docker pull harbor_prefix$image
+    docker tag harbor_prefix$image $image
+  done
+}
+
 check_k8s_installation() {
     ER=$(which kubectl)
     if [ x"${ER}" = "x" ]; then
@@ -237,9 +264,11 @@ then
 
 
     check_docker_installation
+    config_docker_harbor_certs
+    prepare_k8s_images
     check_k8s_installation
     set_up_k8s_cluster
-    
+
     install_necessary_packages
 
     install_source_dir && echo "Successfully installed source tree..."
@@ -248,7 +277,7 @@ then
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 
     set_docker_config
-    load_docker_images
+    #load_docker_images
 
 fi
 

@@ -206,7 +206,7 @@ install_necessary_packages () {
 
 install_harbor () {
     #### prepare harbor dir
-    echo 'Input harbor storage path:'
+    echo 'Input harbor storage path: (Path of current machine, e.g. /data/harbor. Please ensure the dir disk is big enough.)'
     read -r HARBOR_STORAGE_PATH
     if [ -d "$HARBOR_STORAGE_PATH" ]; then
       echo "$HARBOR_STORAGE_PATH exists"
@@ -234,6 +234,7 @@ install_harbor () {
     read -r HARBOR_ADMIN_PASSWORD
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/Harbor12345/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
+    echo "Preparing docker certs, docker daemon will restart soon ..."
     cp -r ${THIS_DIR}/config/harbor/harbor-cert $HARBOR_INSTALL_DIR/harbor/cert
     cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
     systemctl restart docker
@@ -303,6 +304,17 @@ load_docker_images () {
 	    ############ Will implement later ##################################
 
     fi
+}
+
+push_docker_images_to_harbor () {
+  HARBOR_IMAGE_PREFIX=harbor.sigsus.cn:8443/library/
+  images=($(docker images | awk '{print $1":"$2}' | grep -v "REPOSITORY:TAG"))
+  for image in "${images[@]}"
+  do
+    new_image=${HARBOR_IMAGE_PREFIX}${image}
+    docker tag $image $new_image
+    docker push $new_image
+  done
 }
 
 set_up_k8s_cluster () {
@@ -774,6 +786,8 @@ then
 
     load_docker_images
 
+    push_docker_images_to_harbor
+
     #### copy config ###########################################
     TEMP_CONFIG_DIR=${INSTALLED_DIR}/temp-config
     mkdir -p $TEMP_CONFIG_DIR
@@ -954,9 +968,6 @@ do
     sshpass -p dlwsadmin ssh dlwsadmin@$worknode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
 
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$worknode:${REMOTE_APT_DIR}
-
-    sshpass -p dlwsadmin scp docker-images/${ARCH}/* dlwsadmin@$worknode:${REMOTE_IMAGE_DIR}
-
 
     sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
