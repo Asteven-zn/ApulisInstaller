@@ -226,21 +226,25 @@ install_harbor () {
     cp ${THIS_DIR}/harbor/docker-compose /usr/bin/docker-compose
 
     #### prepare harbor
+    echo "Preparing harbor ..."
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}
     tar -zxvf ${THIS_DIR}/harbor/harbor.tgz -C $HARBOR_INSTALL_DIR
+    echo "Please set harbor admin password:"
+    read -r HARBOR_ADMIN_PASSWORD
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
+    sed -i "s/\${admin_password}/Harbor12345/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     cp -r ${THIS_DIR}/config/harbor/harbor-cert $HARBOR_INSTALL_DIR/harbor/cert
-    cp -r ${THIS_DIR}/config/harbor/docker-certs.d /etc/docker/certs.d
+    cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
     systemctl restart docker
 
     #### install harbor
-    #$HARBOR_INSTALL_DIR/harbor/install.sh
+    echo "Installing harbor ..."
+    $HARBOR_INSTALL_DIR/harbor/install.sh
+    sleep 5
     HARBOR_REGISTRY=harbor.sigsus.cn
-    HARBOR_USERNAME=admin
-    HARBOR_PASSWORD=Harbor12345
-    echo "docker login $HARBOR_REGISTRY --username=$HARBOR_USERNAME --password=$HARBOR_PASSWORD"
-    docker login $HARBOR_REGISTRY --username=$HARBOR_USERNAME --password=$HARBOR_PASSWORD # TODO
+    echo "Docker login harbor ..."
+    docker login $HARBOR_REGISTRY --username admin
 }
 
 install_source_dir () {
