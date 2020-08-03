@@ -851,6 +851,42 @@ if [ ${NO_NFS} = 0 ]; then
    create_nfs_share
 fi
 
+
+############# Config extra master node ###################################################################
+for masternode in "${extra_master_nodes[@]}"
+do
+    ######### set up passwordless access from Master to Node ################################
+    cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$masternode 'cat >> .ssh/authorized_keys'
+    ######### set up passwordless access from Node to Master ################################
+    sshpass -p dlwsadmin ssh dlwsadmin@$masternode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
+
+    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
+
+    sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
+
+    sshpass -p dlwsadmin scp install_masternode.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+
+    #sshpass -p dlwsadmin scp join-command dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+
+    sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+
+    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/python2.7
+
+    ########################### Install on remote node ######################################
+    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
+
+    #### enable nfs server ###########################################
+    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
+    
+    if [ ${NO_NFS} = 0 ]; then
+       if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
+           EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
+       fi
+       sshpass -p dlwsadmin ssh dlwsadmin@$masternode "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
+    fi
+
+done
+############# Config worker node ###################################################################
 for worknode in "${worker_nodes[@]}"
 do
     ######### set up passwordless access from Master to Node ################################
