@@ -370,6 +370,22 @@ generate_config() {
     master_hostname=`hostname`
     master_ip=`grep "${master_hostname}" /etc/hosts | grep -v 127 | grep -v ${master_hostname}\. | awk '{print $1}'`
 
+    echo "Setting alert email ...\n
+    You need to setup:
+    1. smtp server host: e.g. smtp.test.com:25\n
+    2. smtp server email: e.g. test_smtp@test.com\n
+    3. smtp server password: e.g. TEST_PASSWORD
+    4. smtp default receiver: e.g. receiver@test.com
+    "
+    echo "Please set smtp server host:"
+    read -r alert_host
+    echo "Please set smtp server email address:"
+    read -r alert_smtp_email_address
+    echo "Please set smtp server email:"
+    read -r alert_smtp_email_password
+    echo "Please set default receiver email:"
+    read -r alert_default_user_email
+
     # write basic info
     cat << EOF > config.yaml
 cluster_name: DLWorkspace
@@ -486,6 +502,14 @@ repair-manager:
     password: vtguxryxqyrkbfdd
     sender: 1023950387@qq.com
     receiver: ["1023950387@qq.com"]
+
+grafana_alert:
+  smtp:
+    host: $alert_host
+    user: $alert_smtp_email_address
+    password: $alert_smtp_email_password
+    from_address: $alert_smtp_email_address
+  receiver: $alert_default_user_email
 
 machines:
   ${master_hostname}:
