@@ -879,7 +879,7 @@ do
 
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
 
-    sshpass -p dlwsadmin scp install_masternode.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+    sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
     #sshpass -p dlwsadmin scp join-command dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
@@ -966,14 +966,14 @@ mkdir -p ./deploy/etc
 cp /etc/hosts ./deploy/etc/hosts
 ./deploy.py --verbose copytoall ./deploy/etc/hosts  /etc/hosts
 
-./deploy.py --verbose kubeadm init
+./deploy.py --verbose kubeadm init ha
 ./deploy.py --verbose copytoall ./deploy/sshkey/admin.conf /root/.kube/config
 
 if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
     ./deploy.py --verbose kubernetes uncordon 
 fi
 
-./deploy.py --verbose kubeadm join
+./deploy.py --verbose kubeadm join ha
 ./deploy.py --verbose -y kubernetes labelservice
 ./deploy.py --verbose -y labelworker
 
