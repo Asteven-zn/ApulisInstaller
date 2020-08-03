@@ -442,7 +442,22 @@ machines:
     type: cpu
 EOF
  
-   # write worker nodes info
+
+# write extra master nodes info
+for masternode in "${extra_master_nodes[@]}"
+do
+   extra_master_ip=`grep "${masternode}" /etc/hosts | grep -v 127 | grep -v ${masternode}\. | awk '{print $1}'`
+   cat << EOF >> config.yaml
+
+  ${masternode}:
+    role: infrastructure
+    private-ip: ${extra_master_ip}
+    archtype: amd64
+    type: cpu
+
+EOF
+done
+# write worker nodes info
 for worknode in "${worker_nodes[@]}"
 do
    cat << EOF >> config.yaml
