@@ -296,8 +296,8 @@ create_nfs_share() {
         chown -R nobody:nogroup $NFS_MOUNT_POINT
         chmod 777 $NFS_MOUNT_POINT
 
-        ############ /etc/exports will only open to the nodes client. ###############################################
-        for worknode in "${nodes[@]}"
+        ############ /etc/exports will only open to the worker_nodes client. ###############################################
+        for worknode in "${worker_nodes[@]}"
         do
            echo "$NFS_MOUNT_POINT  $worknode   (re,sync,no_subtree_check)" | tee -a /etc/exports
         done
@@ -443,7 +443,7 @@ machines:
 EOF
  
    # write worker nodes info
-for worknode in "${nodes[@]}"
+for worknode in "${worker_nodes[@]}"
 do
    cat << EOF >> config.yaml
 
@@ -768,13 +768,22 @@ if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
 fi
 
 
-declare -a nodes=()
+declare -a worker_nodes=()
+declare -a extra_master_nodes=()
 node_number=1
 
-while [ ${node_number} -le 5 ]
+echo '
+           _                 __  __           _            
+  _____  _| |_ _ __ __ _    |  \/  | __ _ ___| |_ ___ _ __ 
+ / _ \ \/ / __| |__/ _` |   | |\/| |/ _` / __| __/ _ \ |__|
+|  __/>  <| |_| | | (_| |   | |  | | (_| \__ \ ||  __/ |   
+ \___/_/\_\\__|_|  \__,_|___|_|  |_|\__,_|___/\__\___|_|   
+                       |_____|   
+'
+while true
 do
     printf "\\n"
-    printf "Add More Node in the cluster"
+    printf "Add More Master Nodes in the cluster"
     printf "\\n"
     printf "Please enter quit and finish setting hostname \\n"
     printf "Or enter the hostname of node (Node Number: ${node_number} ). \\n"
@@ -787,14 +796,46 @@ do
         printf "Set up node ...\\n"
         setup_user_on_node $nodename
         if [ $? = 0 ]; then
-            nodes[ $(( ${node_number} - 1 )) ]=${nodename}
+            extra_master_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
             node_number=$(( ${node_number} + 1 ))
         fi
     fi
 done
 
-echo ${nodes[@]}
-printf "Total number of nodes: ${#nodes[@]} \\n"
+node_number=1
+echo '
+                    _             
+__      _____  _ __| | _____ _ __ 
+\ \ /\ / / _ \| |__| |/ / _ \ |__|
+ \ V  V / (_) | |  |   <  __/ |   
+  \_/\_/ \___/|_|  |_|\_\___|_|   
+'
+while [ ${node_number} -le 5 ]
+do
+    printf "\\n"
+    printf "Add More Worker Nodes in the cluster"
+    printf "\\n"
+    printf "Please enter quit and finish setting hostname \\n"
+    printf "Or enter the hostname of node (Node Number: ${node_number} ). \\n"
+    printf ">>> "
+    read -r nodename
+    if [ $nodename = "quit" ]; then
+        printf "No more node is need to set up. \\n"
+        break;
+    else
+        printf "Set up node ...\\n"
+        setup_user_on_node $nodename
+        if [ $? = 0 ]; then
+            worker_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
+            node_number=$(( ${node_number} + 1 ))
+        fi
+    fi
+done
+
+echo ${extra_master_nodes[@]}
+printf "Total number of extra master nodes: ${#extra_master_nodes[@]} \\n"
+echo ${worker_nodes[@]}
+printf "Total number of worker nodes: ${#worker_nodes[@]} \\n"
 
 ########### setting up for master, also copy the package files and docker images files ###########################################
 REMOTE_INSTALL_DIR="/tmp/install_YTung.$TIMESTAMP"
@@ -803,14 +844,14 @@ REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${ARCH}"
 REMOTE_CONFIG_DIR="${REMOTE_INSTALL_DIR}/config"
 REMOTE_PYTHON_DIR="${REMOTE_INSTALL_DIR}/python2.7"
 
-runuser dlwsadmin -c "ssh-keyscan ${nodes[@]} >> ~/.ssh/known_hosts"
+runuser dlwsadmin -c "ssh-keyscan ${worker_nodes[@]} >> ~/.ssh/known_hosts"
 
 ############# Create NFS share ###################################################################
 if [ ${NO_NFS} = 0 ]; then
    create_nfs_share
 fi
 
-for worknode in "${nodes[@]}"
+for worknode in "${worker_nodes[@]}"
 do
     ######### set up passwordless access from Master to Node ################################
     cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$worknode 'cat >> .ssh/authorized_keys'
