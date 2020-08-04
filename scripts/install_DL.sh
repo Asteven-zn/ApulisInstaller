@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x
+#set -x
 
 config_k8s_cluster() {
     ###### init kubernetes cluster config file
@@ -1008,7 +1008,7 @@ do
 
     sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_CONFIG_DIR}
+    sshpass -p dlwsadmin scp -r config/* dlwsadmin@$worknode:${REMOTE_CONFIG_DIR}
 
     #sshpass -p dlwsadmin scp join-command dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
