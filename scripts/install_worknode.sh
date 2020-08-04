@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -x
+
 usage() {
     cat <<EOF
 Usage: $0 [options] [command]
@@ -55,7 +57,7 @@ prepare_k8s_images() {
     $k8s_url/coredns:1.6.7
     plndr/kube-vip:0.1.7
   )
-  for image in $k8s_images
+  for image in ${k8s_images[@]}
   do
     docker pull $harbor_prefix$image
     docker tag $harbor_prefix$image $image
@@ -125,7 +127,7 @@ install_source_dir () {
 	    mkdir -p ${INSTALLED_DIR}
     fi
 
-    tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
+    #tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
 
     # there is no need to run python virtual env on work node
     # python virtual env is prepared for deploy.py which only run on master

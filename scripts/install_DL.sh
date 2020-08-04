@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -x
+
 config_k8s_cluster() {
     ###### init kubernetes cluster config file
     IMAGE_DIR="${INSTALLED_DIR}/docker-images/${ARCH}"
@@ -371,8 +373,7 @@ create_nfs_share() {
 
 
 ###### generate config.yaml ####################################################################
-gpulis123
-enerate_config() {
+generate_config() {
 
     # get host ip as master
     master_hostname=`hostname`
@@ -975,7 +976,7 @@ do
 
     #sshpass -p dlwsadmin scp join-command dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+    #sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/python2.7
 
@@ -1011,7 +1012,7 @@ do
 
     #sshpass -p dlwsadmin scp join-command dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
+    #sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}/python2.7
 
