@@ -33,6 +33,8 @@ check_docker_installation() {
 }
 
 config_docker_harbor_certs() {
+
+  HARBOR_REGISTRY=harbor.sigsus.cn:8443
   cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
   systemctl restart docker
   echo "Docker login harbor ..."
@@ -55,8 +57,8 @@ prepare_k8s_images() {
   )
   for image in $k8s_images
   do
-    docker pull harbor_prefix$image
-    docker tag harbor_prefix$image $image
+    docker pull $harbor_prefix$image
+    docker tag $harbor_prefix$image $image
   done
 }
 
