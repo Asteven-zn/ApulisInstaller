@@ -207,36 +207,6 @@ if which getopt > /dev/null 2>&1; then
     done
 fi
 
-printf "Download nvidia driver?\\n"
-printf "[no]>>>"
-read -r ans
-while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
-      [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-do
-  printf "Please answer 'yes' or 'no':'\\n"
-  printf ">>> "
-  read -r ans
-done
-if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
-then
-  IS_DOWNLOAD_NVIDIA="0"
-fi
-
-printf "Download CUDA 10.2?\\n"
-printf "[no]>>>"
-read -r ans
-while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
-      [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-do
-  printf "Please answer 'yes' or 'no':'\\n"
-  printf ">>> "
-  read -r ans
-done
-if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
-then
-  IS_DOWNLOAD_CUDA="0"
-fi
-
 INSTALL_DIR=
 printf "Installed Directory: ${INSTALLED_DIR} \n"
 
@@ -264,17 +234,6 @@ getHarborPackages
 getAllNeededDockerImages
 
 getAllNeededConfigs
-
-if [ "${IS_DOWNLOAD_NVIDIA}" != 0 ]; then
-  printf "Downloading NVIDIA......\\n"
-  getNvidiaDriver
-fi
-
-if [ "${IS_DOWNLOAD_CUDA}" != 0 ]; then
-  printf "Downloading CUDA 10.2......\\n"
-  getCudaPackage
-fi
-
 
 install_scripts
 
