@@ -261,6 +261,8 @@ install_source_dir () {
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
     source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
+    (cd python2.7; pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 }
 
@@ -505,10 +507,10 @@ repair-manager:
   ecc_rule:
     cordon_dry_run: True
   alert:
-    smtp_url: 
-    login: 
-    password: 
-    sender: 
+    smtp_url:
+    login:
+    password:
+    sender:
     receiver: []
 
 grafana_alert:
