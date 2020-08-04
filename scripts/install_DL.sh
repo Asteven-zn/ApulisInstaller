@@ -971,6 +971,8 @@ do
 
     sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
+    sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+
     #sshpass -p dlwsadmin scp join-command dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
@@ -1004,6 +1006,8 @@ do
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$worknode:${REMOTE_APT_DIR}
 
     sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
+
+    sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
     #sshpass -p dlwsadmin scp join-command dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
 
