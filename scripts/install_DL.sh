@@ -206,7 +206,8 @@ install_necessary_packages () {
 
 install_harbor () {
     #### prepare harbor dir
-    echo 'Input harbor storage path: (Path of current machine, e.g. /data/harbor. Please ensure the dir disk is big enough.)'
+    echo 'Input harbor storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /data/harbor)'
+    echo '[e.g. /data/storage]>>>'
     read -r HARBOR_STORAGE_PATH
     if [ -d "$HARBOR_STORAGE_PATH" ]; then
       echo "$HARBOR_STORAGE_PATH exists"
@@ -230,7 +231,8 @@ install_harbor () {
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}
     tar -zxvf ${THIS_DIR}/harbor/harbor.tgz -C $HARBOR_INSTALL_DIR
-    echo "Please set harbor admin password:"
+    echo "Please set harbor admin password, default is 'Harbor12345':"
+    echo "[e.g. Harbor12345]>>>"
     read -r HARBOR_ADMIN_PASSWORD
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/Harbor12345/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
@@ -311,8 +313,11 @@ push_docker_images_to_harbor () {
   images=($(docker images | awk '{print $1":"$2}' | grep -v "REPOSITORY:TAG"))
   for image in "${images[@]}"
   do
-    new_image=${HARBOR_IMAGE_PREFIX}${image}
-    docker tag $image $new_image
+    new_image=${image}
+    if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]]; then
+      new_image=${HARBOR_IMAGE_PREFIX}${image}
+      docker tag $image $new_image
+    fi
     docker push $new_image
   done
 }
@@ -378,12 +383,16 @@ generate_config() {
     4. smtp default receiver: e.g. receiver@test.com
     "
     echo "Please set smtp server host:"
+    echo "[e.g. smtp.test.com:25]>>>"
     read -r alert_host
     echo "Please set smtp server email address:"
+    echo "[e.g. test_smtp@test.com]>>>"
     read -r alert_smtp_email_address
-    echo "Please set smtp server email:"
+    echo "Please set smtp server email password:"
+    echo "[e.g. TEST_PASSWORD]>>>"
     read -r alert_smtp_email_password
     echo "Please set default receiver email:"
+    echo "[e.g. receiver@test.com]>>>"
     read -r alert_default_user_email
 
     # write basic info
