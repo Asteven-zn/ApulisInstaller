@@ -364,7 +364,8 @@ create_nfs_share() {
 
 
 ###### generate config.yaml ####################################################################
-generate_config() {
+gpulis123
+enerate_config() {
 
     # get host ip as master
     master_hostname=`hostname`
@@ -449,7 +450,7 @@ onpremise_cluster:
 mountpoints:
   nfsshare1:
     type: nfs
-    server: master
+    server: ${master_hostname}
     filesharename: /mnt/local
     curphysicalmountpoint: /mntdlws
     mountpoints: ""
@@ -477,9 +478,7 @@ WebUIregisterGroups:
 UserGroups:
   DLWSAdmins:
     Allowed:
-    - jinlmsft@hotmail.com
-    - jinli.ccs@gmail.com
-    - jin.li@apulis.com
+    - admin
     gid: "20001"
     uid: "20000"
   DLWSRegister:
@@ -497,11 +496,11 @@ repair-manager:
   ecc_rule:
     cordon_dry_run: True
   alert:
-    smtp_url: smtp.qq.com
-    login: 1023950387@qq.com
-    password: vtguxryxqyrkbfdd
-    sender: 1023950387@qq.com
-    receiver: ["1023950387@qq.com"]
+    smtp_url: 
+    login: 
+    password: 
+    sender: 
+    receiver: []
 
 grafana_alert:
   smtp:
