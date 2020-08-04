@@ -22,6 +22,13 @@ getCudaPackage() {
   wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
 }
 
+updateNvidiaPluginRequirementSource() {
+  curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+  distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+  curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+  sudo apt-get update -y
+}
+
 getNvidiaDriver() {
   sudo add-apt-repository -y ppa:graphics-drivers/ppa
   sudo apt-get purge -y nvidia*
@@ -46,6 +53,8 @@ getDLWorkspace () {
 }
 
 getNeededAptPackages () {
+  #################### update nvidia docker source ##############################
+  updateNvidiaPluginRequirementSource
   #####################  Create Installation Disk apt packages ##########################
   mkdir -p ${INSTALLED_DIR}/apt/${ARCH}
 
@@ -125,7 +134,7 @@ RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
 NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server kubeadm kubectl docker.io pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget\\
-  python-dev python-pip virtualenv "
+  python-dev python-pip virtualenv nvidia-modprobe nvidia-docker2"
 COMPLETED_APT_DOWNLOAD=0
 
 TEMP_DIR=.temp
