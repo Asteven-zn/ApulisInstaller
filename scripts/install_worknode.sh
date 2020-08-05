@@ -37,6 +37,7 @@ check_docker_installation() {
 config_docker_harbor_certs() {
 
   HARBOR_REGISTRY=harbor.sigsus.cn:8443
+  mkdir -p /etc/docker/certs.d
   cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
   systemctl restart docker
   echo "Docker login harbor ..."

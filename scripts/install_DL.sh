@@ -236,9 +236,11 @@ install_harbor () {
     echo "Please set harbor admin password, default is 'Harbor12345':"
     echo "[e.g. Harbor12345]>>>"
     read -r HARBOR_ADMIN_PASSWORD
+    echo "Please remember your admin password: $HARBOR_ADMIN_PASSWORD"
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
-    sed -i "s/\${admin_password}/Harbor12345/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
+    sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
+    mkdir -p /etc/docker/certs.d
     cp -r ${THIS_DIR}/config/harbor/harbor-cert $HARBOR_INSTALL_DIR/harbor/cert
     cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
     systemctl restart docker
@@ -246,10 +248,18 @@ install_harbor () {
     #### install harbor
     echo "Installing harbor ..."
     $HARBOR_INSTALL_DIR/harbor/install.sh
-    sleep 5
-    HARBOR_REGISTRY=harbor.sigsus.cn
+    HARBOR_REGISTRY=harbor.sigsus.cn:8443
     echo "Docker login harbor ..."
     docker login $HARBOR_REGISTRY --username admin
+    echo "Check if docker login success ..."
+    echo "[y/n]>>>"
+    read -r ans
+    if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]; then
+      echo "Ensure docker login success, continue ..."
+    else
+      echo "Please check docker harbor problems"
+      exit 2
+    fi
 }
 
 install_source_dir () {
@@ -314,17 +324,39 @@ load_docker_images () {
 }
 
 push_docker_images_to_harbor () {
+  echo "Pushing images to harbor ..."
   HARBOR_IMAGE_PREFIX=harbor.sigsus.cn:8443/library/
   images=($(docker images | awk '{print $1":"$2}' | grep -v "REPOSITORY:TAG"))
+
+  PROC_NUM = 10
+  FIFO_FILE="/tmp/$$.fifo"
+  mkfifo $FIFO_FILE
+  exec 9<>$FIFO_FILE
+
+  for process_num in $(seq $PROC_NUM})
+  do
+    echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
+  done
+
   for image in "${images[@]}"
   do
-    new_image=${image}
-    if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]]; then
-      new_image=${HARBOR_IMAGE_PREFIX}${image}
-      docker tag $image $new_image
-    fi
-    docker push $new_image
+    read -u 9 P
+    {
+      echo "Process [${P}] is in process ..."
+      new_image=${image}
+      if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]]; then
+        new_image=${HARBOR_IMAGE_PREFIX}${image}
+        docker tag $image $new_image
+      fi
+      docker push $new_image
+      echo ${P} >&9
+    }&
   done
+
+  wait
+  echo "All images are pushed to harbor ..."
+  exec 9>&-
+  rm -f ${FIFO_FILE}
 }
 
 set_up_k8s_cluster () {
@@ -1078,9 +1110,15 @@ fi
 ./deploy.py --verbose nginx fqdn
 ./deploy.py --verbose nginx config
 
+./deploy.py runscriptonroles infra worker ./scripts/install_nfs.sh
+./deploy.py --verbose --force mount
+
 ./deploy.py --verbose kubernetes start mysql
 ./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
 ./deploy.py --verbose kubernetes start monitor
 
 ./deploy.py --verbose kubernetes start webui3
 ./deploy.py kubernetes start custom-user-dashboard
+./deploy.py kubernetes start image-label
+
+. ../docker-images/init-container/prebuild.sh
