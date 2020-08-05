@@ -274,6 +274,7 @@ install_source_dir () {
     source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
     (cd python2.7; pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 }
