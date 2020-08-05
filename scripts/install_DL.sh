@@ -324,17 +324,39 @@ load_docker_images () {
 }
 
 push_docker_images_to_harbor () {
+  echo "Pushing images to harbor ..."
   HARBOR_IMAGE_PREFIX=harbor.sigsus.cn:8443/library/
   images=($(docker images | awk '{print $1":"$2}' | grep -v "REPOSITORY:TAG"))
+
+  PROC_NUM = 10
+  FIFO_FILE="/tmp/$$.fifo"
+  mkfifo $FIFO_FILE
+  exec 9<>$FIFO_FILE
+
+  for process_num in $(seq $PROC_NUM})
+  do
+    echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
+  done
+
   for image in "${images[@]}"
   do
-    new_image=${image}
-    if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]]; then
-      new_image=${HARBOR_IMAGE_PREFIX}${image}
-      docker tag $image $new_image
-    fi
-    docker push $new_image
+    read -u 9 P
+    {
+      echo "Process [${P}] is in process ..."
+      new_image=${image}
+      if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]]; then
+        new_image=${HARBOR_IMAGE_PREFIX}${image}
+        docker tag $image $new_image
+      fi
+      docker push $new_image
+      echo ${P} >&9
+    }&
   done
+
+  wait
+  echo "All images are pushed to harbor ..."
+  exec 9>&-
+  rm -f ${FIFO_FILE}
 }
 
 set_up_k8s_cluster () {
@@ -1101,4 +1123,4 @@ fi
 ./deploy.py kubernetes start custom-user-dashboard
 ./deploy.py kubernetes start image-label
 
-. ../docker-images/init-container/prebuild.sh 
+. ../docker-images/init-container/prebuild.sh
