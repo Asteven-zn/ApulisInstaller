@@ -346,12 +346,12 @@ push_docker_images_to_harbor () {
   HARBOR_IMAGE_PREFIX=harbor.sigsus.cn:8443/library/
   images=($(docker images | awk '{print $1":"$2}' | grep -v "REPOSITORY:TAG"))
 
-  PROC_NUM = 10
+  PROC_NUM=10
   FIFO_FILE="/tmp/$$.fifo"
   mkfifo $FIFO_FILE
   exec 9<>$FIFO_FILE
 
-  for process_num in $(seq $PROC_NUM})
+  for process_num in $(seq $PROC_NUM)
   do
     echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
   done
