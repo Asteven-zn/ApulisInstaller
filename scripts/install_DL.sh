@@ -236,9 +236,11 @@ install_harbor () {
     echo "Please set harbor admin password, default is 'Harbor12345':"
     echo "[e.g. Harbor12345]>>>"
     read -r HARBOR_ADMIN_PASSWORD
+    echo "Please remember your admin password: $HARBOR_ADMIN_PASSWORD"
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
-    sed -i "s/\${admin_password}/Harbor12345/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
+    sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
+    mkdir -p /etc/docker/certs.d
     cp -r ${THIS_DIR}/config/harbor/harbor-cert $HARBOR_INSTALL_DIR/harbor/cert
     cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
     systemctl restart docker
@@ -246,10 +248,18 @@ install_harbor () {
     #### install harbor
     echo "Installing harbor ..."
     $HARBOR_INSTALL_DIR/harbor/install.sh
-    sleep 5
-    HARBOR_REGISTRY=harbor.sigsus.cn
+    HARBOR_REGISTRY=harbor.sigsus.cn:8443
     echo "Docker login harbor ..."
     docker login $HARBOR_REGISTRY --username admin
+    echo "Check if docker login success ..."
+    echo "[y/n]>>>"
+    read -r ans
+    if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]; then
+      echo "Ensure docker login success, continue ..."
+    else
+      echo "Please check docker harbor problems"
+      exit 2
+    fi
 }
 
 install_source_dir () {
