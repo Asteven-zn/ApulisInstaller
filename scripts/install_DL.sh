@@ -997,11 +997,13 @@ do
     ######### set up passwordless access from Master to Node ################################
     cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$masternode 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
-    sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@$masternode:/etc/ # for docker harbor init, we need to set up hosts at begining
-
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
 
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
+
+    sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
+
+    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
 
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
 
@@ -1033,11 +1035,13 @@ do
     ######### set up passwordless access from Master to Node ################################
     cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$worknode 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
-    sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@$worknode:/etc/ # for docker harbor init, we need to set up hosts at begining
-
     sshpass -p dlwsadmin ssh dlwsadmin@$worknode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
 
     sshpass -p dlwsadmin ssh dlwsadmin@$worknode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
+
+   sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
+
+    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
 
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$worknode:${REMOTE_APT_DIR}
 
