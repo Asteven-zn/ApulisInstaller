@@ -206,6 +206,24 @@ install_necessary_packages () {
     systemctl enable nfs-kernel-server
 }
 
+prepare_nfs_storage_path () {
+    echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
+    echo '[e.g. /mnt/disk]'
+    read -r NFS_STORAGE_PATH
+    if [ -d "$NFS_STORAGE_PATH" ]; then
+      echo "$NFS_STORAGE_PATH exists"
+    else
+      echo "$NFS_STORAGE_PATH not exists"
+      exit 1
+    fi
+
+    NFS_DIR=/mnt/local
+    mkdir -p /mnt
+    rm -rf $NFS_DIR
+    ln -s $NFS_STORAGE_PATH $NFS_DIR
+    echo 'NFS prepared success'
+}
+
 install_harbor () {
     #### prepare harbor dir
     echo 'Input harbor storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /data/harbor)'
@@ -836,6 +854,8 @@ then
 
     #install_1st_necessary_packages
     install_necessary_packages
+
+    prepare_nfs_storage_path
 
     install_harbor
 
