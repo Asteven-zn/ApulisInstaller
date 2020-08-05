@@ -206,6 +206,24 @@ install_necessary_packages () {
     systemctl enable nfs-kernel-server
 }
 
+prepare_nfs_storage_path () {
+    echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
+    echo '[e.g. /mnt/disk]'
+    read -r NFS_STORAGE_PATH
+    if [ -d "$NFS_STORAGE_PATH" ]; then
+      echo "$NFS_STORAGE_PATH exists"
+    else
+      echo "$NFS_STORAGE_PATH not exists"
+      exit 1
+    fi
+
+    NFS_DIR=/mnt/local
+    mkdir -p /mnt
+    rm -rf $NFS_DIR
+    ln -s $NFS_STORAGE_PATH $NFS_DIR
+    echo 'NFS prepared success'
+}
+
 install_harbor () {
     #### prepare harbor dir
     echo 'Input harbor storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /data/harbor)'
@@ -328,12 +346,12 @@ push_docker_images_to_harbor () {
   HARBOR_IMAGE_PREFIX=harbor.sigsus.cn:8443/library/
   images=($(docker images | awk '{print $1":"$2}' | grep -v "REPOSITORY:TAG"))
 
-  PROC_NUM = 10
+  PROC_NUM=10
   FIFO_FILE="/tmp/$$.fifo"
   mkfifo $FIFO_FILE
   exec 9<>$FIFO_FILE
 
-  for process_num in $(seq $PROC_NUM})
+  for process_num in $(seq $PROC_NUM)
   do
     echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
   done
@@ -836,6 +854,8 @@ then
 
     #install_1st_necessary_packages
     install_necessary_packages
+
+    prepare_nfs_storage_path
 
     install_harbor
 

@@ -41,7 +41,7 @@ config_docker_harbor_certs() {
   cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
   systemctl restart docker
   echo "Docker login harbor ..."
-  docker login $HARBOR_REGISTRY --username admin
+  #docker login $HARBOR_REGISTRY --username admin
 }
 
 prepare_k8s_images() {
@@ -85,7 +85,6 @@ check_k8s_installation() {
     fi
 
 }
-
 
 
 install_necessary_packages () {
