@@ -1090,9 +1090,15 @@ fi
 ./deploy.py --verbose nginx fqdn
 ./deploy.py --verbose nginx config
 
+./deploy.py runscriptonroles infra worker ./scripts/install_nfs.sh
+./deploy.py --verbose --force mount
+
 ./deploy.py --verbose kubernetes start mysql
 ./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
 ./deploy.py --verbose kubernetes start monitor
 
 ./deploy.py --verbose kubernetes start webui3
 ./deploy.py kubernetes start custom-user-dashboard
+./deploy.py kubernetes start image-label
+
+. ../docker-images/init-container/prebuild.sh 
