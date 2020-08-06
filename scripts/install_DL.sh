@@ -258,17 +258,17 @@ install_harbor () {
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
+    mkdir -p $HARBOR_INSTALL_DIR/harbor/cert
+    cp -r ${THIS_DIR}/config/harbor/harbor-cert/* $HARBOR_INSTALL_DIR/harbor/cert/
     mkdir -p /etc/docker/certs.d
-    cp -r ${THIS_DIR}/config/harbor/harbor-cert $HARBOR_INSTALL_DIR/harbor/cert
     cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
     systemctl restart docker
 
     #### install harbor
     echo "Installing harbor ..."
     $HARBOR_INSTALL_DIR/harbor/install.sh
-    HARBOR_REGISTRY=harbor.sigsus.cn:8443
     echo "Docker login harbor ..."
-    docker login $HARBOR_REGISTRY --username admin
+    docker login ${HARBOR_REGISTRY}:8443 --username admin
     echo "Check if docker login success ..."
     echo "[y/n]>>>"
     read -r ans
@@ -278,6 +278,16 @@ install_harbor () {
       echo "Please check docker harbor problems"
       exit 2
     fi
+
+    #### create basic harbor library
+    curl -X POST "https://${HARBOR_REGISTRY}:8443/api/v2.0/projects" -H 'Content-Type: application/json' -k -u admin:${HARBOR_ADMIN_PASSWORD} --data-raw "
+    {
+      \"project_name\": \"${DOCKER_HARBOR_LIBRARY}\",
+      \"metadata\": {
+        \"public\": \"true\"
+      },
+      \"storage_limit\": -1
+    }"
 }
 
 install_source_dir () {
@@ -327,11 +337,29 @@ load_docker_images () {
 	    printf "Copy docker images from source\n"
 	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images/${ARCH}"
 
-	    for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
-	    do
-	        printf "Load docker image file: $file\n"
-	        docker load -i $file
-	    done
+      PROC_NUM=10
+      FIFO_FILE="/tmp/$$.fifo"
+      mkfifo $FIFO_FILE
+      exec 9<>$FIFO_FILE
+    for process_num in $(seq $PROC_NUM)
+    do
+      echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
+    done
+	for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
+    do
+        read -u 9 P
+        {
+	      printf "Load docker image file: $file\n"
+          echo "Process [${P}] is in process ..."
+	      docker load -i $file
+          echo ${P} >&9
+        }&
+	done
+
+      wait
+      echo "All docker images are loaded from install disk ..."
+      exec 9>&-
+      rm -f ${FIFO_FILE}
 
     else
 	    printf "Pull docker images from Docker Hub...\n"
@@ -343,7 +371,7 @@ load_docker_images () {
 
 push_docker_images_to_harbor () {
   echo "Pushing images to harbor ..."
-  HARBOR_IMAGE_PREFIX=harbor.sigsus.cn:8443/library/
+  HARBOR_IMAGE_PREFIX=${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
   images=($(docker images | awk '{print $1":"$2}' | grep -v "REPOSITORY:TAG"))
 
   PROC_NUM=10
@@ -470,7 +498,7 @@ useclusterfile : true
 admin_username: dlwsadmin
 
 # settings for docker
-private_docker_registry: harbor.sigsus.cn:8443/library/
+private_docker_registry: ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
 dockerregistry: apulistech/
 dockers:
   hub: apulistech/
@@ -637,6 +665,8 @@ EXTERNAL_NFS_MOUNT=0
 EXTERNAL_MOUNT_POINT=
 NFS_MOUNT_POINT="/mnt/nfs_share"
 USE_MASTER_NODE_AS_WORKER=1
+HARBOR_REGISTRY=harbor.sigsus.cn
+DOCKER_HARBOR_LIBRARY=sz_gongdianju
 
 CLUSTER_NAME="DLWorkspace"
 
