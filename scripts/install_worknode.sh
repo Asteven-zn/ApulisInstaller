@@ -36,7 +36,6 @@ check_docker_installation() {
 
 config_docker_harbor_certs() {
 
-  HARBOR_REGISTRY=harbor.sigsus.cn:8443
   mkdir -p /etc/docker/certs.d
   cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
   systemctl restart docker
@@ -45,7 +44,7 @@ config_docker_harbor_certs() {
 }
 
 prepare_k8s_images() {
-  harbor_prefix=harbor.sigsus.cn:8443/library/
+  harbor_prefix=${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
   k8s_url=k8s.gcr.io
   k8s_version=v1.18.2
   k8s_images=(
@@ -222,6 +221,8 @@ HUAWEI_NPU="False"
 COPY_DOCKER_IMAGE=1
 DOCKER_REGISTRY=
 INSTALLED_DIR="/home/dlwsadmin/DLWorkspace"
+HARBOR_REGISTRY=harbor.sigsus.cn
+DOCKER_HARBOR_LIBRARY=sz_gongdianju
 
 CLUSTER_NAME="DLWorkspace"
 TIMESTAMP=$(date "+%Y%m%d-%H:%M:%S")
