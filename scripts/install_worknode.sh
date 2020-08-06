@@ -270,11 +270,11 @@ then
 
     check_docker_installation
     config_docker_harbor_certs
+    install_necessary_packages
+
     prepare_k8s_images
     check_k8s_installation
     set_up_k8s_cluster
-
-    install_necessary_packages
 
     install_source_dir && echo "Successfully installed source tree..."
 
