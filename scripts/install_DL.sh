@@ -341,17 +341,20 @@ load_docker_images () {
       FIFO_FILE="/tmp/$$.fifo"
       mkfifo $FIFO_FILE
       exec 9<>$FIFO_FILE
-
-	    for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
-	    do
+    for process_num in $(seq $PROC_NUM)
+    do
+      echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
+    done
+	for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
+    do
         read -u 9 P
         {
-	        printf "Load docker image file: $file\n"
+	      printf "Load docker image file: $file\n"
           echo "Process [${P}] is in process ..."
-	        docker load -i $file
+	      docker load -i $file
           echo ${P} >&9
         }&
-	    done
+	done
 
       wait
       echo "All docker images are loaded from install disk ..."
