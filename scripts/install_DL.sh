@@ -258,8 +258,9 @@ install_harbor () {
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
+    mkdir -p $HARBOR_INSTALL_DIR/harbor/cert
+    cp -r ${THIS_DIR}/config/harbor/harbor-cert/* $HARBOR_INSTALL_DIR/harbor/cert/
     mkdir -p /etc/docker/certs.d
-    cp -r ${THIS_DIR}/config/harbor/harbor-cert $HARBOR_INSTALL_DIR/harbor/cert
     cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
     systemctl restart docker
 
@@ -336,11 +337,26 @@ load_docker_images () {
 	    printf "Copy docker images from source\n"
 	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images/${ARCH}"
 
+      PROC_NUM=10
+      FIFO_FILE="/tmp/$$.fifo"
+      mkfifo $FIFO_FILE
+      exec 9<>$FIFO_FILE
+
 	    for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
 	    do
+        read -u 9 P
+        {
 	        printf "Load docker image file: $file\n"
+          echo "Process [${P}] is in process ..."
 	        docker load -i $file
+          echo ${P} >&9
+        }&
 	    done
+
+      wait
+      echo "All docker images are loaded from install disk ..."
+      exec 9>&-
+      rm -f ${FIFO_FILE}
 
     else
 	    printf "Pull docker images from Docker Hub...\n"
