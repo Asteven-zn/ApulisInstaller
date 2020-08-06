@@ -1144,5 +1144,7 @@ fi
 ./deploy.py --verbose kubernetes start webui3
 ./deploy.py kubernetes start custom-user-dashboard
 ./deploy.py kubernetes start image-label
+./deploy.py kubernetes start aiarts-frontend
+./deploy.py docker build data-platform-backend
 
 . ../docker-images/init-container/prebuild.sh
