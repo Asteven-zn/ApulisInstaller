@@ -268,7 +268,7 @@ install_harbor () {
     echo "Installing harbor ..."
     $HARBOR_INSTALL_DIR/harbor/install.sh
     echo "Docker login harbor ..."
-    docker login ${HARBOR_REGISTRY} --username admin
+    docker login ${HARBOR_REGISTRY}:8443 --username admin
     echo "Check if docker login success ..."
     echo "[y/n]>>>"
     read -r ans
@@ -280,7 +280,7 @@ install_harbor () {
     fi
 
     #### create basic harbor library
-    curl -X POST "https://${HARBOR_REGISTRY}/api/v2.0/projects" -H 'Content-Type: application/json' -k -u admin:${HARBOR_ADMIN_PASSWORD} --data-raw "
+    curl -X POST "https://${HARBOR_REGISTRY}:8443/api/v2.0/projects" -H 'Content-Type: application/json' -k -u admin:${HARBOR_ADMIN_PASSWORD} --data-raw "
     {
       \"project_name\": \"${DOCKER_HARBOR_LIBRARY}\",
       \"metadata\": {
@@ -495,7 +495,7 @@ useclusterfile : true
 admin_username: dlwsadmin
 
 # settings for docker
-private_docker_registry: harbor.sigsus.cn:8443/${DOCKER_HARBOR_LIBRARY}/
+private_docker_registry: ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
 dockerregistry: apulistech/
 dockers:
   hub: apulistech/
@@ -662,7 +662,7 @@ EXTERNAL_NFS_MOUNT=0
 EXTERNAL_MOUNT_POINT=
 NFS_MOUNT_POINT="/mnt/nfs_share"
 USE_MASTER_NODE_AS_WORKER=1
-HARBOR_REGISTRY=harbor.sigsus.cn:8443
+HARBOR_REGISTRY=harbor.sigsus.cn
 DOCKER_HARBOR_LIBRARY=sz_gongdianju
 
 CLUSTER_NAME="DLWorkspace"
