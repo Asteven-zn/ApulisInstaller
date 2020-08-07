@@ -302,7 +302,7 @@ install_source_dir () {
 
     tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
 
-    (cd python2.7; pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd python2.7; pip install setuptools;pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
