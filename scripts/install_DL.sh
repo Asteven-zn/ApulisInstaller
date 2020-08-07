@@ -1174,6 +1174,20 @@ fi
 ./deploy.py runscriptonroles infra worker ./scripts/install_nfs.sh
 ./deploy.py --verbose --force mount
 
+echo 'Please check if all nodes have mounted storage using below cmds:'
+echo '    cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap'
+echo '    source ${INSTALLED_DIR}/python2.7-venv/bin/activate'
+echo '    ./deploy.py execonall "df -h"'
+echo '                                                                '
+
+echo 'If the storage havnt mounted yet, try:'
+echo '    ./deploy.py --verbose --force mount'
+echo '    or '
+echo '    ./deploy.py execonall "python /opt/auto_share/auto_share.py"'
+echo '                                                                '
+echo 'Please type any char to proceed:>> '
+read -i anychar
+
 ./deploy.py --verbose kubernetes start mysql
 ./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
 ./deploy.py --verbose kubernetes start monitor
@@ -1182,6 +1196,6 @@ fi
 ./deploy.py kubernetes start custom-user-dashboard
 ./deploy.py kubernetes start image-label
 ./deploy.py kubernetes start aiarts-frontend
-./deploy.py docker build data-platform-backend
+./deploy.py kubernetes start data-platform
 
 . ../docker-images/init-container/prebuild.sh
