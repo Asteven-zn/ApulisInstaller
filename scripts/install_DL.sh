@@ -16,6 +16,9 @@
 
 #set -x
 
+modify_harbor_library_in_config() {
+    sed -i "s|harbor.sigsus.cn:8443/library/|${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" config/weave-net.yaml
+}
 config_k8s_cluster() {
     ###### init kubernetes cluster config file
     IMAGE_DIR="${INSTALLED_DIR}/docker-images/${ARCH}"
@@ -884,8 +887,9 @@ then
 
     check_docker_installation
     check_k8s_installation
+    
+    modify_harbor_library_in_config
 
-    #install_1st_necessary_packages
     install_necessary_packages
 
     prepare_nfs_storage_path
@@ -927,7 +931,6 @@ then
 
     #### Now, this is basic setting of K8s services ####################
     set_up_k8s_cluster
-    #config_k8s_cluster
 
 fi
 
