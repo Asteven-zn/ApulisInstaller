@@ -1196,6 +1196,7 @@ read -i anychar
 ./deploy.py kubernetes start custom-user-dashboard
 ./deploy.py kubernetes start image-label
 ./deploy.py kubernetes start aiarts-frontend
+./deploy.py kubernetes start aiarts-backend
 ./deploy.py kubernetes start data-platform
 
 . ../docker-images/init-container/prebuild.sh
