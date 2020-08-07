@@ -270,6 +270,7 @@ install_harbor () {
     #### install harbor
     echo "Installing harbor ..."
     $HARBOR_INSTALL_DIR/harbor/install.sh
+    sleep 10
     echo "Docker login harbor ..."
     docker login ${HARBOR_REGISTRY}:8443 --username admin
     echo "Check if docker login success ..."
@@ -303,7 +304,7 @@ install_source_dir () {
 
     (cd python2.7; pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
-    
+
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
     source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
@@ -887,7 +888,7 @@ then
 
     check_docker_installation
     check_k8s_installation
-    
+
     modify_harbor_library_in_config
 
     install_necessary_packages
