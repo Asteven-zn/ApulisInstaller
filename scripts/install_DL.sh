@@ -1083,7 +1083,7 @@ do
 
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
 
-    sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+    sshpass -p dlwsadmin scp install_masternode_extra.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_CONFIG_DIR}
 
@@ -1092,7 +1092,7 @@ do
     sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/python2.7
 
     ########################### Install on remote node ######################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
+    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
 
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
@@ -1194,12 +1194,12 @@ fi
 ./deploy.py --verbose --force mount
 
 echo 'Please check if all nodes have mounted storage using below cmds:'
-echo '    cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap'
-echo '    source ${INSTALLED_DIR}/python2.7-venv/bin/activate'
+echo "    cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
+echo "    source ${INSTALLED_DIR}/python2.7-venv/bin/activate"
 echo '    ./deploy.py execonall "df -h"'
 echo '                                                                '
 
-echo 'If the storage havnt mounted yet, try:'
+echo 'If the storage havnt mounted yet, please try:'
 echo '    ./deploy.py --verbose --force mount'
 echo '    or '
 echo '    ./deploy.py execonall "python /opt/auto_share/auto_share.py"'
