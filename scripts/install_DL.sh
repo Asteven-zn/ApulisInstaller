@@ -222,6 +222,7 @@ install_necessary_packages () {
         fi
     done
 
+    dpkg -i ${TEMP_DIR}/libseccomp2_2.4.3-1ubuntu3.18.04.3_amd64.deb # fix 18.04.1 docker deps
     dpkg -i ${TEMP_DIR}/*
 
     #### enable nfs server ###########################################
