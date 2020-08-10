@@ -197,6 +197,7 @@ install_necessary_packages () {
     TEMP_DIR="/tmp/install_ytung_apt".${TIMESTAMP}
     mkdir -p ${TEMP_DIR}
 
+    cp ${THIS_DIR}/apt/${ARCH}/libseccomp2_2.4.3-1ubuntu3.18.04.3_amd64.deb ${TEMP_DIR}/
 
     for entry in ${THIS_DIR}/apt/${ARCH}/*.deb
     do
