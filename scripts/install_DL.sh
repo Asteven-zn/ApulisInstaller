@@ -17,6 +17,25 @@
 #set -x
 
 modify_harbor_library_in_config() {
+    ans="no"
+    while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
+    do
+        printf "Please input your library name >>> "
+        read -r DOCKER_HARBOR_LIBRARY
+        printf "Your library name is \"${DOCKER_HARBOR_LIBRARY}\", is that correct?"
+        printf "[yes/no] >>> "
+
+        read -r ans
+        while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+                [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+        do
+            printf "Please answer 'yes' or 'no':'\\n"
+            printf ">>> "
+            read -r ans
+        done
+    done
+    printf "library selected set as >>>${DOCKER_HARBOR_LIBRARY}."
+    printf "now continue.\n"
     sed -i "s|harbor.sigsus.cn:8443/library/|${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" config/weave-net.yaml
 }
 config_k8s_cluster() {
@@ -673,7 +692,7 @@ EXTERNAL_MOUNT_POINT=
 NFS_MOUNT_POINT="/mnt/nfs_share"
 USE_MASTER_NODE_AS_WORKER=1
 HARBOR_REGISTRY=harbor.sigsus.cn
-DOCKER_HARBOR_LIBRARY=sz_gongdianju
+DOCKER_HARBOR_LIBRARY # to be set before harbor installing
 
 CLUSTER_NAME="DLWorkspace"
 
@@ -889,11 +908,11 @@ then
     check_docker_installation
     check_k8s_installation
 
-    modify_harbor_library_in_config
-
     install_necessary_packages
 
     prepare_nfs_storage_path
+
+    modify_harbor_library_in_config
 
     install_harbor
 
