@@ -166,6 +166,8 @@ set_up_password_less () {
 }
 
 set_docker_config() {
+    systemctl daemon-reload
+    systemctl restart docker
     echo "set docker config done."
 }
 
