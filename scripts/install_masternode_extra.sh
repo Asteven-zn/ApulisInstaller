@@ -166,7 +166,7 @@ set_up_password_less () {
 }
 
 set_docker_config() {
-
+    echo "set docker config done."
 }
 
 load_docker_images () {
