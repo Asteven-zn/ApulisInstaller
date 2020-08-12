@@ -197,6 +197,7 @@ install_necessary_packages () {
     TEMP_DIR="/tmp/install_ytung_apt".${TIMESTAMP}
     mkdir -p ${TEMP_DIR}
 
+    cp ${THIS_DIR}/apt/${ARCH}/libseccomp2_2.4.3-1ubuntu3.18.04.3_amd64.deb ${TEMP_DIR}/
 
     for entry in ${THIS_DIR}/apt/${ARCH}/*.deb
     do
@@ -222,6 +223,7 @@ install_necessary_packages () {
         fi
     done
 
+    dpkg -i ${TEMP_DIR}/libseccomp2_2.4.3-1ubuntu3.18.04.3_amd64.deb # fix 18.04.1 docker deps
     dpkg -i ${TEMP_DIR}/*
 
     #### enable nfs server ###########################################
@@ -494,15 +496,34 @@ generate_config() {
     echo "Please set smtp server host:"
     echo "[e.g. smtp.test.com:25]>>>"
     read -r alert_host
+    
     echo "Please set smtp server email address:"
     echo "[e.g. test_smtp@test.com]>>>"
     read -r alert_smtp_email_address
+
     echo "Please set smtp server email password:"
     echo "[e.g. TEST_PASSWORD]>>>"
     read -r alert_smtp_email_password
+
     echo "Please set default receiver email:"
     echo "[e.g. receiver@test.com]>>>"
     read -r alert_default_user_email
+
+    if [ ${#extra_master_nodes[@]} -gt 0 ]; then
+        echo "Setting HA-VIP:"
+        while :
+        do
+            read -p "Please enter your VIP >>> " kube_vip
+            read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
+            
+            if [ "$kube_vip_check" = "y" ]; then
+                 break
+            fi
+        done
+    else
+	kube_vip=${master_ip}
+    fi
+
 
     # write basic info
     cat << EOF > config.yaml
@@ -626,6 +647,8 @@ grafana_alert:
     password: $alert_smtp_email_password
     from_address: $alert_smtp_email_address
   receiver: $alert_default_user_email
+
+kube-vip: ${kube_vip}
 
 machines:
   ${master_hostname}:
@@ -1102,7 +1125,7 @@ do
 
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
 
-    sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+    sshpass -p dlwsadmin scp install_masternode_extra.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_CONFIG_DIR}
 
@@ -1111,7 +1134,7 @@ do
     sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/python2.7
 
     ########################### Install on remote node ######################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
+    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
 
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
@@ -1213,12 +1236,12 @@ fi
 ./deploy.py --verbose --force mount
 
 echo 'Please check if all nodes have mounted storage using below cmds:'
-echo '    cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap'
-echo '    source ${INSTALLED_DIR}/python2.7-venv/bin/activate'
+echo "    cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
+echo "    source ${INSTALLED_DIR}/python2.7-venv/bin/activate"
 echo '    ./deploy.py execonall "df -h"'
 echo '                                                                '
 
-echo 'If the storage havnt mounted yet, try:'
+echo 'If the storage havnt mounted yet, please try:'
 echo '    ./deploy.py --verbose --force mount'
 echo '    or '
 echo '    ./deploy.py execonall "python /opt/auto_share/auto_share.py"'
