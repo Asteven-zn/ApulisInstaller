@@ -496,15 +496,30 @@ generate_config() {
     echo "Please set smtp server host:"
     echo "[e.g. smtp.test.com:25]>>>"
     read -r alert_host
+    
     echo "Please set smtp server email address:"
     echo "[e.g. test_smtp@test.com]>>>"
     read -r alert_smtp_email_address
+
     echo "Please set smtp server email password:"
     echo "[e.g. TEST_PASSWORD]>>>"
     read -r alert_smtp_email_password
+
     echo "Please set default receiver email:"
     echo "[e.g. receiver@test.com]>>>"
     read -r alert_default_user_email
+
+    echo "Setting HA-VIP:"
+    while :
+    do
+        read -p "Please enter your VIP >>> " kube_vip
+	read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
+	
+	if [ "$kube_vip_check" = "y" ]; then
+	     break
+	fi
+    done
+
 
     # write basic info
     cat << EOF > config.yaml
@@ -628,6 +643,8 @@ grafana_alert:
     password: $alert_smtp_email_password
     from_address: $alert_smtp_email_address
   receiver: $alert_default_user_email
+
+kube-vip: ${kube_vip}
 
 machines:
   ${master_hostname}:
