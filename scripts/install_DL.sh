@@ -509,16 +509,20 @@ generate_config() {
     echo "[e.g. receiver@test.com]>>>"
     read -r alert_default_user_email
 
-    echo "Setting HA-VIP:"
-    while :
-    do
-        read -p "Please enter your VIP >>> " kube_vip
-	read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
-	
-	if [ "$kube_vip_check" = "y" ]; then
-	     break
-	fi
-    done
+    if [ ${#extra_master_nodes[@]} -gt 0 ]; then
+        echo "Setting HA-VIP:"
+        while :
+        do
+            read -p "Please enter your VIP >>> " kube_vip
+            read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
+            
+            if [ "$kube_vip_check" = "y" ]; then
+                 break
+            fi
+        done
+    else
+	kube_vip=${master_ip}
+    fi
 
 
     # write basic info
