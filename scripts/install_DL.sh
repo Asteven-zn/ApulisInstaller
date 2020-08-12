@@ -632,8 +632,18 @@ machines:
     role: infrastructure
     private-ip: ${master_ip}
     archtype: amd64
+EOF
+if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
+    cat << EOF >> config.yaml
     type: cpu
 EOF
+else
+    cat << EOF >> config.yaml
+    type: gpu
+    vendor: nvidia
+    os: ubuntu
+EOF
+fi
 
 # write extra master nodes info
 for masternode in "${extra_master_nodes[@]}"
@@ -645,9 +655,18 @@ do
     role: infrastructure
     private-ip: ${extra_master_ip}
     archtype: amd64
-    type: cpu
-
 EOF
+    if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
+        cat << EOF >> config.yaml
+    type: cpu
+EOF
+    else
+            cat << EOF >> config.yaml
+    type: gpu
+    vendor: nvidia
+    os: ubuntu
+EOF
+    fi
 done
 # write worker nodes info
 for worknode in "${worker_nodes[@]}"
