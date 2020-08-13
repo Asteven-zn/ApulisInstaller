@@ -652,6 +652,7 @@ machines:
     private-ip: ${master_ip}
     archtype: amd64
 EOF
+
 if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
     cat << EOF >> config.yaml
     type: cpu
