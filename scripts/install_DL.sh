@@ -365,29 +365,32 @@ load_docker_images () {
 	    printf "Copy docker images from source\n"
 	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images/${ARCH}"
 
-      PROC_NUM=10
-      FIFO_FILE="/tmp/$$.fifo"
-      mkfifo $FIFO_FILE
-      exec 9<>$FIFO_FILE
-    for process_num in $(seq $PROC_NUM)
-    do
-      echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
-    done
-	for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
-    do
-        read -u 9 P
-        {
-	      printf "Load docker image file: $file\n"
-          echo "Process [${P}] is in process ..."
-	      docker load -i $file
-          echo ${P} >&9
-        }&
-	done
+          PROC_NUM=10
+          FIFO_FILE="/tmp/$$.fifo"
+          mkfifo $FIFO_FILE
+          exec 9<>$FIFO_FILE
 
-      wait
-      echo "All docker images are loaded from install disk ..."
-      exec 9>&-
-      rm -f ${FIFO_FILE}
+        for process_num in $(seq $PROC_NUM)
+        do
+          echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
+        done
+
+        for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
+        do
+            read -u 9 P
+            {
+                  printf "Load docker image file: $file\n"
+                  echo "Process [${P}] is in process ..."
+	          
+                  docker load -i $file
+                  echo ${P} >&9
+            }&
+        done
+
+          wait
+          echo "All docker images are loaded from install disk ..."
+          exec 9>&-
+          rm -f ${FIFO_FILE}
 
     else
 	    printf "Pull docker images from Docker Hub...\n"
@@ -418,6 +421,8 @@ push_docker_images_to_harbor () {
     {
       echo "Process [${P}] is in process ..."
       new_image=${image}
+      new_image="$(sed s/harbor.sigsus.cn:8443\\/[^\\/]*\\//harbor.sigsus.cn:8443\\/${DOCKER_HARBOR_LIBRARY}\\//g <<< $new_image)"
+
       if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]]; then
         new_image=${HARBOR_IMAGE_PREFIX}${image}
         docker tag $image $new_image
