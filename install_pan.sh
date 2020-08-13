@@ -78,7 +78,7 @@ getAllNeededDockerImages () {
 
   #####################  Copy docker images ##########################
   mkdir -p ${INSTALLED_DOCKER_IMAGE_PATH}
-  
+
   for image in "${LIB_IMAGES[@]}"
   do
       new_image="$(sed s/[/]/-/g <<< $image)"
@@ -118,6 +118,7 @@ install_scripts () {
 
   #####################  Install Scripts  ##########################
   /usr/bin/install scripts/install_DL.sh ${INSTALLED_DIR}/install_DL.sh
+  /usr/bin/install scripts/install_masternode_extra.sh ${INSTALLED_DIR}/install_masternode_extra.sh
   /usr/bin/install scripts/install_worknode.sh ${INSTALLED_DIR}/install_worknode.sh
   #cp  ${DOCKER_IMAGE_DIR}/* ${INSTALLED_DOCKER_IMAGE_PATH}
 }
@@ -152,7 +153,7 @@ printConfigs() {
 }
 
 checkParams() {
-	
+
     if [ "$SAVE_DOCKER_IMAGES_ONLY" = "1" -a "$PROJECT_NAME" = "" ]; then
         echo "error: please type project name!!"
         echo "usage: `basename $0` -p project_name_of_your_harbor -d path_to_save_image"
