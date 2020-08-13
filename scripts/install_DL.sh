@@ -36,7 +36,7 @@ modify_harbor_library_in_config() {
     done
     printf "library selected set as >>>${DOCKER_HARBOR_LIBRARY}."
     printf "now continue.\n"
-    sed -i "s|harbor.sigsus.cn:8443/library/|${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" config/weave-net.yaml
+    sed -i "s|:\ .*:8443/[a-z]*/|:\ ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" config/weave-net.yaml
 }
 config_k8s_cluster() {
     ###### init kubernetes cluster config file
@@ -653,7 +653,7 @@ machines:
     archtype: amd64
 EOF
 
-if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
+if [ ${USE_MASTER_NODE_AS_WORKER} = 0 ]; then
     cat << EOF >> config.yaml
     type: cpu
 EOF
@@ -676,7 +676,7 @@ do
     private-ip: ${extra_master_ip}
     archtype: amd64
 EOF
-    if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
+    if [ ${USE_MASTER_NODE_AS_WORKER} = 0 ]; then
         cat << EOF >> config.yaml
     type: cpu
 EOF
