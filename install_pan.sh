@@ -16,7 +16,7 @@
 # limitations under the License.
 
 
-
+set -x
 getCudaPackage() {
   mkdir -p ${CUDA_PACKAGE_PATH}
   cd ${CUDA_PACKAGE_PATH}
@@ -76,9 +76,16 @@ getHarborPackages () {
 
 getAllNeededDockerImages () {
 
-  #####################  Copy docker images ##########################
+  #####################  exits if no docker path are provided ##########################
+  if [[ -z "$DOCKER_IMAGE_DIR" ]];
+  then
+      echo "no docker image path were provided, skip saving the images"
+      return
+  fi
+
   mkdir -p ${INSTALLED_DOCKER_IMAGE_PATH}
 
+  #####################  pull library images ##########################
   for image in "${LIB_IMAGES[@]}"
   do
       new_image="$(sed s/[/]/-/g <<< $image)"
@@ -89,6 +96,7 @@ getAllNeededDockerImages () {
   done
 
 
+  #####################  pull app images ##########################
   for image in "${APP_IMAGES[@]}"
   do
       new_image="$(sed s/[/]/-/g <<< $image)"
@@ -98,12 +106,6 @@ getAllNeededDockerImages () {
       echo "image saved! path: ${INSTALLED_DOCKER_IMAGE_PATH}/${new_image}.tar"
   done
 
-
-  if [ "$SAVE_DOCKER_IMAGES_ONLY" = "1" ];
-  then
-      echo "all images are saved to ${INSTALLED_DOCKER_IMAGE_PATH}! exiting"
-      exit 0
-  fi
 }
 
 getAllNeededConfigs () {
@@ -337,7 +339,6 @@ if which getopt > /dev/null 2>&1; then
 		        ;;
 	        -d)
 		        DOCKER_IMAGE_DIR="$2"
-			SAVE_DOCKER_IMAGES_ONLY="1"
 		        shift;
 		        shift;
 		        ;;
@@ -381,10 +382,10 @@ mkdir -p ${INSTALLED_DIR}
 
 INSTALLED_DIR=$(cd "${INSTALLED_DIR}"; pwd)
 
-if [ "$DOCKER_IMAGE_DIR" = "" ]; then
-    INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/docker-images/${ARCH}
-else
+if [[ "$DOCKER_IMAGE_DIR" == "/*" ]]; then
     INSTALLED_DOCKER_IMAGE_PATH=${DOCKER_IMAGE_DIR}
+elif [ ! -z "$DOCKER_IMAGE_DIR" ]; then
+    INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/$DOCKER_IMAGE_DIR
 fi
 
 INSTALLED_CONFIG_PATH=${INSTALLED_DIR}/config
