@@ -178,6 +178,9 @@ LIB_IMAGES=(
     "harbor.sigsus.cn:8443/library/directxman12/k8s-prometheus-adapter:v0.7.0"
     "harbor.sigsus.cn:8443/library/dopa6/atlas200dk:atlas200dk_full_root_user"
     "harbor.sigsus.cn:8443/library/emacski/tensorflow-serving:1.15.0"
+    "harbor.sigsus.cn:8443/library/emacski/tensorflow-serving:2.2.0"
+    "harbor.sigsus.cn:8443/library/tensorflow/serving:2.2.0-gpu"
+    "harbor.sigsus.cn:8443/library/tensorflow/serving:1.15.0-gpu"
 
     "harbor.sigsus.cn:8443/library/goharbor/chartmuseum-photon:v2.0.1"
     "harbor.sigsus.cn:8443/library/goharbor/clair-adapter-photon:v2.0.1"
