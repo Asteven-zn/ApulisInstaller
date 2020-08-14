@@ -91,6 +91,7 @@ getAllNeededDockerImages () {
       new_image="$(sed s/[/]/-/g <<< $image)"
 
       echo "docker save $image > ${new_image}.tar"
+      docker pull $image
       docker save $image > ${INSTALLED_DOCKER_IMAGE_PATH}/${new_image}.tar
       echo "image saved! path: ${INSTALLED_DOCKER_IMAGE_PATH}/${new_image}.tar"
   done
@@ -166,7 +167,6 @@ checkParams() {
 setImageList() {
 
 LIB_IMAGES=(
-    "harbor.sigsus.cn:8443/library/apulistech/grafana:6.7.3"
     "harbor.sigsus.cn:8443/library/apulistech/grafana:6.7.4"
     "harbor.sigsus.cn:8443/library/apulistech/omg:0.0.1"
     "harbor.sigsus.cn:8443/library/apulistech/openresty:base"
