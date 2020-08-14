@@ -103,6 +103,7 @@ getAllNeededDockerImages () {
       new_image="$(sed s/[/]/-/g <<< $image)"
 
       echo "docker save $image > ${new_image}.tar"
+      docker pull $image
       docker save $image > ${INSTALLED_DOCKER_IMAGE_PATH}/${new_image}.tar
       echo "image saved! path: ${INSTALLED_DOCKER_IMAGE_PATH}/${new_image}.tar"
   done
@@ -165,6 +166,9 @@ checkParams() {
 }
 
 setImageList() {
+echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+echo $PROJECT_NAME
+echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
 
 LIB_IMAGES=(
     "harbor.sigsus.cn:8443/library/apulistech/grafana:6.7.4"
@@ -176,7 +180,6 @@ LIB_IMAGES=(
 
     "harbor.sigsus.cn:8443/library/bash:5"
     "harbor.sigsus.cn:8443/library/directxman12/k8s-prometheus-adapter:v0.7.0"
-    "harbor.sigsus.cn:8443/library/dopa6/atlas200dk:atlas200dk_full_root_user"
     "harbor.sigsus.cn:8443/library/emacski/tensorflow-serving:1.15.0"
     "harbor.sigsus.cn:8443/library/emacski/tensorflow-serving:2.2.0"
     "harbor.sigsus.cn:8443/library/tensorflow/serving:2.2.0-gpu"
@@ -204,7 +207,6 @@ LIB_IMAGES=(
 
     "harbor.sigsus.cn:8443/library/k8s.gcr.io/coredns:1.6.7"
     "harbor.sigsus.cn:8443/library/k8s.gcr.io/etcd:3.4.3-0"
-    "harbor.sigsus.cn:8443/library/k8s.gcr.io/kube-apiserver:v1.18.1"
     "harbor.sigsus.cn:8443/library/k8s.gcr.io/kube-apiserver:v1.18.2"
     "harbor.sigsus.cn:8443/library/k8s.gcr.io/kube-controller-manager:v1.18.2"
     "harbor.sigsus.cn:8443/library/k8s.gcr.io/kube-proxy:v1.18.2"
@@ -215,9 +217,7 @@ LIB_IMAGES=(
     "harbor.sigsus.cn:8443/library/mysql/mysql-server:8.0"
     "harbor.sigsus.cn:8443/library/node:12"
     "harbor.sigsus.cn:8443/library/node:dubnium"
-    "harbor.sigsus.cn:8443/library/nvidia/cuda:latest"
     "harbor.sigsus.cn:8443/library/nvidia/k8s-device-plugin:1.11"
-    "harbor.sigsus.cn:8443/library/omg:0.0.1"
     "harbor.sigsus.cn:8443/library/plndr/kube-vip:0.1.7"
     "harbor.sigsus.cn:8443/library/prom/alertmanager:v0.20.0"
     "harbor.sigsus.cn:8443/library/prom/node-exporter:v0.18.1"
@@ -232,12 +232,9 @@ LIB_IMAGES=(
 
 APP_IMAGES=(
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/a910-device-plugin:devel3"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/aiarts-frontend:1.0.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/apulis-huawei-dev_a910-device-plugin:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/backendbase:1.9"
 
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/cuda:10.0"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/cuda:sudo_installed"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_aiarts-backend:1.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_aiarts-frontend:1.0.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_custom-user-dashboard-backend:latest"
@@ -252,9 +249,6 @@ APP_IMAGES=(
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_webui3:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/job-exporter:1.9"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/nginx:1.9"
-
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/user-dashboard-backend:1.0.0"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/user-dashboard-backend:latest"
 
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/dlworkspace_gpu-reporter:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/dlworkspace_init-container:latest"
