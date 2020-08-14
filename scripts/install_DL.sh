@@ -16,7 +16,7 @@
 
 #set -x
 
-modify_harbor_library_in_config() {
+input_harbor_library_name() {
     ans="no"
     while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
     do
@@ -36,7 +36,6 @@ modify_harbor_library_in_config() {
     done
     printf "library selected set as >>>${DOCKER_HARBOR_LIBRARY}."
     printf "now continue.\n"
-    sed -i "s|:\ .*:8443/[a-z]*/|:\ ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" config/weave-net.yaml
 }
 config_k8s_cluster() {
     ###### init kubernetes cluster config file
@@ -333,6 +332,12 @@ install_source_dir () {
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
+
+    TEMP_CONFIG_DIR=${INSTALLED_DIR}/temp-config
+    mkdir -p $TEMP_CONFIG_DIR
+    cp -r ../config/* $TEMP_CONFIG_DIR
+    sed -i "s|:\ .*:8443/\${library}/|:\ ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" ${TEMP_CONFIG_DIR}/weave-net.yaml
+
 }
 
 
@@ -956,7 +961,7 @@ then
 
     prepare_nfs_storage_path
 
-    modify_harbor_library_in_config
+    input_harbor_library_name
 
     install_harbor
 
@@ -976,11 +981,6 @@ then
     load_docker_images
 
     push_docker_images_to_harbor
-
-    #### copy config ###########################################
-    TEMP_CONFIG_DIR=${INSTALLED_DIR}/temp-config
-    mkdir -p $TEMP_CONFIG_DIR
-    cp -r config/* $TEMP_CONFIG_DIR
 
     #### check if A910 is presented ########################################
     if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
