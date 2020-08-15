@@ -128,6 +128,7 @@ install_scripts () {
 
   mkdir -p ${INSTALLED_DIR}/tools
   cp tools/* ${INSTALLED_DIR}/tools/
+  cp upgrade_doc.md ${INSTALLED_DIR}/tools/
 }
 
 
