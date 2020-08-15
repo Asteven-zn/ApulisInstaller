@@ -125,6 +125,9 @@ install_scripts () {
   /usr/bin/install scripts/install_masternode_extra.sh ${INSTALLED_DIR}/install_masternode_extra.sh
   /usr/bin/install scripts/install_worknode.sh ${INSTALLED_DIR}/install_worknode.sh
   #cp  ${DOCKER_IMAGE_DIR}/* ${INSTALLED_DOCKER_IMAGE_PATH}
+
+  mkdir -p ${INSTALLED_DIR}/tools
+  cp tools/* ${INSTALLED_DIR}/tools/
 }
 
 
@@ -166,9 +169,6 @@ checkParams() {
 }
 
 setImageList() {
-echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-echo $PROJECT_NAME
-echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
 
 LIB_IMAGES=(
     "harbor.sigsus.cn:8443/library/apulistech/grafana:6.7.4"
