@@ -386,7 +386,7 @@ load_docker_images () {
             {
                   printf "Load docker image file: $file\n"
                   echo "Process [${P}] is in process ..."
-	          
+
                   docker load -i $file
                   echo ${P} >&9
             }&
@@ -406,6 +406,8 @@ load_docker_images () {
 }
 
 push_docker_images_to_harbor () {
+  echo "Remove all untagged images ..."
+  docker image prune
   echo "Pushing images to harbor ..."
   HARBOR_IMAGE_PREFIX=${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
   images=($(docker images | awk '{print $1":"$2}' | grep -v "REPOSITORY:TAG"))
@@ -428,10 +430,11 @@ push_docker_images_to_harbor () {
       new_image=${image}
       new_image="$(sed s/harbor.sigsus.cn:8443\\/[^\\/]*\\//harbor.sigsus.cn:8443\\/${DOCKER_HARBOR_LIBRARY}\\//g <<< $new_image)"
 
-      if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]]; then
+      if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]] && [[ $new_image != ${HARBOR_IMAGE_PREFIX} ]]; then
         new_image=${HARBOR_IMAGE_PREFIX}${image}
         docker tag $image $new_image
       fi
+      echo "Pushing image tag $new_image to harbor"
       docker push $new_image
       echo ${P} >&9
     }&
@@ -506,7 +509,7 @@ generate_config() {
     echo "Please set smtp server host:"
     echo "[e.g. smtp.test.com:25]>>>"
     read -r alert_host
-    
+
     echo "Please set smtp server email address:"
     echo "[e.g. test_smtp@test.com]>>>"
     read -r alert_smtp_email_address
@@ -524,7 +527,7 @@ generate_config() {
     do
         read -p "Please enter your VIP >>> " kube_vip
         read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
-        
+
         if [ "$kube_vip_check" = "y" ]; then
              break
         fi
