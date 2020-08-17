@@ -176,8 +176,11 @@ LIB_IMAGES=(
     "harbor.sigsus.cn:8443/library/apulistech/omg:0.0.1"
     "harbor.sigsus.cn:8443/library/apulistech/openresty:base"
     "harbor.sigsus.cn:8443/library/apulistech/tensorflow:1.14.0-gpu-py3"
-    "harbor.sigsus.cn:8443/library/apulistech/tensorflow:2.2.0-gpu"
-    "harbor.sigsus.cn:8443/library/apulistech/tensorflow:2.2.0-gpu-py3"
+    "harbor.sigsus.cn:8443/library/apulistech/tensorflow:1.15.2-gpu-py3"
+    "harbor.sigsus.cn:8443/library/apulistech/tensorflow:2.3.0-gpu-py3"
+    "harbor.sigsus.cn:8443/library/apulistech/pytorch:1.15"
+    "harbor.sigsus.cn:8443/library/apulistech/mxnet:2.0.0-gpu-py3"
+    "harbor.sigsus.cn:8443/library/apulistech/ubuntu:18.04-amd64"
 
     "harbor.sigsus.cn:8443/library/bash:5"
     "harbor.sigsus.cn:8443/library/directxman12/k8s-prometheus-adapter:v0.7.0"
