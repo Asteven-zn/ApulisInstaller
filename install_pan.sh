@@ -171,7 +171,7 @@ checkParams() {
 
 setImageList() {
 
-LIB_IMAGES=(
+  LIB_IMAGES=(
     "harbor.sigsus.cn:8443/library/apulistech/grafana:6.7.4"
     "harbor.sigsus.cn:8443/library/apulistech/omg:0.0.1"
     "harbor.sigsus.cn:8443/library/apulistech/openresty:base"
@@ -189,23 +189,6 @@ LIB_IMAGES=(
     "harbor.sigsus.cn:8443/library/tensorflow/serving:2.2.0-gpu"
     "harbor.sigsus.cn:8443/library/tensorflow/serving:1.15.0-gpu"
 
-    "harbor.sigsus.cn:8443/library/goharbor/chartmuseum-photon:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/clair-adapter-photon:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/clair-photon:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/harbor-core:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/harbor-db:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/harbor-jobservice:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/harbor-log:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/harbor-portal:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/harbor-registryctl:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/nginx-photon:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/notary-server-photon:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/notary-signer-photon:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/prepare:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/redis-photon:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/registry-photon:v2.0.1"
-    "harbor.sigsus.cn:8443/library/goharbor/trivy-adapter-photon:v2.0.1"
-
     "harbor.sigsus.cn:8443/library/golang:1.13.7-alpine3.11"
     "harbor.sigsus.cn:8443/library/jessestuart/prometheus-operator:v0.38.0"
 
@@ -215,30 +198,19 @@ LIB_IMAGES=(
     "harbor.sigsus.cn:8443/library/k8s.gcr.io/kube-controller-manager:v1.18.2"
     "harbor.sigsus.cn:8443/library/k8s.gcr.io/kube-proxy:v1.18.2"
     "harbor.sigsus.cn:8443/library/k8s.gcr.io/kube-scheduler:v1.18.2"
-    "harbor.sigsus.cn:8443/library/k8s.gcr.io/pause:3.2"
-
 
     "harbor.sigsus.cn:8443/library/mysql/mysql-server:8.0"
-    "harbor.sigsus.cn:8443/library/node:12"
-    "harbor.sigsus.cn:8443/library/node:dubnium"
     "harbor.sigsus.cn:8443/library/nvidia/k8s-device-plugin:1.11"
     "harbor.sigsus.cn:8443/library/plndr/kube-vip:0.1.7"
     "harbor.sigsus.cn:8443/library/prom/alertmanager:v0.20.0"
     "harbor.sigsus.cn:8443/library/prom/node-exporter:v0.18.1"
     "harbor.sigsus.cn:8443/library/prom/prometheus:v2.18.0"
-    "harbor.sigsus.cn:8443/library/python:3.7"
-    "harbor.sigsus.cn:8443/library/python:3.8.0-alpine3.10"
     "harbor.sigsus.cn:8443/library/redis:5.0.6-alpine"
-    "harbor.sigsus.cn:8443/library/ubuntu:18.04"
     "harbor.sigsus.cn:8443/library/weaveworks/weave-kube:2.6.5"
     "harbor.sigsus.cn:8443/library/weaveworks/weave-npc:2.6.5"
-)
+  )
 
-APP_IMAGES=(
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/a910-device-plugin:devel3"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/apulis-huawei-dev_a910-device-plugin:latest"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/backendbase:1.9"
-
+  APP_IMAGES=(
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_aiarts-backend:1.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_aiarts-frontend:1.0.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_custom-user-dashboard-backend:latest"
@@ -253,14 +225,8 @@ APP_IMAGES=(
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_webui3:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/job-exporter:1.9"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/nginx:1.9"
-
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/dlworkspace_gpu-reporter:latest"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/dlworkspace_init-container:latest"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/dlworkspace_openresty:latest"
-
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/watchdog:1.9"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/watchdog:1.9"
-)
+  )
 
 }
 
