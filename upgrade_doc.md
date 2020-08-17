@@ -10,6 +10,7 @@
 
 
 ## 2. 更新镜像至私有化部署集群harbor
+* 首先需要确保除library和当前harbor项目的tag被删除。如当前项目为`sz_airs`，请确保`sz_gongdianju`全部删除。可使用`clear_harbor_project_imgs.sh`
 * 执行`tools/load_docker_images.sh`，将新镜像文件夹中的镜像全部load。
 * 执行`tools/push_image_to_harbor.sh`，将master01相关镜像推送到harbor。
 

@@ -32,7 +32,7 @@ push_docker_images_to_harbor () {
       echo "Process [${P}] is in process ..."
       new_image=${image}
       new_image="$(sed s/harbor.sigsus.cn:8443\\/[^\\/]*\\//harbor.sigsus.cn:8443\\/${DOCKER_HARBOR_LIBRARY}\\//g <<< $new_image)"
-      if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]] && [[ $new_image != ${HARBOR_IMAGE_PREFIX} ]]; then
+      if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]] && [[ $new_image != ${HARBOR_IMAGE_PREFIX}* ]]; then
         new_image=${HARBOR_IMAGE_PREFIX}${image}
         docker tag $image $new_image
       fi
