@@ -198,6 +198,7 @@ setImageList() {
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-controller-manager:v1.18.2"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-proxy:v1.18.2"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-scheduler:v1.18.2"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/pause:3.2"
 
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/mysql/mysql-server:8.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/nvidia/k8s-device-plugin:1.11"

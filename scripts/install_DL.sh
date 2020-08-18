@@ -447,6 +447,27 @@ push_docker_images_to_harbor () {
   rm -f ${FIFO_FILE}
 }
 
+prepare_k8s_images() {
+  harbor_prefix=${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
+  k8s_url=k8s.gcr.io
+  k8s_version=v1.18.2
+  k8s_images=(
+    $k8s_url/kube-proxy:$k8s_version
+    $k8s_url/kube-apiserver:$k8s_version
+    $k8s_url/kube-controller-manager:$k8s_version
+    $k8s_url/kube-scheduler:$k8s_version
+    $k8s_url/pause:3.2
+    $k8s_url/etcd:3.4.3-0
+    $k8s_url/coredns:1.6.7
+    plndr/kube-vip:0.1.7
+  )
+  for image in ${k8s_images[@]}
+  do
+    docker pull $harbor_prefix$image
+    docker tag $harbor_prefix$image $image
+  done
+}
+
 set_up_k8s_cluster () {
     echo "The Cluster Name will be set to: ${CLUSTER_NAME}"
 
@@ -985,6 +1006,8 @@ then
     load_docker_images
 
     push_docker_images_to_harbor
+
+    prepare_k8s_images
 
     #### check if A910 is presented ########################################
     if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
