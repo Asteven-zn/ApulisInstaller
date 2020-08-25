@@ -12,6 +12,7 @@ push_docker_images_to_harbor () {
   echo "Please input harbor project name: "
   echo "[e.g. sz_gongdianju]>>>"
   read -r DOCKER_HARBOR_LIBRARY
+  HARBOR_BASIC_PREFIX=${HARBOR_REGISTRY}:8443/
   HARBOR_IMAGE_PREFIX=${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
   images=($(docker images | awk '{print $1":"$2}' | grep -v "REPOSITORY:TAG"))
 
@@ -31,13 +32,14 @@ push_docker_images_to_harbor () {
     {
       echo "Process [${P}] is in process ..."
       new_image=${image}
-      new_image="$(sed s/harbor.sigsus.cn:8443\\/[^\\/]*\\//harbor.sigsus.cn:8443\\/${DOCKER_HARBOR_LIBRARY}\\//g <<< $new_image)"
-      if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]] && [[ $new_image != ${HARBOR_IMAGE_PREFIX}* ]]; then
+      if [[ $image != ${HARBOR_IMAGE_PREFIX}* ]] && [[ $image != ${HARBOR_BASIC_PREFIX}* ]]; then
         new_image=${HARBOR_IMAGE_PREFIX}${image}
         docker tag $image $new_image
       fi
       echo "Pushing image tag $new_image to harbor"
-      docker push $new_image
+      if [[ $new_image == ${HARBOR_IMAGE_PREFIX}* ]]; then
+        docker push $new_image
+      fi
       echo ${P} >&9
     }&
   done
