@@ -335,7 +335,7 @@ install_source_dir () {
 
     TEMP_CONFIG_DIR=${INSTALLED_DIR}/temp-config
     mkdir -p $TEMP_CONFIG_DIR
-    cp -r ../config/* $TEMP_CONFIG_DIR
+    cp -r ./config/* $TEMP_CONFIG_DIR
     sed -i "s|:\ .*:8443/\${library}/|:\ ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" ${TEMP_CONFIG_DIR}/weave-net.yaml
 
 }
