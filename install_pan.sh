@@ -173,8 +173,8 @@ setImageList() {
 
   LIB_IMAGES=(
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/grafana:6.7.4"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/omg:0.0.1"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/openresty:base"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/atc:0.0.1-amd64"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/visualjob:1.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow:1.14.0-gpu-py3"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow:1.15.2-gpu-py3"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow:2.3.0-gpu-py3"
