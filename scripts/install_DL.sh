@@ -1145,7 +1145,7 @@ do
 						read -r ans
 					done
 				done
-				worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]=gpuType
+				worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]=${gpuType}
 				ans="no"
 				while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
 				do
@@ -1163,7 +1163,7 @@ do
 						read -r ans
 					done
 				done
-				worker_nodes_vendor[ $(( ${node_number} - 1 )) ]=vendor
+				worker_nodes_vendor[ $(( ${node_number} - 1 )) ]=${vendor}
 			fi
             worker_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
             node_number=$(( ${node_number} + 1 ))
