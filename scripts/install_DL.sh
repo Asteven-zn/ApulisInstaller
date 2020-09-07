@@ -724,15 +724,15 @@ EOF
     fi
 done
 # write worker nodes info
-for worknode in "${worker_nodes[@]}"
+for i in "${!worker_nodes[@]}"
 do
    cat << EOF >> config.yaml
 
-  ${worknode}:
+  ${worker_nodes[$i]}:
     role: worker
     archtype: amd64
-    type: gpu
-    vendor: nvidia
+    type: ${worker_nodes_gpuType[$i]}
+    vendor: ${worker_nodes_vendor[$i]}
     os: ubuntu
 
 EOF
@@ -1055,6 +1055,8 @@ fi
 
 
 declare -a worker_nodes=()
+declare -a worker_nodes_gpuType=()
+declare -a worker_nodes_vendor=()
 declare -a extra_master_nodes=()
 node_number=1
 
@@ -1112,6 +1114,57 @@ do
         printf "Set up node ...\\n"
         setup_user_on_node $nodename
         if [ $? = 0 ]; then
+			printf "use default setting? \n type: gpu \n vendr: nvidia\n[(default)y/n]:" 
+			read -r ans
+			while [ "$ans" != "yes" ] && [ "$ans" != "y" ] && [ "$ans" != "YES" ] && \
+				[ "$ans" != "no" ]  && [ "$ans" != "n" ]  && [ "$ans" != "NO" ] && [ "$ans" != "" ]
+			do
+				printf "Please answer 'yes' or 'no':'\\n"
+				printf ">>> "
+				read -r ans
+			done
+			if [ "$ans" != "yes" ] && [ "$ans" != "y" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]
+			  then
+				worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]="gpu"
+				worker_nodes_vendor[ $(( ${node_number} - 1 )) ]="nvidia"
+			else
+				ans="no"
+				while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
+				do
+					printf "please input gpu type: "
+					read -r gpuType
+					printf "Your gpu type is \"${gpuType}\", is that correct?"
+					printf "[yes/no] >>> "
+
+					read -r ans
+					while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ] && \
+							[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+					do
+						printf "Please answer 'yes' or 'no':'\\n"
+						printf ">>> "
+						read -r ans
+					done
+				done
+				worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]=gpuType
+				ans="no"
+				while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
+				do
+					printf "please input vendor: "
+					read -r vendor
+					printf "Your vendor is \"${vendor}\", is that correct?"
+					printf "[yes/no] >>> "
+
+					read -r ans
+					while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ] && \
+							[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+					do
+						printf "Please answer 'yes' or 'no':'\\n"
+						printf ">>> "
+						read -r ans
+					done
+				done
+				worker_nodes_vendor[ $(( ${node_number} - 1 )) ]=vendor
+			fi
             worker_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
             node_number=$(( ${node_number} + 1 ))
         fi
