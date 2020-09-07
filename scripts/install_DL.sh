@@ -730,7 +730,7 @@ do
 
   ${worker_nodes[$i]}:
     role: worker
-    archtype: amd64
+    archtype: ${worker_nodes_arch[$i]}
     type: ${worker_nodes_gpuType[$i]}
     vendor: ${worker_nodes_vendor[$i]}
     os: ubuntu
@@ -1057,6 +1057,7 @@ fi
 declare -a worker_nodes=()
 declare -a worker_nodes_gpuType=()
 declare -a worker_nodes_vendor=()
+declare -a worker_nodes_arch=()
 declare -a extra_master_nodes=()
 node_number=1
 
@@ -1166,6 +1167,16 @@ do
 				worker_nodes_vendor[ $(( ${node_number} - 1 )) ]=${vendor}
 			fi
             worker_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
+			arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+			if [ "${arch_result}" == "x86_64" ]
+			then
+				node_arch="amd64"
+			fi
+			if [ "${arch_result}" == "aarch64" ]
+			then
+				node_arch="arm64"
+			fi
+			worker_nodes_arch[ $(( ${node_number} - 1 )) ] =$node_arch
             node_number=$(( ${node_number} + 1 ))
         fi
     fi
