@@ -1176,7 +1176,7 @@ do
 			then
 				node_arch="arm64"
 			fi
-			worker_nodes_arch[ $(( ${node_number} - 1 )) ] =$node_arch
+			worker_nodes_arch[ $(( ${node_number} - 1 )) ]=${node_arch}
             node_number=$(( ${node_number} + 1 ))
         fi
     fi
@@ -1241,38 +1241,47 @@ do
 
 done
 ############# Config worker node ###################################################################
-for worknode in "${worker_nodes[@]}"
+for i in "${!worker_nodes[@]}"
 do
+	record_arch=${worker_nodes_arch[$i]}
+	if [ "${record_arch}" == "amd64" ]
+	then
+		node_arch="x86_64"
+	fi
+	if [ "${record_arch}" == "arm64" ]
+	then
+		node_arch="aarch64"
+	fi
     ######### set up passwordless access from Master to Node ################################
     cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$worknode 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
+    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
 
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
+    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
 
-   sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
+   sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
 
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
+    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
 
-    sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$worknode:${REMOTE_APT_DIR}
+    sshpass -p dlwsadmin scp apt/${node_arch}/*.deb dlwsadmin@${worker_nodes[$i]}:${REMOTE_APT_DIR}
 
-    sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}
+    sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp -r config/* dlwsadmin@$worknode:${REMOTE_CONFIG_DIR}
+    sshpass -p dlwsadmin scp -r config/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_CONFIG_DIR}
 
-    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$worknode:${REMOTE_INSTALL_DIR}/python2.7
+    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/python2.7
 
     ########################### Install on remote node ######################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
+    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
 
     #### enable nfs server ###########################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$worknode "sudo systemctl enable nfs-kernel-server"
+    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo systemctl enable nfs-kernel-server"
 
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
            EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
        fi
-       sshpass -p dlwsadmin ssh dlwsadmin@$worknode "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
+       sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
     fi
 
 done
