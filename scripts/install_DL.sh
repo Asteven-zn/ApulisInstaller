@@ -1252,6 +1252,8 @@ do
 	then
 		node_arch="aarch64"
 	fi
+	REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${node_arch}"
+	REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${node_arch}"
     ######### set up passwordless access from Master to Node ################################
     cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
