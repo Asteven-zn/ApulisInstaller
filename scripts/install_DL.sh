@@ -1123,7 +1123,7 @@ do
 				printf ">>> "
 				read -r ans
 			done
-			if [ "$ans" != "yes" ] && [ "$ans" != "y" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]
+			if [ "$ans" == "yes" ] && [ "$ans" == "y" ] && [ "$ans" == "YES" ] && [ "$ans" == "" ]
 			  then
 				worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]="gpu"
 				worker_nodes_vendor[ $(( ${node_number} - 1 )) ]="nvidia"
