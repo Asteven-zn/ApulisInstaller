@@ -1253,7 +1253,7 @@ do
 		node_arch="aarch64"
 	fi
     ######### set up passwordless access from Master to Node ################################
-    cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$worknode 'cat >> .ssh/authorized_keys'
+    cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
     sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
 
