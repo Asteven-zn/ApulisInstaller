@@ -196,7 +196,7 @@ install_necessary_packages () {
     TEMP_DIR="/tmp/install_ytung_apt".${TIMESTAMP}
     mkdir -p ${TEMP_DIR}
 
-    cp ${THIS_DIR}/apt/${ARCH}/libseccomp2_2.4.3-1ubuntu3.18.04.3_amd64.deb ${TEMP_DIR}/
+    cp ${THIS_DIR}/apt/${ARCH}/libseccomp2_2.4.3-1ubuntu3.18.04.3_${ARCHTYPE}.deb ${TEMP_DIR}/
 
     for entry in ${THIS_DIR}/apt/${ARCH}/*.deb
     do
@@ -222,11 +222,29 @@ install_necessary_packages () {
         fi
     done
 
-    dpkg -i ${TEMP_DIR}/libseccomp2_2.4.3-1ubuntu3.18.04.3_amd64.deb # fix 18.04.1 docker deps
+    dpkg -i ${TEMP_DIR}/libseccomp2_2.4.3-1ubuntu3.18.04.3_${ARCHTYPE}.deb # fix 18.04.1 docker deps
     dpkg -i ${TEMP_DIR}/*
 
     #### enable nfs server ###########################################
     systemctl enable nfs-kernel-server
+}
+
+copy_bin_file (){
+  DIS_DIR="/usr/bin/"
+  for entry in ${THIS_DIR}/bin/${ARCH}/*
+  do
+      echo "$entry"
+      if [ -f $$entry ];then
+        IS_EXIST=1
+      fi
+
+      if [ ${IS_EXIST} = 0 ]; then
+        echo "Looks like $entry has not been copy. Let's copy ...";
+        cp ${entry} $DIS_DIR
+      else
+        echo "Looks like ${package[0]} has been copy. Skip ...";
+      fi
+  done
 }
 
 prepare_nfs_storage_path () {
@@ -746,141 +764,146 @@ EOF
 
 }
 
-############################################################################
-#
-#   MAIN CODE START FROM HERE
-#
-############################################################################
-DLWS_HOME="/home/dlwsadmin"
-NO_DOCKER=1
-NO_KUBECTL=1
-NO_KUBEADM=1
-NVIDIA_CUDA=0
-HUAWEI_NPU="False"
-COPY_DOCKER_IMAGE=1
-DOCKER_REGISTRY=
-INSTALLED_DIR="/home/dlwsadmin/DLWorkspace"
-NO_NFS=1
-EXTERNAL_NFS_MOUNT=0
-EXTERNAL_MOUNT_POINT=
-NFS_MOUNT_POINT="/mnt/nfs_share"
-USE_MASTER_NODE_AS_WORKER=1
-HARBOR_REGISTRY=harbor.sigsus.cn
-DOCKER_HARBOR_LIBRARY # to be set before harbor installing
 
-CLUSTER_NAME="DLWorkspace"
+init_environment() {
+  ############################################################################
+  #
+  #   MAIN CODE START FROM HERE
+  #
+  ############################################################################
+  DLWS_HOME="/home/dlwsadmin"
+  NO_DOCKER=1
+  NO_KUBECTL=1
+  NO_KUBEADM=1
+  NVIDIA_CUDA=0
+  HUAWEI_NPU="False"
+  COPY_DOCKER_IMAGE=1
+  DOCKER_REGISTRY=
+  INSTALLED_DIR="/home/dlwsadmin/DLWorkspace"
+  NO_NFS=1
+  EXTERNAL_NFS_MOUNT=0
+  EXTERNAL_MOUNT_POINT=
+  NFS_MOUNT_POINT="/mnt/nfs_share"
+  USE_MASTER_NODE_AS_WORKER=1
+  HARBOR_REGISTRY=harbor.sigsus.cn
+  DOCKER_HARBOR_LIBRARY # to be set before harbor installing
+  CLUSTER_NAME="DLWorkspace"
 
+  ############# Don't source the install file. Run it in sh or bash ##########
+  if ! echo "$0" | grep '\.sh$' > /dev/null; then
+      printf 'Please run using "bash" or "sh", but not "." or "source"\\n' >&2
+      return 1
+  fi
 
-############# Don't source the install file. Run it in sh or bash ##########
-if ! echo "$0" | grep '\.sh$' > /dev/null; then
-    printf 'Please run using "bash" or "sh", but not "." or "source"\\n' >&2
-    return 1
-fi
+  ############ Check CPU Aritecchure ########################################
+  ARCH=$(uname -m)
+  if [ $ARCH = "aarch64" ];then
+    ARCHTYPE="arm64"
+  else
+    ARCHTYPE="amd64"
+  fi
+  printf "Hardware Architecture: ${ARCH}\n"
 
+  ###########  Check Operation System ######################################
+  INSTALL_OS=$(grep '^ID=' /etc/os-release | awk -F'=' '{print $2}')
+  OS_RELEASE=$(grep '^VERSION_ID=' /etc/os-release | awk -F'=' '{print $2}')
 
-############ Check CPU Aritecchure ########################################
-ARCH=$(uname -m)
-printf "Hardware Architecture: ${ARCH}\n"
+  THIS_DIR=$(DIRNAME=$(dirname "$0"); cd "$DIRNAME"; pwd)
+  THIS_FILE=$(basename "$0")
+  THIS_PATH="$THIS_DIR/$THIS_FILE"
 
-###########  Check Operation System ######################################
-INSTALL_OS=$(grep '^ID=' /etc/os-release | awk -F'=' '{print $2}')
-OS_RELEASE=$(grep '^VERSION_ID=' /etc/os-release | awk -F'=' '{print $2}')
+  USAGE="
+  usage: $0 [options]
 
-THIS_DIR=$(DIRNAME=$(dirname "$0"); cd "$DIRNAME"; pwd)
-THIS_FILE=$(basename "$0")
-THIS_PATH="$THIS_DIR/$THIS_FILE"
+  Installs YTung AI Workspace 2020.06
 
-USAGE="
-usage: $0 [options]
+  -d           install directory. Default:  "/home/dlwsadmin/DLWorkspace"
+  -n           install cluster name. Default: "DLWorkspace"
+  -u           install A910 device plugin. Default: False
+  -r           remote docker registry
+  -f           load docker images from local. Default: True
 
-Installs YTung AI Workspace 2020.06
+  -h	     print usage page.
+  "
 
--d           install directory. Default:  "/home/dlwsadmin/DLWorkspace"
--n           install cluster name. Default: "DLWorkspace"
--u           install A910 device plugin. Default: False
--r           remote docker registry
--f           load docker images from local. Default: True
+  if which getopt > /dev/null 2>&1; then
+      OPTS=$(getopt d:n:r:m:ulhez "$*" 2>/dev/null)
+      if [ ! $? ]; then
+          printf "%s\\n" "$USAGE"
+          exit 2
+      fi
 
--h	     print usage page.
-"
+      eval set -- "$OPTS"
 
-if which getopt > /dev/null 2>&1; then
-    OPTS=$(getopt d:n:r:m:ulhez "$*" 2>/dev/null)
-    if [ ! $? ]; then
-        printf "%s\\n" "$USAGE"
-        exit 2
-    fi
+      while true; do
+          case "$1" in
+              -h)
+                  printf "%s\\n" "$USAGE"
+                  exit 2
+                  ;;
+            -d)
+              INSTALLED_DIR="$2"
+              shift;
+              shift;
+              ;;
+            -n)
+              CLUSTER_NAME="$2"
+              shift;
+              shift;
+              ;;
+            -u)
+              HUAWEI_NPU=1
+              shift;
+              ;;
+            -f)
+              COPY_DOCKER_IMAGE=1
+              shift;
+              ;;
+            -r)
+              COPY_DOCKER_IMAGE=0
+              DOCKER_REGISTRY="$2"
+              shift;
+              shift;
+              ;;
+            -e)
+              EXTERNAL_NFS_MOUNT=1
+              EXTERNAL_MOUNT_POINT="$2"
+              shift;
+              shift;
+              ;;
+          -m)
+              NFS_MOUNT_POINT="$2"
+              shift;
+              shift;
+              ;;
+          -z)
+              NO_NFS=0
+              shift;
+              ;;
+            --)
+                  shift
+                  break
+                  ;;
+              *)
+                  printf "ERROR: did not recognize option '%s', please try -h\\n" "$1"
+                  exit 1
+                  ;;
 
-    eval set -- "$OPTS"
-
-    while true; do
-        case "$1" in
-            -h)
-                printf "%s\\n" "$USAGE"
-                exit 2
-                ;;
-	        -d)
-		        INSTALLED_DIR="$2"
-		        shift;
-		        shift;
-		        ;;
-	        -n)
-		        CLUSTER_NAME="$2"
-		        shift;
-		        shift;
-		        ;;
-	        -u)
-		        HUAWEI_NPU=1
-		        shift;
-		        ;;
-	        -f)
-		        COPY_DOCKER_IMAGE=1
-		        shift;
-		        ;;
-	        -r)
-		        COPY_DOCKER_IMAGE=0
-		        DOCKER_REGISTRY="$2"
-		        shift;
-		        shift;
-		        ;;
-	        -e)
-		        EXTERNAL_NFS_MOUNT=1
-		        EXTERNAL_MOUNT_POINT="$2"
-		        shift;
-		        shift;
-		        ;;
-		    -m)
-		        NFS_MOUNT_POINT="$2"
-		        shift;
-		        shift;
-		        ;;
-		    -z)
-		        NO_NFS=0
-		        shift;
-		        ;;
-	        --)
-                shift
-                break
-                ;;
-            *)
-                printf "ERROR: did not recognize option '%s', please try -h\\n" "$1"
-                exit 1
-                ;;
-
-	    esac
-    done
-fi
-
-
-printf "directory: ${THIS_DIR} file: ${THIS_FILE} path: ${THIS_PATH} \n"
-printf "system: ${INSTALL_OS} version: ${OS_RELEASE} \n"
-
-
-printf "Install directory: $INSTALLED_DIR \n"
-printf "Cluster Name:  $CLUSTER_NAME \n"
+        esac
+      done
+  fi
 
 
-########### Assume install is interactive (Can change later) #############
+  printf "directory: ${THIS_DIR} file: ${THIS_FILE} path: ${THIS_PATH} \n"
+  printf "system: ${INSTALL_OS} version: ${OS_RELEASE} \n"
+
+  printf "Install directory: $INSTALLED_DIR \n"
+  printf "Cluster Name:  $CLUSTER_NAME \n"
+}
+
+
+protocol_agree(){
+  ########### Assume install is interactive (Can change later) #############
 BATCH=0
 
 ########### First of all, check if you have root privilleges #############
@@ -961,407 +984,482 @@ EOF
         printf "The license agreement wasn't approved, aborting installation.\\n"
         exit 2
     fi
-
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-echo "!"
-echo "!   Start to work on the master. Hostname is: " $(hostname)
-echo "!"
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
-TIMESTAMP=$(date "+%Y%m%d-%H:%M:%S")
-
-if [ "${INSTALL_OS}" = "ubuntu" ] ||  [ "${INSTALL_OS}" = "linuxmint" ] ;
-then
-    printf "Install DLWS On Ubuntu...\n"
-    if [ "${OS_RELEASE}" != "18.04" ]; then
-	    printf "WARNING: \n"
-	    printf "       DLWorkspace is only certified on 18.04, 19.04, 19.10\n"
-    fi
+}
 
 
-    check_docker_installation
-    check_k8s_installation
+init_message_print() {
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo "!"
+  echo "!   Start to work on the master. Hostname is: " $(hostname)
+  echo "!"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
-    install_necessary_packages
+  TIMESTAMP=$(date "+%Y%m%d-%H:%M:%S")
 
-    prepare_nfs_storage_path
+  if [ "${INSTALL_OS}" = "ubuntu" ] ||  [ "${INSTALL_OS}" = "linuxmint" ] ;
+  then
+      printf "Install DLWS On Ubuntu...\n"
+      if [ "${OS_RELEASE}" != "18.04" ]; then
+        printf "WARNING: \n"
+        printf "       DLWorkspace is only certified on 18.04, 19.04, 19.10\n"
+      fi
+  fi
+}
 
-    input_harbor_library_name
 
-    install_harbor
 
-    install_dlws_admin_ubuntu
 
-    set_up_password_less
 
-    #### set up DLWorkspace source tree ####################################
-    install_source_dir && echo "Successfully installed source tree..."
 
-    #### check if there are nVidia Cards ###################################
-    #${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
+deploy_node(){
+  #################### Now, deploy node #########################################################################
 
-    #### load/copy docker images ###########################################
-    usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo "!"
+  echo "!   Start to work on node. "
+  echo "!"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
-    load_docker_images
+  printf "\\n"
+  printf "Do you want to use master as worknode? [yes|no] \\n"
+  printf "[no] >>> "
 
-    push_docker_images_to_harbor
+    read -r ans
+    while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+          [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+    do
+        printf "Please answer 'yes' or 'no':'\\n"
+        printf ">>> "
+        read -r ans
+    done
 
-    prepare_k8s_images
+  if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
+    then
+      printf "Not setup Up Master as a worknode.\\n"
 
-    #### check if A910 is presented ########################################
-    if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
-	    echo "Load A910 device plugin images ..."
-	    if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
-	        gzip "${INSTALLED_DIR}/docker-images/A910_driver/${ARCH}/device-plugin.tar.gz" | docker load
-	    else
-	        echo "Build Device Plugin images ..."
-	        # docker build ...
-	    fi
-    fi
+      USE_MASTER_NODE_AS_WORKER=0
+  fi
 
-    #### Now, this is basic setting of K8s services ####################
-    set_up_k8s_cluster
 
-fi
+  declare -a worker_nodes=()
+  declare -a worker_nodes_gpuType=()
+  declare -a worker_nodes_vendor=()
+  declare -a worker_nodes_arch=()
+  declare -a extra_master_nodes=()
+  node_number=1
 
-#################### Now, deploy node #########################################################################
-
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-echo "!"
-echo "!   Start to work on node. "
-echo "!"
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
-printf "\\n"
-printf "Do you want to use master as worknode? [yes|no] \\n"
-printf "[no] >>> "
-
-  read -r ans
-  while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
-        [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+  echo '
+             _                 __  __           _
+    ____ _  _  | |_ _ __ __ _    |  \/  | __ _ ___| |_ ___ _ __
+   / _ \  \/ / __| |__/ _` |   | |\/| |/ _` / __| __/ _ \ |__|
+  |  __/ >  <  | |_| | | (_| |   | |  | | (_| \__ \ ||  __/ |
+   \___/ _/\_\ \__|_|  \__,_|___|_|  |_|\__,_|___/\__\___|_|
+                         |_____|
+  '
+  while true
   do
-      printf "Please answer 'yes' or 'no':'\\n"
+      printf "\\n"
+      printf "Add More Master Nodes in the cluster"
+      printf "\\n"
+      printf "Please enter quit and finish setting hostname \\n"
+      printf "Or enter the hostname of node (Node Number: ${node_number} ). \\n"
       printf ">>> "
-      read -r ans
+      read -r nodename
+      if [ $nodename = "quit" ]; then
+          printf "No more node is need to set up. \\n"
+          break;
+      else
+          printf "Set up node ...\\n"
+          setup_user_on_node $nodename
+          if [ $? = 0 ]; then
+              extra_master_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
+              node_number=$(( ${node_number} + 1 ))
+          fi
+      fi
   done
 
-if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
-  then
-    printf "Not setup Up Master as a worknode.\\n"
+  node_number=1
+  echo '
+                      _
+  __      _____  _ __| | _____ _ __
+  \ \ /\ / / _ \| |__| |/ / _ \ |__|
+   \ V  V / (_) | |  |   <  __/ |
+    \_/\_/ \___/|_|  |_|\_\___|_|
+  '
+  while [ ${node_number} -le 5 ]
+  do
+      printf "\\n"
+      printf "Add More Worker Nodes in the cluster"
+      printf "\\n"
+      printf "Please enter quit and finish setting hostname \\n"
+      printf "Or enter the hostname of node (Node Number: ${node_number} ). \\n"
+      printf ">>> "
+      read -r nodename
+      if [ $nodename = "quit" ]; then
+          printf "No more node is need to set up. \\n"
+          break;
+      else
+          printf "Set up node ...\\n"
+          setup_user_on_node $nodename
+          if [ $? = 0 ]; then
+        printf "use default setting? \n type: gpu \n vendr: nvidia\n[(default)y/n]:"
+        read -r ans
+        while [ "$ans" != "yes" ] && [ "$ans" != "y" ] && [ "$ans" != "YES" ] && \
+          [ "$ans" != "no" ]  && [ "$ans" != "n" ]  && [ "$ans" != "NO" ] && [ "$ans" != "" ]
+        do
+          printf "Please answer 'yes' or 'no':'\\n"
+          printf ">>> "
+          read -r ans
+        done
+        if [ "$ans" == "yes" ] && [ "$ans" == "y" ] && [ "$ans" == "YES" ] && [ "$ans" == "" ]
+          then
+          worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]="gpu"
+          worker_nodes_vendor[ $(( ${node_number} - 1 )) ]="nvidia"
+        else
+          ans="no"
+          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
+          do
+            printf "please input gpu type: "
+            read -r gpuType
+            printf "Your gpu type is \"${gpuType}\", is that correct?"
+            printf "[yes/no] >>> "
 
-    USE_MASTER_NODE_AS_WORKER=0
-fi
+            read -r ans
+            while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ] && \
+                [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+            do
+              printf "Please answer 'yes' or 'no':'\\n"
+              printf ">>> "
+              read -r ans
+            done
+          done
+          worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]=${gpuType}
+          ans="no"
+          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
+          do
+            printf "please input vendor: "
+            read -r vendor
+            printf "Your vendor is \"${vendor}\", is that correct?"
+            printf "[yes/no] >>> "
 
-
-declare -a worker_nodes=()
-declare -a worker_nodes_gpuType=()
-declare -a worker_nodes_vendor=()
-declare -a worker_nodes_arch=()
-declare -a extra_master_nodes=()
-node_number=1
-
-echo '
-           _                 __  __           _
-  _____  _| |_ _ __ __ _    |  \/  | __ _ ___| |_ ___ _ __
- / _ \ \/ / __| |__/ _` |   | |\/| |/ _` / __| __/ _ \ |__|
-|  __/>  <| |_| | | (_| |   | |  | | (_| \__ \ ||  __/ |
- \___/_/\_\\__|_|  \__,_|___|_|  |_|\__,_|___/\__\___|_|
-                       |_____|
-'
-while true
-do
-    printf "\\n"
-    printf "Add More Master Nodes in the cluster"
-    printf "\\n"
-    printf "Please enter quit and finish setting hostname \\n"
-    printf "Or enter the hostname of node (Node Number: ${node_number} ). \\n"
-    printf ">>> "
-    read -r nodename
-    if [ $nodename = "quit" ]; then
-        printf "No more node is need to set up. \\n"
-        break;
-    else
-        printf "Set up node ...\\n"
-        setup_user_on_node $nodename
-        if [ $? = 0 ]; then
-            extra_master_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
-            node_number=$(( ${node_number} + 1 ))
+            read -r ans
+            while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ] && \
+                [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+            do
+              printf "Please answer 'yes' or 'no':'\\n"
+              printf ">>> "
+              read -r ans
+            done
+          done
+          worker_nodes_vendor[ $(( ${node_number} - 1 )) ]=${vendor}
         fi
-    fi
-done
-
-node_number=1
-echo '
-                    _
-__      _____  _ __| | _____ _ __
-\ \ /\ / / _ \| |__| |/ / _ \ |__|
- \ V  V / (_) | |  |   <  __/ |
-  \_/\_/ \___/|_|  |_|\_\___|_|
-'
-while [ ${node_number} -le 5 ]
-do
-    printf "\\n"
-    printf "Add More Worker Nodes in the cluster"
-    printf "\\n"
-    printf "Please enter quit and finish setting hostname \\n"
-    printf "Or enter the hostname of node (Node Number: ${node_number} ). \\n"
-    printf ">>> "
-    read -r nodename
-    if [ $nodename = "quit" ]; then
-        printf "No more node is need to set up. \\n"
-        break;
-    else
-        printf "Set up node ...\\n"
-        setup_user_on_node $nodename
-        if [ $? = 0 ]; then
-			printf "use default setting? \n type: gpu \n vendr: nvidia\n[(default)y/n]:" 
-			read -r ans
-			while [ "$ans" != "yes" ] && [ "$ans" != "y" ] && [ "$ans" != "YES" ] && \
-				[ "$ans" != "no" ]  && [ "$ans" != "n" ]  && [ "$ans" != "NO" ] && [ "$ans" != "" ]
-			do
-				printf "Please answer 'yes' or 'no':'\\n"
-				printf ">>> "
-				read -r ans
-			done
-			if [ "$ans" == "yes" ] && [ "$ans" == "y" ] && [ "$ans" == "YES" ] && [ "$ans" == "" ]
-			  then
-				worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]="gpu"
-				worker_nodes_vendor[ $(( ${node_number} - 1 )) ]="nvidia"
-			else
-				ans="no"
-				while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
-				do
-					printf "please input gpu type: "
-					read -r gpuType
-					printf "Your gpu type is \"${gpuType}\", is that correct?"
-					printf "[yes/no] >>> "
-
-					read -r ans
-					while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ] && \
-							[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-					do
-						printf "Please answer 'yes' or 'no':'\\n"
-						printf ">>> "
-						read -r ans
-					done
-				done
-				worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]=${gpuType}
-				ans="no"
-				while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
-				do
-					printf "please input vendor: "
-					read -r vendor
-					printf "Your vendor is \"${vendor}\", is that correct?"
-					printf "[yes/no] >>> "
-
-					read -r ans
-					while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ] && \
-							[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-					do
-						printf "Please answer 'yes' or 'no':'\\n"
-						printf ">>> "
-						read -r ans
-					done
-				done
-				worker_nodes_vendor[ $(( ${node_number} - 1 )) ]=${vendor}
-			fi
-            worker_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
-			arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
-			if [ "${arch_result}" == "x86_64" ]
-			then
-				node_arch="amd64"
-			fi
-			if [ "${arch_result}" == "aarch64" ]
-			then
-				node_arch="arm64"
-			fi
-			worker_nodes_arch[ $(( ${node_number} - 1 )) ]=${node_arch}
-            node_number=$(( ${node_number} + 1 ))
+              worker_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
+        arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+        if [ "${arch_result}" == "x86_64" ]
+        then
+          node_arch="amd64"
         fi
+        if [ "${arch_result}" == "aarch64" ]
+        then
+          node_arch="arm64"
+        fi
+        worker_nodes_arch[ $(( ${node_number} - 1 )) ]=${node_arch}
+              node_number=$(( ${node_number} + 1 ))
+          fi
+      fi
+  done
+
+  echo ${extra_master_nodes[@]}
+  printf "Total number of extra master nodes: ${#extra_master_nodes[@]} \\n"
+  echo ${worker_nodes[@]}
+  printf "Total number of worker nodes: ${#worker_nodes[@]} \\n"
+
+  ########### setting up for master, also copy the package files and docker images files ###########################################
+  REMOTE_INSTALL_DIR="/tmp/install_YTung.$TIMESTAMP"
+  REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${ARCH}"
+  REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${ARCH}"
+  REMOTE_CONFIG_DIR="${REMOTE_INSTALL_DIR}/config"
+  REMOTE_PYTHON_DIR="${REMOTE_INSTALL_DIR}/python2.7"
+
+  runuser dlwsadmin -c "ssh-keyscan ${worker_nodes[@]} >> ~/.ssh/known_hosts"
+
+  ############# Create NFS share ###################################################################
+  if [ ${NO_NFS} = 0 ]; then
+     create_nfs_share
+  fi
+
+
+  ############# Config extra master node ###################################################################
+  for masternode in "${extra_master_nodes[@]}"
+  do
+      ######### set up passwordless access from Master to Node ################################
+      cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$masternode 'cat >> .ssh/authorized_keys'
+      ######### set up passwordless access from Node to Master ################################
+      sshpass -p dlwsadmin ssh dlwsadmin@$masternode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
+
+      sshpass -p dlwsadmin ssh dlwsadmin@$masternode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
+
+      sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
+
+      sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
+
+      sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
+
+      sshpass -p dlwsadmin scp bin/${ARCH}/* dlwsadmin@$masternode:${REMOTE_APT_DIR}
+
+      sshpass -p dlwsadmin scp install_masternode_extra.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+
+      sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_CONFIG_DIR}
+
+      # sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+
+      sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/python2.7
+
+      ########################### Install on remote node ######################################
+      sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
+
+      #### enable nfs server ###########################################
+      sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
+
+      if [ ${NO_NFS} = 0 ]; then
+         if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
+             EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
+         fi
+         sshpass -p dlwsadmin ssh dlwsadmin@$masternode "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
+      fi
+
+  done
+  ############# Config worker node ###################################################################
+  for i in "${!worker_nodes[@]}"
+  do
+    record_arch=${worker_nodes_arch[$i]}
+    if [ "${record_arch}" == "amd64" ]
+    then
+      node_arch="x86_64"
     fi
-done
+    if [ "${record_arch}" == "arm64" ]
+    then
+      node_arch="aarch64"
+    fi
+    REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${node_arch}"
+    REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${node_arch}"
+      ######### set up passwordless access from Master to Node ################################
+      cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} 'cat >> .ssh/authorized_keys'
+      ######### set up passwordless access from Node to Master ################################
+      sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
 
-echo ${extra_master_nodes[@]}
-printf "Total number of extra master nodes: ${#extra_master_nodes[@]} \\n"
-echo ${worker_nodes[@]}
-printf "Total number of worker nodes: ${#worker_nodes[@]} \\n"
+      sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
 
-########### setting up for master, also copy the package files and docker images files ###########################################
-REMOTE_INSTALL_DIR="/tmp/install_YTung.$TIMESTAMP"
-REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${ARCH}"
-REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${ARCH}"
-REMOTE_CONFIG_DIR="${REMOTE_INSTALL_DIR}/config"
-REMOTE_PYTHON_DIR="${REMOTE_INSTALL_DIR}/python2.7"
+     sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
 
-runuser dlwsadmin -c "ssh-keyscan ${worker_nodes[@]} >> ~/.ssh/known_hosts"
+      sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
 
-############# Create NFS share ###################################################################
-if [ ${NO_NFS} = 0 ]; then
-   create_nfs_share
+      sshpass -p dlwsadmin scp apt/${node_arch}/*.deb dlwsadmin@${worker_nodes[$i]}:${REMOTE_APT_DIR}
+
+      sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}
+
+      sshpass -p dlwsadmin scp -r config/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_CONFIG_DIR}
+
+      sshpass -p dlwsadmin scp python2.7/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/python2.7
+
+      ########################### Install on remote node ######################################
+      sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
+
+      #### enable nfs server ###########################################
+      sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo systemctl enable nfs-kernel-server"
+
+      if [ ${NO_NFS} = 0 ]; then
+         if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
+             EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
+         fi
+         sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
+      fi
+
+  done
+
+  ###### apply weave network ###################################################################
+  # kubectl apply -f config/weave-net.yaml # don't apply on command, deploy.py will handle the job
+
+  source ${INSTALLED_DIR}/python2.7-venv/bin/activate
+
+  ###### deploy with deploy.py ###################################################################
+  cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap # enter into deploy.py directory
+
+
+  ###### start building cluster ####################################################################
+  generate_config
+
+  ./deploy.py --verbose -y build
+
+  mkdir -p deploy/sshkey
+  cd deploy/sshkey
+
+  echo "dlwsadmin" > "rootuser"
+  echo "dlwsadmin" > "rootpasswd"
+  cd ../..
+
+  ./deploy.py --verbose sshkey install
+
+  mkdir -p ./deploy/etc
+  cp /etc/hosts ./deploy/etc/hosts
+  ./deploy.py --verbose copytoall ./deploy/etc/hosts  /etc/hosts
+
+  ./deploy.py --verbose kubeadm init ha
+  ./deploy.py --verbose copytoall ./deploy/sshkey/admin.conf /root/.kube/config
+
+  if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
+      ./deploy.py --verbose kubernetes uncordon
+  fi
+
+  ./deploy.py --verbose kubeadm join ha
+  ./deploy.py --verbose -y kubernetes labelservice
+  ./deploy.py --verbose -y labelworker
+
+  ./deploy.py --verbose kubernetes start nvidia-device-plugin
+
+  ./deploy.py --verbose renderservice
+  ./deploy.py --verbose renderimage
+  ./deploy.py --verbose webui
+  ./deploy.py --verbose nginx webui3
+
+  ./deploy.py --verbose nginx fqdn
+  ./deploy.py --verbose nginx config
+
+  ./deploy.py runscriptonroles infra worker ./scripts/install_nfs.sh
+  ./deploy.py --verbose --force mount
+
+  echo 'Please check if all nodes have mounted storage using below cmds:'
+  echo "    cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
+  echo "    source ${INSTALLED_DIR}/python2.7-venv/bin/activate"
+  echo '    ./deploy.py execonall "df -h"'
+  echo '                                                                '
+
+  echo 'If the storage havnt mounted yet, please try:'
+  echo '    ./deploy.py --verbose --force mount'
+  echo '    or '
+  echo '    ./deploy.py execonall "python /opt/auto_share/auto_share.py"'
+  echo '                                                                '
+  echo 'Please type any char to proceed:>> '
+  read -i anychar
+
+  ./deploy.py --verbose kubernetes start mysql
+  ./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
+  ./deploy.py --verbose kubernetes start monitor
+
+  ./deploy.py --verbose kubernetes start webui3
+  ./deploy.py kubernetes start custom-user-dashboard
+  ./deploy.py kubernetes start image-label
+  ./deploy.py kubernetes start aiarts-frontend
+  ./deploy.py kubernetes start aiarts-backend
+  ./deploy.py kubernetes start data-platform
+
+  . ../docker-images/init-container/prebuild.sh
+}
+
+choose_start_from_which_step(){
+  init_environment
+  protocol_agree
+  init_message_print
+
+  echo '
+    1. check_docker_installation
+    2. check_k8s_installation
+    3. install_necessary_packages
+    4. prepare_nfs_storage_path
+    5. install_harbor
+    6. install_dlws_admin_ubuntu
+    7. install_source_dir
+    8. load_docker_images
+    9. push_docker_images_to_harbor
+    10. prepare_k8s_images
+    11. set_up_k8s_cluster
+    12. deploy_node
+  '
+  echo "Choose a step to start from: >>"
+  read -r step
+
+}
+
+
+choose_start_from_which_step
+
+if [ $step -lt 2 ];
+then
+  check_docker_installation
 fi
-
-
-############# Config extra master node ###################################################################
-for masternode in "${extra_master_nodes[@]}"
-do
-    ######### set up passwordless access from Master to Node ################################
-    cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$masternode 'cat >> .ssh/authorized_keys'
-    ######### set up passwordless access from Node to Master ################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
-
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
-
-    sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
-
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
-
-    sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
-
-    sshpass -p dlwsadmin scp install_masternode_extra.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
-
-    sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_CONFIG_DIR}
-
-    # sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
-
-    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/python2.7
-
-    ########################### Install on remote node ######################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
-
-    #### enable nfs server ###########################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
-
-    if [ ${NO_NFS} = 0 ]; then
-       if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
-           EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
-       fi
-       sshpass -p dlwsadmin ssh dlwsadmin@$masternode "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
-    fi
-
-done
-############# Config worker node ###################################################################
-for i in "${!worker_nodes[@]}"
-do
-	record_arch=${worker_nodes_arch[$i]}
-	if [ "${record_arch}" == "amd64" ]
-	then
-		node_arch="x86_64"
-	fi
-	if [ "${record_arch}" == "arm64" ]
-	then
-		node_arch="aarch64"
-	fi
-	REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${node_arch}"
-	REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${node_arch}"
-    ######### set up passwordless access from Master to Node ################################
-    cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} 'cat >> .ssh/authorized_keys'
-    ######### set up passwordless access from Node to Master ################################
-    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
-
-    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
-
-   sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
-
-    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
-
-    sshpass -p dlwsadmin scp apt/${node_arch}/*.deb dlwsadmin@${worker_nodes[$i]}:${REMOTE_APT_DIR}
-
-    sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}
-
-    sshpass -p dlwsadmin scp -r config/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_CONFIG_DIR}
-
-    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/python2.7
-
-    ########################### Install on remote node ######################################
-    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
-
-    #### enable nfs server ###########################################
-    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo systemctl enable nfs-kernel-server"
-
-    if [ ${NO_NFS} = 0 ]; then
-       if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
-           EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
-       fi
-       sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
-    fi
-
-done
-
-###### apply weave network ###################################################################
-# kubectl apply -f config/weave-net.yaml # don't apply on command, deploy.py will handle the job
-
-source ${INSTALLED_DIR}/python2.7-venv/bin/activate
-
-###### deploy with deploy.py ###################################################################
-cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap # enter into deploy.py directory
-
-
-###### start building cluster ####################################################################
-generate_config
-
-./deploy.py --verbose -y build
-
-mkdir -p deploy/sshkey
-cd deploy/sshkey
-
-echo "dlwsadmin" > "rootuser"
-echo "dlwsadmin" > "rootpasswd"
-cd ../..
-
-./deploy.py --verbose sshkey install
-
-mkdir -p ./deploy/etc
-cp /etc/hosts ./deploy/etc/hosts
-./deploy.py --verbose copytoall ./deploy/etc/hosts  /etc/hosts
-
-./deploy.py --verbose kubeadm init ha
-./deploy.py --verbose copytoall ./deploy/sshkey/admin.conf /root/.kube/config
-
-if [ ${USE_MASTER_NODE_AS_WORKER} = 1 ]; then
-    ./deploy.py --verbose kubernetes uncordon
+if [ $step -lt 3 ];
+then
+  check_k8s_installation
 fi
+if [ $step -lt 4 ];
+then
+  install_necessary_packages
+  copy_bin_file
+fi
+if [ $step -lt 5 ];
+then
+  prepare_nfs_storage_path
+fi
+if [ $step -lt 6 ];
+then
+  input_harbor_library_name
 
-./deploy.py --verbose kubeadm join ha
-./deploy.py --verbose -y kubernetes labelservice
-./deploy.py --verbose -y labelworker
+  install_harbor
+fi
+if [ $step -lt 7 ];
+then
+  install_dlws_admin_ubuntu
 
-./deploy.py --verbose kubernetes start nvidia-device-plugin
+  set_up_password_less
+fi
+if [ $step -lt 8 ];
+then
+  #### set up DLWorkspace source tree ####################################
+  install_source_dir && echo "Successfully installed source tree..."
 
-./deploy.py --verbose renderservice
-./deploy.py --verbose renderimage
-./deploy.py --verbose webui
-./deploy.py --verbose nginx webui3
+  #### check if there are nVidia Cards ###################################
+  #${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
 
-./deploy.py --verbose nginx fqdn
-./deploy.py --verbose nginx config
+  #### load/copy docker images ###########################################
+usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
+fi
+if [ $step -lt 9 ];
+then
+  load_docker_images
+fi
+if [ $step -lt 10 ];
+then
+  if [ -z $DOCKER_HARBOR_LIBRARY ];then
+    input_harbor_library_name
+  fi
+  push_docker_images_to_harbor
+fi
+if [ $step -lt 11 ];
+then
+  if [ -z $DOCKER_HARBOR_LIBRARY ];then
+    input_harbor_library_name
+  fi
+  prepare_k8s_images
 
-./deploy.py runscriptonroles infra worker ./scripts/install_nfs.sh
-./deploy.py --verbose --force mount
+  #### check if A910 is presented ########################################
+  if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
+    echo "Load A910 device plugin images ..."
+    if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
+        gzip "${INSTALLED_DIR}/docker-images/A910_driver/${ARCH}/device-plugin.tar.gz" | docker load
+    else
+        echo "Build Device Plugin images ..."
+        # docker build ...
+    fi
+  fi
 
-echo 'Please check if all nodes have mounted storage using below cmds:'
-echo "    cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
-echo "    source ${INSTALLED_DIR}/python2.7-venv/bin/activate"
-echo '    ./deploy.py execonall "df -h"'
-echo '                                                                '
+fi
+if [ $step -lt 12 ];
+then
+  #### Now, this is basic setting of K8s services ####################
+  set_up_k8s_cluster
+fi
+if [ $step -lt 13 ];
+then
+  deploy_node
 
-echo 'If the storage havnt mounted yet, please try:'
-echo '    ./deploy.py --verbose --force mount'
-echo '    or '
-echo '    ./deploy.py execonall "python /opt/auto_share/auto_share.py"'
-echo '                                                                '
-echo 'Please type any char to proceed:>> '
-read -i anychar
-
-./deploy.py --verbose kubernetes start mysql
-./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
-./deploy.py --verbose kubernetes start monitor
-
-./deploy.py --verbose kubernetes start webui3
-./deploy.py kubernetes start custom-user-dashboard
-./deploy.py kubernetes start image-label
-./deploy.py kubernetes start aiarts-frontend
-./deploy.py kubernetes start aiarts-backend
-./deploy.py kubernetes start data-platform
-
-. ../docker-images/init-container/prebuild.sh
+fi
