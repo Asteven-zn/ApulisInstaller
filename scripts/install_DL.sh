@@ -340,7 +340,7 @@ install_source_dir () {
 
     tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
 
-    (cd python2.7; pip install setuptools* ;pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd python2.7/${ARCH}; pip install setuptools* ;pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
@@ -1456,9 +1456,15 @@ fi
 if [ $step -lt 12 ];
 then
   #### Now, this is basic setting of K8s services ####################
+  if [ -z $DOCKER_HARBOR_LIBRARY ];then
+    input_harbor_library_name
+  fi
   set_up_k8s_cluster
 fi
 if [ $step -lt 13 ];
+  if [ -z $DOCKER_HARBOR_LIBRARY ];then
+    input_harbor_library_name
+  fi
 then
   deploy_node
 
