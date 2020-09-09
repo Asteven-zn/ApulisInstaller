@@ -1254,7 +1254,7 @@ do
 
     # sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp -r python2.7/${node_arch} dlwsadmin@$masternode:${REMOTE_PYTHON_DIR}
+    sshpass -p dlwsadmin scp python2.7/${node_arch}/* dlwsadmin@$masternode:${REMOTE_PYTHON_DIR}
 
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
@@ -1302,7 +1302,7 @@ do
 
     sshpass -p dlwsadmin scp -r config/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_CONFIG_DIR}
 
-    sshpass -p dlwsadmin scp -r python2.7/${node_arch} dlwsadmin@${worker_nodes[$i]}:${REMOTE_PYTHON_DIR}
+    sshpass -p dlwsadmin scp python2.7/${node_arch}/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_PYTHON_DIR}
 
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
