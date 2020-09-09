@@ -1065,6 +1065,8 @@ declare -a worker_nodes_gpuType=()
 declare -a worker_nodes_vendor=()
 declare -a worker_nodes_arch=()
 declare -a extra_master_nodes=()
+declare -a extra_master_nodes_arch=()
+
 node_number=1
 
 echo '
@@ -1091,7 +1093,17 @@ do
         printf "Set up node ...\\n"
         setup_user_on_node $nodename
         if [ $? = 0 ]; then
+			arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+			if [ "${arch_result}" == "x86_64" ]
+			then
+				node_arch="amd64"
+			fi
+			if [ "${arch_result}" == "aarch64" ]
+			then
+				node_arch="arm64"
+			fi
             extra_master_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
+			extra_master_nodes_arch[ $(( ${node_number} - 1 )) ]=${node_arch}
             node_number=$(( ${node_number} + 1 ))
         fi
     fi
@@ -1211,6 +1223,18 @@ fi
 ############# Config extra master node ###################################################################
 for masternode in "${extra_master_nodes[@]}"
 do
+	record_arch=${extra_master_nodes_arch[$i]}
+	if [ "${record_arch}" == "amd64" ]
+	then
+		node_arch="x86_64"
+	fi
+	if [ "${record_arch}" == "arm64" ]
+	then
+		node_arch="aarch64"
+	fi
+	REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${node_arch}"
+	REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${node_arch}"
+	REMOTE_PYTHON_DIR="${REMOTE_INSTALL_DIR}/python2.7/${node_arch}"
     ######### set up passwordless access from Master to Node ################################
     cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$masternode 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
@@ -1230,7 +1254,7 @@ do
 
     # sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/python2.7
+    sshpass -p dlwsadmin scp -r python2.7/${node_arch} dlwsadmin@$masternode:${REMOTE_PYTHON_DIR}
 
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
@@ -1260,6 +1284,7 @@ do
 	fi
 	REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${node_arch}"
 	REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${node_arch}"
+	REMOTE_PYTHON_DIR="${REMOTE_INSTALL_DIR}/python2.7/${node_arch}"
     ######### set up passwordless access from Master to Node ################################
     cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
@@ -1277,7 +1302,7 @@ do
 
     sshpass -p dlwsadmin scp -r config/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_CONFIG_DIR}
 
-    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/python2.7
+    sshpass -p dlwsadmin scp -r python2.7/${node_arch} dlwsadmin@${worker_nodes[$i]}:${REMOTE_PYTHON_DIR}
 
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
