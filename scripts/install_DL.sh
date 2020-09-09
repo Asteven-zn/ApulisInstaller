@@ -1443,6 +1443,9 @@ then
 fi
 if [ $step -lt 8 ];
 then
+  if [ -z $DOCKER_HARBOR_LIBRARY ];then
+    input_harbor_library_name
+  fi
   #### set up DLWorkspace source tree ####################################
   install_source_dir && echo "Successfully installed source tree..."
 
