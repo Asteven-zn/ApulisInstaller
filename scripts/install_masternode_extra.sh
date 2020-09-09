@@ -286,7 +286,7 @@ then
     check_docker_installation
     config_docker_harbor_certs
     install_necessary_packages
-    copy_bin_file
+
     prepare_k8s_images
     check_k8s_installation
     set_up_k8s_cluster

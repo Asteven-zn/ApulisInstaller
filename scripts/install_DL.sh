@@ -386,7 +386,7 @@ set_up_password_less () {
 load_docker_images () {
     if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
 	    printf "Copy docker images from source\n"
-	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images/${ARCH}"
+	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images"
 
           PROC_NUM=10
           FIFO_FILE="/tmp/$$.fifo"
@@ -398,7 +398,7 @@ load_docker_images () {
           echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
         done
 
-        for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
+        for file in ${DOCKER_IMAGE_DIRECTORY}/*/*.tar
         do
             read -u 9 P
             {
