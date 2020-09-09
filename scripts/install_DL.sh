@@ -469,7 +469,7 @@ prepare_k8s_images() {
   harbor_prefix=${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
   k8s_url=k8s.gcr.io
   k8s_version=v1.18.2
-  if [ "${ARCH}" == "aarch64"]
+  if [ "${ARCH}" == "aarch64" ]
   then
 	  arch_tail="-arm64"
   else
