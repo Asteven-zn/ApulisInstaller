@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="23f1f6e0-3e71-4d75-9b36-43995b8c325a" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/scripts/install_DL.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_DL.sh" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task id="LOCAL-00001" summary="Merge branch 'dev_tcy' into czl&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh">
+      <created>1599633813311</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1599633813311</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Merge branch 'dev_tcy' into czl&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'dev_tcy' into czl&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599633812383">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599633812383" />
+    <state x="357" y="221" width="1698" height="882" key="DiffContextDialog" timestamp="1599634050476">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="357" y="221" width="1698" height="882" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599634050476" />
+    <state x="175" y="85" key="MergeDialog" timestamp="1599633805025">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="175" y="85" key="MergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599633805025" />
+    <state x="916" y="379" key="MultipleFileMergeDialog" timestamp="1599633805037">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="916" y="379" key="MultipleFileMergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599633805037" />
+  </component>
+</project>
