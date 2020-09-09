@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="23f1f6e0-3e71-4d75-9b36-43995b8c325a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/InstallationYTung.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/harbor/docker-certs.d/harbor.sigsus.cn:8443/ca.crt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/harbor/docker-certs.d/harbor.sigsus.cn:8443/harbor.sigsus.cn.cert" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/harbor/docker-certs.d/harbor.sigsus.cn:8443/harbor.sigsus.cn.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.cert" beforeDir="false" afterPath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.cert" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.crt" beforeDir="false" afterPath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.crt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.key" beforeDir="false" afterPath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.key" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/harbor/harbor.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/harbor/harbor.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/weave-net.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/weave-net.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/install_pan.sh" beforeDir="false" afterPath="$PROJECT_DIR$/install_pan.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/install_DL.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_DL.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/install_masternode_extra.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_masternode_extra.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/install_worknode.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_worknode.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/clear_harbor_project_imgs.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/clear_harbor_project_imgs.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/load_docker_images.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/load_docker_images.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/push_image_to_harbor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/push_image_to_harbor.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/start_services.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/start_services.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/stop_services.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/stop_services.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/tmux.conf" beforeDir="false" afterPath="$PROJECT_DIR$/tools/tmux.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upgrade_doc.md" beforeDir="false" afterPath="$PROJECT_DIR$/upgrade_doc.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task id="LOCAL-00001" summary="Merge branch 'dev_tcy' into czl&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh">
+      <created>1599633813311</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1599633813311</updated>
+    </task>
+    <task id="LOCAL-00002" summary="fixhub">
+      <created>1599642115828</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1599642115828</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Merge branch 'dev_tcy' into czl&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh" />
+    <MESSAGE value="fixhub" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixhub" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599642114658">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599642114658" />
+    <state x="357" y="221" width="1698" height="882" key="DiffContextDialog" timestamp="1599643048238">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="357" y="221" width="1698" height="882" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599643048238" />
+    <state x="175" y="85" width="2288" height="1155" key="MergeDialog" timestamp="1599642808464">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="175" y="85" width="2288" height="1155" key="MergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599642808464" />
+    <state x="916" y="379" key="MultipleFileMergeDialog" timestamp="1599642808493">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="916" y="379" key="MultipleFileMergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599642808493" />
+    <state x="1005" y="475" width="617" height="490" key="find.popup" timestamp="1599638181522">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1005" y="475" width="617" height="490" key="find.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1599638181522" />
+  </component>
+</project>

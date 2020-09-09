@@ -97,7 +97,7 @@ install_necessary_packages () {
     TEMP_DIR="/tmp/install_ytung_apt".${TIMESTAMP}
     mkdir -p ${TEMP_DIR}
 
-    cp ${THIS_DIR}/apt/${ARCH}/libseccomp2_2.4.3-1ubuntu3.18.04.3_amd64.deb ${TEMP_DIR}/
+    cp ${THIS_DIR}/apt/${ARCH}/libseccomp2_2.4.3-1ubuntu3.18.04.3_${ARCHTYPE}.deb ${TEMP_DIR}/
 
     for entry in apt/${ARCH}/*.deb
     do
@@ -123,7 +123,7 @@ install_necessary_packages () {
         fi
     done
 
-    dpkg -i ${TEMP_DIR}/libseccomp2_2.4.3-1ubuntu3.18.04.3_amd64.deb # fix 18.04.1 docker deps
+    dpkg -i ${TEMP_DIR}/libseccomp2_2.4.3-1ubuntu3.18.04.3_${ARCHTYPE}.deb # fix 18.04.1 docker deps
     dpkg -i ${TEMP_DIR}/*
 
 }
@@ -141,7 +141,7 @@ install_source_dir () {
     # (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
     # source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
-    (cd python2.7/${ARCH}; pip install *.whl; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd python2.7/${ARCH}; pip install setuptools* ;pip install wheel*; python setup.py bdist_wheel;pip install ./*.whl;pip install pycurl-*.tar.gz;pip install subprocess32-*.tar.gz;tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
@@ -244,6 +244,13 @@ fi
 
 ############ Check CPU Aritecchure ########################################
 ARCH=$(uname -m)
+if [ $ARCH = "aarch64" ];then
+  ARCHTYPE="arm64"
+else
+  ARCHTYPE="amd64"
+fi
+
+
 printf "Hardware Architecture: ${ARCH}\n"
 
 ###########  Check Operation System ######################################
