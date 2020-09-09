@@ -340,13 +340,13 @@ install_source_dir () {
 
     tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
 
-    (cd python2.7/${ARCH}; pip install setuptools* ;pip install wheel*; python setup.py bdist_wheel;pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd python2.7/${ARCH}; pip install setuptools* ;pip install wheel*; python setup.py bdist_wheel;pip install ./*.whl;pip install pycurl-*.tar.gz;pip install subprocess32-*.tar.gz;tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
     source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
-    (cd python2.7; pip install ./*)
+    (cd python2.7/${ARCH}; pip install setuptools* ;pip install wheel*; python setup.py bdist_wheel;pip install ./*.whl;pip install pycurl-*.tar.gz;pip install subprocess32-*.tar.gz; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
@@ -1211,8 +1211,6 @@ deploy_node(){
 
       sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
 
-      sshpass -p dlwsadmin scp bin/${ARCH}/* dlwsadmin@$masternode:${REMOTE_APT_DIR}
-
       sshpass -p dlwsadmin scp install_masternode_extra.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
       sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_CONFIG_DIR}
@@ -1266,7 +1264,7 @@ deploy_node(){
 
       sshpass -p dlwsadmin scp -r config/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_CONFIG_DIR}
 
-      sshpass -p dlwsadmin scp python2.7/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/python2.7
+      sshpass -p dlwsadmin scp python2.7/${ARCH}/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/python2.7
 
       ########################### Install on remote node ######################################
       sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
