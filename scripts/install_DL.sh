@@ -552,22 +552,31 @@ generate_config() {
     3. smtp server password: e.g. TEST_PASSWORD
     4. smtp default receiver: e.g. receiver@test.com
     "
-    echo "Please set smtp server host:"
-    echo "[e.g. smtp.test.com:25]>>>"
-    read -r alert_host
 
-    echo "Please set smtp server email address:"
-    echo "[e.g. test_smtp@test.com]>>>"
-    read -r alert_smtp_email_address
-
-    echo "Please set smtp server email password:"
-    echo "[e.g. TEST_PASSWORD]>>>"
-    read -r alert_smtp_email_password
-
-    echo "Please set default receiver email:"
-    echo "[e.g. receiver@test.com]>>>"
-    read -r alert_default_user_email
-
+    while [ -z $alert_host ]
+    do
+      echo "Please set smtp server host:"
+      echo "[e.g. smtp.test.com:25]>>>"
+      read -r alert_host
+    done
+    while [ -z $alert_host ]
+    do
+      echo "Please set smtp server email address:"
+      echo "[e.g. test_smtp@test.com]>>>"
+      read -r alert_smtp_email_address
+    done
+    while [ -z $alert_host ]
+    do
+      echo "Please set smtp server email password:"
+      echo "[e.g. TEST_PASSWORD]>>>"
+      read -r alert_smtp_email_password
+    done
+    while [ -z $alert_host ]
+    do
+      echo "Please set default receiver email:"
+      echo "[e.g. receiver@test.com]>>>"
+      read -r alert_default_user_email
+    done
     echo "Setting HA-VIP:"
     while :
     do

@@ -172,17 +172,31 @@ set_up_password_less () {
 }
 
 set_docker_config() {
-    cat << EOF > /etc/docker/daemon.json
-        {
-        "default-runtime": "nvidia",
-        "runtimes": {
-            "nvidia": {
-                "path": "nvidia-container-runtime",
-                "runtimeArgs": []
-            }
-        }
-    }
+    if [ "${ARCH}" == "aarch64" ];then
+      cat << EOF > /etc/docker/daemon.json
+          {
+          "default-runtime": "nvidia",
+          "runtimes": {
+              "nvidia": {
+                  "path": "nvidia-container-runtime",
+                  "runtimeArgs": []
+              }
+          }
+      }
 EOF
+    else
+      cat << EOF > /etc/docker/daemon.json
+          {
+          "runtimes": {
+              "nvidia": {
+                  "path": "nvidia-container-runtime",
+                  "runtimeArgs": []
+              }
+          }
+      }
+EOF
+    fi
+
 
     systemctl daemon-reload
     systemctl restart docker
