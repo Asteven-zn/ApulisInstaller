@@ -322,7 +322,7 @@ install_source_dir () {
 
     tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
 
-    (cd python2.7; pip install setuptools* ;pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd python2.7/${ARCH}; pip install setuptools* ;pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
@@ -368,7 +368,7 @@ set_up_password_less () {
 load_docker_images () {
     if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
 	    printf "Copy docker images from source\n"
-	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images/${ARCH}"
+	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images"
 
           PROC_NUM=10
           FIFO_FILE="/tmp/$$.fifo"
@@ -380,7 +380,7 @@ load_docker_images () {
           echo "$(date +%F\ %T) Processor-${process_num} Info: " >&9
         done
 
-        for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
+        for file in `ls -R -l ${DOCKER_IMAGE_DIRECTORY}| grep ^- | awk '{print $9}' | grep '.tar$'` # load all images in spite of arch
         do
             read -u 9 P
             {
@@ -451,6 +451,12 @@ prepare_k8s_images() {
   harbor_prefix=${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
   k8s_url=k8s.gcr.io
   k8s_version=v1.18.2
+  if [ "${ARCH}" == "aarch64"]
+  then
+	  arch_tail="-arm64"
+  else
+	  arch_tail=""
+  fi
   k8s_images=(
     $k8s_url/kube-proxy:$k8s_version
     $k8s_url/kube-apiserver:$k8s_version
@@ -463,8 +469,8 @@ prepare_k8s_images() {
   )
   for image in ${k8s_images[@]}
   do
-    docker pull $harbor_prefix$image
-    docker tag $harbor_prefix$image $image
+    docker pull $harbor_prefix$image${arch_tail}
+    docker tag $harbor_prefix$image${arch_tail} $image
   done
 }
 
@@ -1059,6 +1065,8 @@ declare -a worker_nodes_gpuType=()
 declare -a worker_nodes_vendor=()
 declare -a worker_nodes_arch=()
 declare -a extra_master_nodes=()
+declare -a extra_master_nodes_arch=()
+
 node_number=1
 
 echo '
@@ -1085,7 +1093,17 @@ do
         printf "Set up node ...\\n"
         setup_user_on_node $nodename
         if [ $? = 0 ]; then
+			arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+			if [ "${arch_result}" == "x86_64" ]
+			then
+				node_arch="amd64"
+			fi
+			if [ "${arch_result}" == "aarch64" ]
+			then
+				node_arch="arm64"
+			fi
             extra_master_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
+			extra_master_nodes_arch[ $(( ${node_number} - 1 )) ]=${node_arch}
             node_number=$(( ${node_number} + 1 ))
         fi
     fi
@@ -1205,6 +1223,18 @@ fi
 ############# Config extra master node ###################################################################
 for masternode in "${extra_master_nodes[@]}"
 do
+	record_arch=${extra_master_nodes_arch[$i]}
+	if [ "${record_arch}" == "amd64" ]
+	then
+		node_arch="x86_64"
+	fi
+	if [ "${record_arch}" == "arm64" ]
+	then
+		node_arch="aarch64"
+	fi
+	REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${node_arch}"
+	REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${node_arch}"
+	REMOTE_PYTHON_DIR="${REMOTE_INSTALL_DIR}/python2.7/${node_arch}"
     ######### set up passwordless access from Master to Node ################################
     cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$masternode 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
@@ -1224,7 +1254,7 @@ do
 
     # sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/python2.7
+    sshpass -p dlwsadmin scp python2.7/${node_arch}/* dlwsadmin@$masternode:${REMOTE_PYTHON_DIR}
 
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
@@ -1254,6 +1284,7 @@ do
 	fi
 	REMOTE_APT_DIR="${REMOTE_INSTALL_DIR}/apt/${node_arch}"
 	REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${node_arch}"
+	REMOTE_PYTHON_DIR="${REMOTE_INSTALL_DIR}/python2.7/${node_arch}"
     ######### set up passwordless access from Master to Node ################################
     cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
@@ -1271,7 +1302,7 @@ do
 
     sshpass -p dlwsadmin scp -r config/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_CONFIG_DIR}
 
-    sshpass -p dlwsadmin scp python2.7/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}/python2.7
+    sshpass -p dlwsadmin scp python2.7/${node_arch}/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_PYTHON_DIR}
 
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"

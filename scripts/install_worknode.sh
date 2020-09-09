@@ -47,6 +47,12 @@ prepare_k8s_images() {
   harbor_prefix=${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
   k8s_url=k8s.gcr.io
   k8s_version=v1.18.2
+  if [ "${ARCH}" == "aarch64"]
+  then
+	  arch_tail="-arm64"
+  else
+	  arch_tail=""
+  fi
   k8s_images=(
     $k8s_url/kube-proxy:$k8s_version
     $k8s_url/kube-apiserver:$k8s_version
@@ -59,8 +65,8 @@ prepare_k8s_images() {
   )
   for image in ${k8s_images[@]}
   do
-    docker pull $harbor_prefix$image
-    docker tag $harbor_prefix$image $image
+    docker pull $harbor_prefix$image${arch_tail}
+    docker tag $harbor_prefix$image${arch_tail} $image
   done
 }
 
@@ -135,7 +141,7 @@ install_source_dir () {
     # (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
     # source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
-    (cd python2.7; pip install *.whl; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd python2.7/${ARCH}; pip install *.whl; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
     (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
