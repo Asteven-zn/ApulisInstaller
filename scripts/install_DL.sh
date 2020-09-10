@@ -1354,6 +1354,7 @@ fi
 ./deploy.py --verbose -y labelworker
 
 ./deploy.py --verbose kubernetes start nvidia-device-plugin
+./deploy.py --verbose kubernetes start  a910-device-plugin
 
 ./deploy.py --verbose renderservice
 ./deploy.py --verbose renderimage
