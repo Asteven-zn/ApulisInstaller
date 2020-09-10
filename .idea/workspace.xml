@@ -2,34 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="23f1f6e0-3e71-4d75-9b36-43995b8c325a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/InstallationYTung.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/InstallationYTung.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/harbor/docker-certs.d/harbor.sigsus.cn:8443/ca.crt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/harbor/docker-certs.d/harbor.sigsus.cn:8443/harbor.sigsus.cn.cert" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/harbor/docker-certs.d/harbor.sigsus.cn:8443/harbor.sigsus.cn.key" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.cert" beforeDir="false" afterPath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.cert" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.crt" beforeDir="false" afterPath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.crt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.key" beforeDir="false" afterPath="$PROJECT_DIR$/config/harbor/harbor-cert/harbor.sigsus.cn.key" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/harbor/harbor.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/harbor/harbor.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/weave-net.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/weave-net.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/install_pan.sh" beforeDir="false" afterPath="$PROJECT_DIR$/install_pan.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/install_DL.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_DL.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/install_masternode_extra.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_masternode_extra.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/install_worknode.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_worknode.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/clear_harbor_project_imgs.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/clear_harbor_project_imgs.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/load_docker_images.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/load_docker_images.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/push_image_to_harbor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/push_image_to_harbor.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/start_services.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/start_services.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/stop_services.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/stop_services.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/tmux.conf" beforeDir="false" afterPath="$PROJECT_DIR$/tools/tmux.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/upgrade_doc.md" beforeDir="false" afterPath="$PROJECT_DIR$/upgrade_doc.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +32,14 @@
       <option name="project" value="LOCAL" />
       <updated>1599642115828</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="fixhub">
+      <created>1599656277998</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1599656277998</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -66,10 +48,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="fixhub" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599643204205">
+    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599705642831">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599643204205" />
+    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599705642831" />
     <state x="357" y="221" width="1698" height="882" key="DiffContextDialog" timestamp="1599643048238">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -86,5 +68,9 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1005" y="475" width="617" height="490" key="find.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1599638181522" />
+    <state x="907" y="397" width="670" height="676" key="search.everywhere.popup" timestamp="1599703167241">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="907" y="397" width="670" height="676" key="search.everywhere.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1599703167241" />
   </component>
 </project>

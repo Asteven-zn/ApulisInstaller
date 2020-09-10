@@ -67,6 +67,14 @@ getNeededAptPackages () {
   fi
 }
 
+getAllNeededBinFile(){
+  mkdir -p ${INSTALLED_DIR}/bin/x86_64
+  mkdir -p ${INSTALLED_DIR}/bin/aarch64
+  (cd ${INSTALLED_DIR}/bin/x86_64; wget https://github.com/istio/istio/releases/download/1.6.8/istio-1.6.8-linux-amd64.tar.gz;tar xf istio-1.6.8-linux-amd64.tar.gz;cp istio-1.6.8/bin/istioctl .;rm -rf istio-1.6.8*)
+  (cd ${INSTALLED_DIR}/bin/aarch64; wget https://github.com/istio/istio/releases/download/1.6.8/istio-1.6.8-linux-arm64.tar.gz;tar xf istio-1.6.8-linux-arm64.tar.gz;cp istio-1.6.8/bin/istioctl .;rm -rf istio-1.6.8*)
+}
+
+
 getHarborPackages () {
   #####################  Create Installation harbor packages ##########################
   mkdir -p ${INSTALLED_DIR}/harbor
@@ -379,6 +387,8 @@ getAllNeededDockerImages
 getDLWorkspace
 
 getNeededAptPackages
+
+getAllNeededBinFile
 
 getHarborPackages
 
