@@ -44,7 +44,14 @@
       <option name="project" value="LOCAL" />
       <updated>1599705648146</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="fixhub">
+      <created>1599705810788</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1599705810788</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -53,10 +60,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="fixhub" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599705647170">
+    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599705809917">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599705647170" />
+    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599705809917" />
     <state x="357" y="221" width="1698" height="882" key="DiffContextDialog" timestamp="1599643048238">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>

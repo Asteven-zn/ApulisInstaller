@@ -561,19 +561,19 @@ generate_config() {
       echo "[e.g. smtp.test.com:25]>>>"
       read -r alert_host
     done
-    while [ -z $alert_host ]
+    while [ -z $alert_smtp_email_address ]
     do
       echo "Please set smtp server email address:"
       echo "[e.g. test_smtp@test.com]>>>"
       read -r alert_smtp_email_address
     done
-    while [ -z $alert_host ]
+    while [ -z $alert_smtp_email_password ]
     do
       echo "Please set smtp server email password:"
       echo "[e.g. TEST_PASSWORD]>>>"
       read -r alert_smtp_email_password
     done
-    while [ -z $alert_host ]
+    while [ -z $alert_default_user_email ]
     do
       echo "Please set default receiver email:"
       echo "[e.g. receiver@test.com]>>>"
