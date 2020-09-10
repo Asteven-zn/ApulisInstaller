@@ -231,12 +231,10 @@ install_necessary_packages () {
 
 copy_bin_file (){
   DIS_DIR="/usr/bin/"
-  IS_EXIST=0
   for entry in ${THIS_DIR}/bin/${ARCH}/*
   do
       echo "$entry"
-      DIR_FILE="$DIS_DIR$(basename $entry)"
-      if [ -f $DIR_FILE ];then
+      if [ -f $$entry ];then
         IS_EXIST=1
       fi
 
@@ -561,19 +559,19 @@ generate_config() {
       echo "[e.g. smtp.test.com:25]>>>"
       read -r alert_host
     done
-    while [ -z $alert_smtp_email_address ]
+    while [ -z $alert_host ]
     do
       echo "Please set smtp server email address:"
       echo "[e.g. test_smtp@test.com]>>>"
       read -r alert_smtp_email_address
     done
-    while [ -z $alert_smtp_email_password ]
+    while [ -z $alert_host ]
     do
       echo "Please set smtp server email password:"
       echo "[e.g. TEST_PASSWORD]>>>"
       read -r alert_smtp_email_password
     done
-    while [ -z $alert_default_user_email ]
+    while [ -z $alert_host ]
     do
       echo "Please set default receiver email:"
       echo "[e.g. receiver@test.com]>>>"
@@ -1131,7 +1129,7 @@ done
           printf "Set up node ...\\n"
           setup_user_on_node $nodename
           if [ $? = 0 ]; then
-        printf "use default setting? \n type: gpu \n vendr: nvidia\n[(default)y/n]:"
+        printf "use default setting? \n type: gpu \n vendor: nvidia\n[(default)y/n]:"
         read -r ans
         while [ "$ans" != "yes" ] && [ "$ans" != "y" ] && [ "$ans" != "YES" ] && \
           [ "$ans" != "no" ]  && [ "$ans" != "n" ]  && [ "$ans" != "NO" ] && [ "$ans" != "" ]
@@ -1140,13 +1138,13 @@ done
           printf ">>> "
           read -r ans
         done
-        if [ "$ans" == "yes" ] && [ "$ans" == "y" ] && [ "$ans" == "YES" ] && [ "$ans" == "" ]
-          then
+        if [ "$ans" == "yes" ] || [ "$ans" == "y" ] || [ "$ans" == "YES" ] || [ "$ans" == "" ]
+	    then
           worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]="gpu"
           worker_nodes_vendor[ $(( ${node_number} - 1 )) ]="nvidia"
         else
           ans="no"
-          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
+          while [ "$ans" != "yes" ] || [ "$ans" != "Yes" ] || [ "$ans" != "YES" ] || [ "$ans" != "y" ]
           do
             printf "please input gpu type: "
             read -r gpuType
@@ -1164,7 +1162,7 @@ done
           done
           worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]=${gpuType}
           ans="no"
-          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
+          while [ "$ans" != "yes" ] || [ "$ans" != "Yes" ] || [ "$ans" != "YES" ] || [ "$ans" != "y" ]
           do
             printf "please input vendor: "
             read -r vendor
@@ -1386,8 +1384,6 @@ read -i anychar
 ./deploy.py --verbose kubernetes start mysql
 ./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
 ./deploy.py --verbose kubernetes start monitor
-
-./deploy.py kubernetes start istio knative kfserving
 
 ./deploy.py --verbose kubernetes start webui3
 ./deploy.py kubernetes start custom-user-dashboard
