@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="23f1f6e0-3e71-4d75-9b36-43995b8c325a" name="Default Changelist" comment="">
+    <list default="true" id="23f1f6e0-3e71-4d75-9b36-43995b8c325a" name="Default Changelist" comment="fixhub">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/install_DL.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_DL.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,8 +52,25 @@
       <option name="project" value="LOCAL" />
       <updated>1599705810788</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="fixhub">
+      <created>1599706787108</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1599706787108</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Merge branch 'dev_tcy' into czl&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh" />
@@ -60,10 +78,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="fixhub" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599705809917">
+    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599707051116">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599705809917" />
+    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599707051116" />
     <state x="357" y="221" width="1698" height="882" key="DiffContextDialog" timestamp="1599643048238">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
