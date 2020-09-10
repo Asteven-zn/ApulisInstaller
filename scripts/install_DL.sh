@@ -17,23 +17,39 @@
 #set -x
 
 input_harbor_library_name() {
-    ans="no"
-    while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
-    do
-        printf "Please input your library name >>> "
-        read -r DOCKER_HARBOR_LIBRARY
-        printf "Your library name is \"${DOCKER_HARBOR_LIBRARY}\", is that correct?"
-        printf "[yes/no] >>> "
+	reset_library_name="no"
+	printf "harbor name has been set to :%s \naccept it?[(default)yes/no]:" "$DOCKER_HARBOR_LIBRARY"
+	read -r ans
+	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
+			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+	do
+		printf "Please answer 'yes(default)' or 'no':'\\n"
+		printf ">>> "
+		read -r ans
+	done
+	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]; then
+		reset_library_name="yes"
+	fi
+	if [ "$reset_library_name" == "yes" ]
+	then
+		ans="no"
+		while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
+		do
+			printf "Please input your library name >>> "
+			read -r DOCKER_HARBOR_LIBRARY
+			printf "Your library name is \"${DOCKER_HARBOR_LIBRARY}\", is that correct?"
+			printf "[yes/no] >>> "
 
-        read -r ans
-        while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
-                [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-        do
-            printf "Please answer 'yes' or 'no':'\\n"
-            printf ">>> "
-            read -r ans
-        done
-    done
+			read -r ans
+			while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+					[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+			do
+				printf "Please answer 'yes' or 'no':'\\n"
+				printf ">>> "
+				read -r ans
+			done
+		done
+	fi
     printf "library selected set as >>>${DOCKER_HARBOR_LIBRARY}."
     printf "now continue.\n"
 }
@@ -248,15 +264,37 @@ copy_bin_file (){
 }
 
 prepare_nfs_storage_path () {
-    echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
-    echo '[e.g. /mnt/disk]'
-    read -r NFS_STORAGE_PATH
-    if [ -d "$NFS_STORAGE_PATH" ]; then
-      echo "$NFS_STORAGE_PATH exists"
-    else
-      echo "$NFS_STORAGE_PATH not exists"
-      exit 1
-    fi
+	reset_nfs_path="no"
+	if [ "$NFS_STORAGE_PATH" != "/mnt/local"]
+	then
+		printf "nfs storage has been set to :%s \naccept it?[(default)yes/no]:" "$NFS_STORAGE_PATH"
+		read -r ans
+		while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
+				[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+		do
+			printf "Please answer 'yes(default)' or 'no':'\\n"
+			printf ">>> "
+			read -r ans
+		done
+		if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]; then
+			reset_nfs_path="yes"
+		fi
+	else
+		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset.!!!!\n"
+		reset_nfs_path="yes"
+	fi
+	if [ "$reset_nfs_path" == "yes" ]
+	then
+		echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
+		echo '[e.g. /mnt/disk]'
+		read -r NFS_STORAGE_PATH
+		if [ -d "$NFS_STORAGE_PATH" ]; then
+		  echo "$NFS_STORAGE_PATH exists"
+		else
+		  echo "$NFS_STORAGE_PATH not exists"
+		  exit 1
+		fi
+	fi
 
     NFS_DIR=/mnt/local
     mkdir -p /mnt
@@ -266,16 +304,18 @@ prepare_nfs_storage_path () {
 }
 
 install_harbor () {
-    #### prepare harbor dir
-    echo 'Input harbor storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /data/harbor)'
-    echo '[e.g. /data/storage]>>>'
-    read -r HARBOR_STORAGE_PATH
-    if [ -d "$HARBOR_STORAGE_PATH" ]; then
-      echo "$HARBOR_STORAGE_PATH exists"
-    else
-      echo "$HARBOR_STORAGE_PATH not exists"
-      exit 1
-    fi
+	printf "harbor dir has been set to :%s \naccept it?[(default)yes/no]:" "$HARBOR_STORAGE_PATH"
+	read -r ans
+	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
+			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+	do
+		printf "Please answer 'yes(default)' or 'no':'\\n"
+		printf ">>> "
+		read -r ans
+	done
+	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]; then
+		reset_harbor_dir="yes"
+	fi
 
     HARBOR_DIR=/data/harbor
     mkdir -p /data
@@ -798,7 +838,6 @@ init_environment() {
   NFS_MOUNT_POINT="/mnt/nfs_share"
   USE_MASTER_NODE_AS_WORKER=1
   HARBOR_REGISTRY=harbor.sigsus.cn
-  DOCKER_HARBOR_LIBRARY # to be set before harbor installing
   CLUSTER_NAME="DLWorkspace"
 
   ############# Don't source the install file. Run it in sh or bash ##########
@@ -1141,7 +1180,7 @@ done
           worker_nodes_vendor[ $(( ${node_number} - 1 )) ]="nvidia"
         else
           ans="no"
-          while [ "$ans" != "yes" ] || [ "$ans" != "Yes" ] || [ "$ans" != "YES" ] || [ "$ans" != "y" ]
+          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
           do
             printf "please input gpu type: "
             read -r gpuType
@@ -1159,7 +1198,7 @@ done
           done
           worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]=${gpuType}
           ans="no"
-          while [ "$ans" != "yes" ] || [ "$ans" != "Yes" ] || [ "$ans" != "YES" ] || [ "$ans" != "y" ]
+          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
           do
             printf "please input vendor: "
             read -r vendor
@@ -1416,7 +1455,7 @@ choose_start_from_which_step(){
 
 }
 
-
+source config/platform.cfg
 choose_start_from_which_step
 
 if [ $step -lt 2 ];
