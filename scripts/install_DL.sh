@@ -1141,7 +1141,7 @@ done
           worker_nodes_vendor[ $(( ${node_number} - 1 )) ]="nvidia"
         else
           ans="no"
-          while [ "$ans" != "yes" ] || [ "$ans" != "Yes" ] || [ "$ans" != "YES" ] || [ "$ans" != "y" ]
+          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
           do
             printf "please input gpu type: "
             read -r gpuType
@@ -1159,7 +1159,7 @@ done
           done
           worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]=${gpuType}
           ans="no"
-          while [ "$ans" != "yes" ] || [ "$ans" != "Yes" ] || [ "$ans" != "YES" ] || [ "$ans" != "y" ]
+          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
           do
             printf "please input vendor: "
             read -r vendor
