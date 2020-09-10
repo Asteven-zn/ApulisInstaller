@@ -503,9 +503,6 @@ setup_user_on_node() {
 
     local node=$1
 
-    if [ x"${SUDO_USER}" != "x" ]; then
-	node=${SUDO_USER}@$node
-    fi
     echo "Node is: ", ${node}
     ssh -t ${node}  "(sudo useradd -d ${DLWS_HOME} -s /bin/bash dlwsadmin; echo \"dlwsadmin:dlwsadmin\" | sudo chpasswd ; \\
 sudo mkdir -p ${DLWS_HOME}; sudo mkdir -p ${DLWS_HOME}/.ssh && sudo chown -R dlwsadmin:dlwsadmin ${DLWS_HOME}) && sudo runuser dlwsadmin -c \"ssh-keygen -t rsa -P '' -f ${DLWS_HOME}/.ssh/id_rsa\" \\
