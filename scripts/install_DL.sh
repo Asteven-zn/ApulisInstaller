@@ -729,7 +729,7 @@ grafana_alert:
   receiver: $alert_default_user_email
 
 kube-vip: ${kube_vip}
-
+endpoint_use_private_ip: true
 machines:
   ${master_hostname}:
     role: infrastructure
