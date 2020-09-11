@@ -269,37 +269,37 @@ copy_bin_file (){
 }
 
 prepare_nfs_storage_path () {
-	reset_nfs_path="no"
-	if [ "$NFS_STORAGE_PATH" != "/mnt/local"]
-	then
-		printf "nfs storage has been set to :%s \naccept it?[(default)yes/no]:" "$NFS_STORAGE_PATH"
-		read -r ans
-		while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
-				[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-		do
-			printf "Please answer 'yes(default)' or 'no':'\\n"
-			printf ">>> "
-			read -r ans
-		done
-		if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]; then
-			reset_nfs_path="yes"
-		fi
-	else
-		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset.!!!!\n"
-		reset_nfs_path="yes"
-	fi
-	if [ "$reset_nfs_path" == "yes" ]
-	then
-		echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
-		echo '[e.g. /mnt/disk]'
-		read -r NFS_STORAGE_PATH
-		if [ -d "$NFS_STORAGE_PATH" ]; then
-		  echo "$NFS_STORAGE_PATH exists"
-		else
-		  echo "$NFS_STORAGE_PATH not exists"
-		  exit 1
-		fi
-	fi
+#	reset_nfs_path="no"
+#	if [ "$NFS_STORAGE_PATH" != "/mnt/local"]
+#	then
+#		printf "nfs storage has been set to :%s \naccept it?[(default)yes/no]:" "$NFS_STORAGE_PATH"
+#		read -r ans
+#		while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
+#				[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+#		do
+#			printf "Please answer 'yes(default)' or 'no':'\\n"
+#			printf ">>> "
+#			read -r ans
+#		done
+#		if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]; then
+#			reset_nfs_path="yes"
+#		fi
+#	else
+#		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset.!!!!\n"
+#		reset_nfs_path="yes"
+#	fi
+#	if [ "$reset_nfs_path" == "yes" ]
+#	then
+#		echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
+#		echo '[e.g. /mnt/disk]'
+#		read -r NFS_STORAGE_PATH
+#		if [ -d "$NFS_STORAGE_PATH" ]; then
+#		  echo "$NFS_STORAGE_PATH exists"
+#		else
+#		  echo "$NFS_STORAGE_PATH not exists"
+#		  exit 1
+#		fi
+#	fi
 
     NFS_DIR=/mnt/local
     mkdir -p /mnt
@@ -309,18 +309,6 @@ prepare_nfs_storage_path () {
 }
 
 install_harbor () {
-	printf "harbor dir has been set to :%s \naccept it?[(default)yes/no]:" "$HARBOR_STORAGE_PATH"
-	read -r ans
-	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
-			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-	do
-		printf "Please answer 'yes(default)' or 'no':'\\n"
-		printf ">>> "
-		read -r ans
-	done
-	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]; then
-		reset_harbor_dir="yes"
-	fi
 
     HARBOR_DIR=/data/harbor
     mkdir -p /data
@@ -1529,7 +1517,7 @@ then
 fi
 if [ $step -lt 6 ];
 then
-  input_harbor_library_name
+  # input_harbor_library_name
 
   install_harbor
 fi
