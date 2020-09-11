@@ -37,6 +37,11 @@ input_harbor_library_name() {
 		do
 			printf "Please input your library name >>> "
 			read -r DOCKER_HARBOR_LIBRARY
+			while [ "$DOCKER_HARBOR_LIBRARY" != "" ]
+			do
+				printf "!! Docker harbor name can't be empty !! Please reinput >>>"
+				read -r DOCKER_HARBOR_LIBRARY
+			done
 			printf "Your library name is \"${DOCKER_HARBOR_LIBRARY}\", is that correct?"
 			printf "[yes/no] >>> "
 
@@ -264,37 +269,37 @@ copy_bin_file (){
 }
 
 prepare_nfs_storage_path () {
-	reset_nfs_path="no"
-	if [ "$NFS_STORAGE_PATH" != "/mnt/local"]
-	then
-		printf "nfs storage has been set to :%s \naccept it?[(default)yes/no]:" "$NFS_STORAGE_PATH"
-		read -r ans
-		while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
-				[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-		do
-			printf "Please answer 'yes(default)' or 'no':'\\n"
-			printf ">>> "
-			read -r ans
-		done
-		if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]; then
-			reset_nfs_path="yes"
-		fi
-	else
-		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset.!!!!\n"
-		reset_nfs_path="yes"
-	fi
-	if [ "$reset_nfs_path" == "yes" ]
-	then
-		echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
-		echo '[e.g. /mnt/disk]'
-		read -r NFS_STORAGE_PATH
-		if [ -d "$NFS_STORAGE_PATH" ]; then
-		  echo "$NFS_STORAGE_PATH exists"
-		else
-		  echo "$NFS_STORAGE_PATH not exists"
-		  exit 1
-		fi
-	fi
+#	reset_nfs_path="no"
+#	if [ "$NFS_STORAGE_PATH" != "/mnt/local"]
+#	then
+#		printf "nfs storage has been set to :%s \naccept it?[(default)yes/no]:" "$NFS_STORAGE_PATH"
+#		read -r ans
+#		while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
+#				[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+#		do
+#			printf "Please answer 'yes(default)' or 'no':'\\n"
+#			printf ">>> "
+#			read -r ans
+#		done
+#		if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]; then
+#			reset_nfs_path="yes"
+#		fi
+#	else
+#		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset.!!!!\n"
+#		reset_nfs_path="yes"
+#	fi
+#	if [ "$reset_nfs_path" == "yes" ]
+#	then
+#		echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
+#		echo '[e.g. /mnt/disk]'
+#		read -r NFS_STORAGE_PATH
+#		if [ -d "$NFS_STORAGE_PATH" ]; then
+#		  echo "$NFS_STORAGE_PATH exists"
+#		else
+#		  echo "$NFS_STORAGE_PATH not exists"
+#		  exit 1
+#		fi
+#	fi
 
     NFS_DIR=/mnt/local
     mkdir -p /mnt
@@ -304,18 +309,6 @@ prepare_nfs_storage_path () {
 }
 
 install_harbor () {
-	printf "harbor dir has been set to :%s \naccept it?[(default)yes/no]:" "$HARBOR_STORAGE_PATH"
-	read -r ans
-	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
-			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-	do
-		printf "Please answer 'yes(default)' or 'no':'\\n"
-		printf ">>> "
-		read -r ans
-	done
-	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ]; then
-		reset_harbor_dir="yes"
-	fi
 
     HARBOR_DIR=/data/harbor
     mkdir -p /data
@@ -332,10 +325,6 @@ install_harbor () {
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}
     tar -zxvf ${THIS_DIR}/harbor/harbor.tgz -C $HARBOR_INSTALL_DIR
-    echo "Please set harbor admin password, default is 'Harbor12345':"
-    echo "[e.g. Harbor12345]>>>"
-    read -r HARBOR_ADMIN_PASSWORD
-    echo "Please remember your admin password: $HARBOR_ADMIN_PASSWORD"
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
@@ -613,16 +602,6 @@ generate_config() {
       echo "Please set default receiver email:"
       echo "[e.g. receiver@test.com]>>>"
       read -r alert_default_user_email
-    done
-    echo "Setting HA-VIP:"
-    while :
-    do
-        read -p "Please enter your VIP >>> " kube_vip
-        read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
-
-        if [ "$kube_vip_check" = "y" ]; then
-             break
-        fi
     done
 
 
@@ -1414,11 +1393,11 @@ echo '    ./deploy.py --verbose --force mount'
 echo '    or '
 echo '    ./deploy.py execonall "python /opt/auto_share/auto_share.py"'
 echo '                                                                '
-echo 'Please type any char to proceed:>> '
-read -i anychar
+read -s -n1 -p "Please press any key to continue:>> "
 
 ./deploy.py --verbose kubernetes start mysql
 ./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
+./deploy.py --background --sudo runscriptonall scripts/npu/npu_info_gen.py
 ./deploy.py --verbose kubernetes start monitor
 
 ./deploy.py --verbose kubernetes start webui3
@@ -1454,8 +1433,88 @@ choose_start_from_which_step(){
   read -r step
 
 }
-# ==================== begin of script ====================
-source config/platform.cfg
+
+load_config_from_file() {
+	NECCESSARY_ARGUMENT=(
+		NFS_STORAGE_PATH
+		HARBOR_STORAGE_PATH
+		DOCKER_HARBOR_LIBRARY
+		HARBOR_ADMIN_PASSWORD
+		alert_host
+		alert_smtp_email_address
+		alert_smtp_email_password
+		alert_default_user_email
+		)
+	if [ ! -f "config/platform.cfg" ]; then
+		echo " !!!!! Can't find config file (platform.cfg), please check there is a platform.cfg under ./config directory !!!!! "
+		echo " Please relaunch later while everything is ready. "
+		exit
+	fi
+	source config/platform.cfg
+	if [ "$NFS_STORAGE_PATH" == "/mnt/local"]
+	then
+		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset in your config file.!!!!\n"
+		exit
+	fi
+	if [ "$HARBOR_STORAGE_PATH" == "/data/harbor"]
+	then
+		printf "\n!!!!Your harbor storage path has been set to /data/harbor, which is not allowed. Please reset in your config file.!!!!\n"
+		exit
+	fi
+	echo "################################"
+	echo " Please check if every config is correct"
+	printf "\n * nfs storage path has been set to : %s" "$NFS_STORAGE_PATH"
+	printf "\n * harbor storage path has been set to : %s" "$HARBOR_STORAGE_PATH"
+	printf "\n * docker library name has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
+	printf "\n * harbor admin password has been set to : %s" "$HARBOR_ADMIN_PASSWORD"
+	printf "\n * smtp server host has been set to : %s" "$alert_host"
+	printf "\n * smtp server email has been set to : %s" "$alert_smtp_email_address"
+	printf "\n * smtp server password has been set to : %s" "$alert_smtp_email_password"
+	printf "\n * smtp default receiver has been set to : %s" "$alert_default_user_email"
+	printf "\n################################"
+	printf "\nAre these config correct? [ yes / (default)no ]"
+	read -r check_config_string
+	while [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] && [ "$check_config_string" != "" ] && \
+			[ "$check_config_string" != "no" ]  && [ "$check_config_string" != "No" ]  && [ "$check_config_string" != "NO" ]
+	do
+		printf "Please answer 'yes' or 'no':'\\n"
+		printf ">>> "
+		read -r check_config_string
+	done
+	if [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] ; then
+		echo " OK. Please relaunch later while everything is ready. "
+		exit
+	fi
+}
+
+config_init() {
+	load_config_from_file
+	echo "Congratulation! config file loaded completed."
+    echo "Now setting HA-VIP:"
+    while :
+    do
+        read -p "Please enter your VIP >>> " kube_vip
+        read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
+
+        if [ "$kube_vip_check" = "y" ]; then
+             break
+        fi
+    done
+
+	echo '
+                    _
+ _ __ ___  __ _  __| |_   _
+| \__/ _ \/ _` |/ _` | | | |
+| | |  __/ (_| | (_| | |_| |
+|_|  \___|\__,_|\__,_|\__, |
+                      |___/
+
+	'
+	read -s -n1 -p "press any key to continue installing"
+
+}
+
+config_init
 choose_start_from_which_step
 
 if [ $step -lt 2 ];
@@ -1477,7 +1536,7 @@ then
 fi
 if [ $step -lt 6 ];
 then
-  input_harbor_library_name
+  # input_harbor_library_name
 
   install_harbor
 fi

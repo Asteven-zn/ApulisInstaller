@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="23f1f6e0-3e71-4d75-9b36-43995b8c325a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/platform.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/config/platform.cfg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/install_DL.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_DL.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -73,7 +74,14 @@
       <option name="project" value="LOCAL" />
       <updated>1599789789666</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="fixhub">
+      <created>1599792575611</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1599792575611</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -92,22 +100,22 @@
     <option name="LAST_COMMIT_MESSAGE" value="fixhub" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599789788576">
+    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599792574611">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599789788576" />
+    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599792574611" />
     <state x="357" y="221" width="1698" height="882" key="DiffContextDialog" timestamp="1599643048238">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="357" y="221" width="1698" height="882" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599643048238" />
-    <state x="175" y="85" width="2288" height="1155" key="MergeDialog" timestamp="1599642808464">
+    <state x="175" y="85" width="2288" height="1155" key="MergeDialog" timestamp="1599809788844">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="175" y="85" width="2288" height="1155" key="MergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599642808464" />
-    <state x="916" y="379" key="MultipleFileMergeDialog" timestamp="1599642808493">
+    <state x="175" y="85" width="2288" height="1155" key="MergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599809788844" />
+    <state x="916" y="379" key="MultipleFileMergeDialog" timestamp="1599809788858">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="916" y="379" key="MultipleFileMergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599642808493" />
+    <state x="916" y="379" key="MultipleFileMergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599809788858" />
     <state x="1005" y="475" width="617" height="490" key="find.popup" timestamp="1599638181522">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
