@@ -1454,7 +1454,7 @@ choose_start_from_which_step(){
   read -r step
 
 }
-
+# ==================== begin of script ====================
 source config/platform.cfg
 choose_start_from_which_step
 
