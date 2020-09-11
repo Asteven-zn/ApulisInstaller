@@ -1463,7 +1463,7 @@ load_config_from_file() {
 	printf "\n * smtp server email has been set to : %s" "$alert_smtp_email_address"
 	printf "\n * smtp server password has been set to : %s" "$alert_smtp_email_password"
 	printf "\n * smtp default receiver has been set to : %s" "$alert_default_user_email"
-	echo "\n################################"
+	printf "\n################################"
 	printf "Are these config correct? [ yes / (default)no ]"
 	read -r check_config_string
 	while [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] && [ "$check_config_string" != "" ] && \
@@ -1502,7 +1502,7 @@ config_init() {
                       |___/
 
 	'
-	print "press any key to continue installing"
+	printf "press any key to continue installing"
 	read -r dump
 	
 }
