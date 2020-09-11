@@ -1397,6 +1397,7 @@ read -s -n1 -p "Please press any key to continue:>> "
 
 ./deploy.py --verbose kubernetes start mysql
 ./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
+./deploy.py --background --sudo runscriptonall scripts/npu/npu_info_gen.py
 ./deploy.py --verbose kubernetes start monitor
 
 ./deploy.py --verbose kubernetes start webui3
@@ -1434,12 +1435,32 @@ choose_start_from_which_step(){
 }
 
 load_config_from_file() {
+	NECCESSARY_ARGUMENT=(
+		NFS_STORAGE_PATH
+		HARBOR_STORAGE_PATH
+		DOCKER_HARBOR_LIBRARY
+		HARBOR_ADMIN_PASSWORD
+		alert_host
+		alert_smtp_email_address
+		alert_smtp_email_password
+		alert_default_user_email
+		)
 	if [ ! -f "config/platform.cfg" ]; then
-		echo " !!!!! Can't find config file, please check there is a platform.cfg under ./config directory !!!!! "
+		echo " !!!!! Can't find config file (platform.cfg), please check there is a platform.cfg under ./config directory !!!!! "
 		echo " Please relaunch later while everything is ready. "
 		exit
 	fi
 	source config/platform.cfg
+	if [ "$NFS_STORAGE_PATH" == "/mnt/local"]
+	then
+		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset in your config file.!!!!\n"
+		exit
+	fi
+	if [ "$HARBOR_STORAGE_PATH" == "/data/harbor"]
+	then
+		printf "\n!!!!Your harbor storage path has been set to /data/harbor, which is not allowed. Please reset in your config file.!!!!\n"
+		exit
+	fi
 	echo "################################"
 	echo " Please check if every config is correct"
 	printf "\n * nfs storage path has been set to : %s" "$NFS_STORAGE_PATH"
