@@ -37,6 +37,11 @@ input_harbor_library_name() {
 		do
 			printf "Please input your library name >>> "
 			read -r DOCKER_HARBOR_LIBRARY
+			while [ "$DOCKER_HARBOR_LIBRARY" != "" ] 
+			do
+				printf "!! Docker harbor name can't be empty !! Please reinput >>>"
+				read -r DOCKER_HARBOR_LIBRARY
+			done
 			printf "Your library name is \"${DOCKER_HARBOR_LIBRARY}\", is that correct?"
 			printf "[yes/no] >>> "
 
