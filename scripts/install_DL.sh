@@ -37,7 +37,7 @@ input_harbor_library_name() {
 		do
 			printf "Please input your library name >>> "
 			read -r DOCKER_HARBOR_LIBRARY
-			while [ "$DOCKER_HARBOR_LIBRARY" != "" ] 
+			while [ "$DOCKER_HARBOR_LIBRARY" != "" ]
 			do
 				printf "!! Docker harbor name can't be empty !! Please reinput >>>"
 				read -r DOCKER_HARBOR_LIBRARY
@@ -729,7 +729,7 @@ grafana_alert:
   receiver: $alert_default_user_email
 
 kube-vip: ${kube_vip}
-
+endpoint_use_private_ip: true
 machines:
   ${master_hostname}:
     role: infrastructure
@@ -1520,7 +1520,7 @@ config_init() {
 
 	'
 	read -s -n1 -p "press any key to continue installing"
-	
+
 }
 
 config_init

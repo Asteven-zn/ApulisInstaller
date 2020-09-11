@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="23f1f6e0-3e71-4d75-9b36-43995b8c325a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/install_worknode.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/install_worknode.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +65,28 @@
       <option name="project" value="LOCAL" />
       <updated>1599746154512</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="fixhub">
+      <created>1599789789665</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1599789789666</updated>
+    </task>
+    <task id="LOCAL-00009" summary="fixhub">
+      <created>1599792575611</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1599792575611</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Merge branch 'master' of https://github.com/apulis/InstallationYTung&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh">
+      <created>1599809793934</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1599809793934</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -82,25 +102,26 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Merge branch 'dev_tcy' into czl&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh" />
     <MESSAGE value="fixhub" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixhub" />
+    <MESSAGE value="Merge branch 'master' of https://github.com/apulis/InstallationYTung&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/apulis/InstallationYTung&#10;&#10;# Conflicts:&#10;#&#9;scripts/install_DL.sh" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599746153443">
+    <state x="828" y="220" key="CommitChangelistDialog2" timestamp="1599809793006">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599746153443" />
+    <state x="828" y="220" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1599809793006" />
     <state x="357" y="221" width="1698" height="882" key="DiffContextDialog" timestamp="1599643048238">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="357" y="221" width="1698" height="882" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599643048238" />
-    <state x="175" y="85" width="2288" height="1155" key="MergeDialog" timestamp="1599642808464">
+    <state x="175" y="85" width="2288" height="1155" key="MergeDialog" timestamp="1599809788844">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="175" y="85" width="2288" height="1155" key="MergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599642808464" />
-    <state x="916" y="379" key="MultipleFileMergeDialog" timestamp="1599642808493">
+    <state x="175" y="85" width="2288" height="1155" key="MergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599809788844" />
+    <state x="916" y="379" key="MultipleFileMergeDialog" timestamp="1599809788858">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="916" y="379" key="MultipleFileMergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599642808493" />
+    <state x="916" y="379" key="MultipleFileMergeDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599809788858" />
     <state x="1005" y="475" width="617" height="490" key="find.popup" timestamp="1599638181522">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
