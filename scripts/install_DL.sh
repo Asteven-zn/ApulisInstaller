@@ -1393,8 +1393,7 @@ echo '    ./deploy.py --verbose --force mount'
 echo '    or '
 echo '    ./deploy.py execonall "python /opt/auto_share/auto_share.py"'
 echo '                                                                '
-echo 'Please type any char to proceed:>> '
-read -i anychar
+read -s -n1 -p "Please press any key to continue:>> "
 
 ./deploy.py --verbose kubernetes start mysql
 ./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
@@ -1490,8 +1489,7 @@ config_init() {
                       |___/
 
 	'
-	printf "press any key to continue installing"
-	read -r dump
+	read -s -n1 -p "press any key to continue installing"
 	
 }
 
