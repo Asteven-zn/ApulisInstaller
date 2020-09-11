@@ -339,8 +339,8 @@ install_harbor () {
     $HARBOR_INSTALL_DIR/harbor/install.sh
     sleep 10
     echo "Docker login harbor ..."
-    docker login ${HARBOR_REGISTRY}:8443 --username admin
-    echo "Check if docker login success ..."
+    docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
+   echo "Check if docker login success ..."
     echo "[y/n]>>>"
     read -r ans
     if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]; then
@@ -359,6 +359,10 @@ install_harbor () {
       },
       \"storage_limit\": -1
     }"
+}
+
+handle_docker_login_fail() {
+	
 }
 
 install_source_dir () {
