@@ -1459,11 +1459,11 @@ load_config_from_file() {
 	printf "\n * harbor storage path has been set to : %s" "$HARBOR_STORAGE_PATH"
 	printf "\n * docker library name has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
 	printf "\n * harbor admin password has been set to : %s" "$HARBOR_ADMIN_PASSWORD"
-	printf "\n * smtp server host has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
-	printf "\n * smtp server email has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
-	printf "\n * smtp server password has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
-	printf "\n * smtp default receiver has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
-	echo "################################"
+	printf "\n * smtp server host has been set to : %s" "$alert_host"
+	printf "\n * smtp server email has been set to : %s" "$alert_smtp_email_address"
+	printf "\n * smtp server password has been set to : %s" "$alert_smtp_email_password"
+	printf "\n * smtp default receiver has been set to : %s" "$alert_default_user_email"
+	echo "\n################################"
 	printf "Are these config correct? [ yes / (default)no ]"
 	read -r check_config_string
 	while [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] && [ "$check_config_string" != "" ] && \
