@@ -619,16 +619,6 @@ generate_config() {
       echo "[e.g. receiver@test.com]>>>"
       read -r alert_default_user_email
     done
-    echo "Setting HA-VIP:"
-    while :
-    do
-        read -p "Please enter your VIP >>> " kube_vip
-        read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
-
-        if [ "$kube_vip_check" = "y" ]; then
-             break
-        fi
-    done
 
 
     # write basic info
@@ -1460,7 +1450,67 @@ choose_start_from_which_step(){
 
 }
 
-source config/platform.cfg
+load_config_from_file() {
+	if [ ! -f "config/platform.cfg" ]; then
+		echo " !!!!! Can't find config file, please check there is a platform.cfg under ./config directory !!!!! "
+		echo " Please relaunch later while everything is ready. "
+		exit
+	fi
+	source config/platform.cfg
+	echo "################################"
+	echo " Please check if every config is correct"
+	printf "\n * nfs storage path has been set to : %s" "$NFS_STORAGE_PATH"
+	printf "\n * harbor storage path has been set to : %s" "$HARBOR_STORAGE_PATH"
+	printf "\n * docker library name has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
+	printf "\n * smtp server host has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
+	printf "\n * smtp server email has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
+	printf "\n * smtp server password has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
+	printf "\n * smtp default receiver has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
+	echo "################################"
+	printf "Are these config correct? [ yes / (default)no ]"
+	read -r check_config_string
+	while [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] && [ "$check_config_string" != "" ] && \
+			[ "$check_config_string" != "no" ]  && [ "$check_config_string" != "No" ]  && [ "$check_config_string" != "NO" ]
+	do
+		printf "Please answer 'yes' or 'no':'\\n"
+		printf ">>> "
+		read -r check_config_string
+	done
+	if [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] ; then
+		echo " OK. Please relaunch later while everything is ready. "
+		exit
+	fi
+}
+
+config_init() {
+	load_config_from_file
+	echo "Congratulation! config file loaded completed."
+    echo "Now setting HA-VIP:"
+    while :
+    do
+        read -p "Please enter your VIP >>> " kube_vip
+        read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
+
+        if [ "$kube_vip_check" = "y" ]; then
+             break
+        fi
+    done
+
+	echo '
+                    _
+ _ __ ___  __ _  __| |_   _
+| \__/ _ \/ _` |/ _` | | | |
+| | |  __/ (_| | (_| | |_| |
+|_|  \___|\__,_|\__,_|\__, |
+                      |___/
+
+	'
+	print "press any key to continue installing"
+	read -r dump
+	
+}
+
+config_init
 choose_start_from_which_step
 
 if [ $step -lt 2 ];
