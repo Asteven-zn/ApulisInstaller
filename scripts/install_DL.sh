@@ -1451,6 +1451,15 @@ load_config_from_file() {
 		exit
 	fi
 	source config/platform.cfg
+	for argument in NECCESSARY_ARGUMENT
+	do
+		eval value="$"$argument""
+		if [ ! $value ]
+		then
+			printf "\n!!!! Argument %s is not set in config file, Please add on and relauch !!!!\n" "$argument"
+			exit
+		fi
+	done
 	if [ "$NFS_STORAGE_PATH" == "/mnt/local"]
 	then
 		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset in your config file.!!!!\n"
