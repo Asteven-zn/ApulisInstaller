@@ -172,7 +172,7 @@ set_up_password_less () {
 }
 
 set_docker_config() {
-    if [ "${ARCH}" == "aarch64" ];then
+    if [ "${ARCH}" == "x86_64" ];then
       cat << EOF > /etc/docker/daemon.json
           {
           "default-runtime": "nvidia",
