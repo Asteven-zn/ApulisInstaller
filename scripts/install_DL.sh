@@ -337,10 +337,6 @@ install_harbor () {
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}
     tar -zxvf ${THIS_DIR}/harbor/harbor.tgz -C $HARBOR_INSTALL_DIR
-    echo "Please set harbor admin password, default is 'Harbor12345':"
-    echo "[e.g. Harbor12345]>>>"
-    read -r HARBOR_ADMIN_PASSWORD
-    echo "Please remember your admin password: $HARBOR_ADMIN_PASSWORD"
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
@@ -1462,6 +1458,7 @@ load_config_from_file() {
 	printf "\n * nfs storage path has been set to : %s" "$NFS_STORAGE_PATH"
 	printf "\n * harbor storage path has been set to : %s" "$HARBOR_STORAGE_PATH"
 	printf "\n * docker library name has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
+	printf "\n * harbor admin password has been set to : %s" "$HARBOR_ADMIN_PASSWORD"
 	printf "\n * smtp server host has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
 	printf "\n * smtp server email has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
 	printf "\n * smtp server password has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
