@@ -1310,13 +1310,46 @@ load_config_from_file() {
 		alert_smtp_email_address
 		alert_smtp_email_password
 		alert_default_user_email
+    kube_vip
 		)
-	if [ ! -f "config/platform.cfg" ]; then
+	if [ ! -f "config/install_config.json" ]; then
 		echo " !!!!! Can't find config file (platform.cfg), please check there is a platform.cfg under ./config directory !!!!! "
 		echo " Please relaunch later while everything is ready. "
 		exit
 	fi
-	source config/platform.cfg
+  cat << EOF > read_config.py
+  import json
+
+  with open('config/install_config.json') as f:
+      data = json.load(f)
+      with open('output.cfg','w') as fout:
+          for key, value in data.items():
+              if key != "worker_nodes" and key != "extra_master_nodes" and "_comment" not in key:
+                  fout.write(key)
+                  fout.write("=")
+                  fout.write(value + "\n")
+          fout.write("worker_nodes=(\n")
+          for worker_node_info in data["worker_nodes"]:
+              fout.write(worker_node_info["host"] + "\n")
+          fout.write(")\n")
+          fout.write("worker_nodes_gpuType=(\n")
+          for worker_node_info in data["worker_nodes"]:
+              fout.write(worker_node_info["gpuType"] + "\n")
+          fout.write(")\n")
+          fout.write("worker_nodes_vendor=(\n")
+          for worker_node_info in data["worker_nodes"]:
+              fout.write(worker_node_info["vendor"] + "\n")
+          fout.write(")\n")
+          fout.write("extra_master_nodes=(\n")
+          for extra_master_nodes_info in data["extra_master_nodes"]:
+              fout.write(extra_master_nodes_info["host"] + "\n")
+          fout.write(")\n")
+EOF
+
+  python3 read_config.py
+  source output.cfg
+  rm output.cfg
+  rm testoutpu.py
 	for argument in NECCESSARY_ARGUMENT
 	do
 		eval value="$"$argument""
@@ -1374,8 +1407,9 @@ load_config_from_file() {
 		echo "You have config follwing extra master nodes:"
 		for i in "${!extra_master_nodes[@]}"; 
 		do 
-			printf "%s. %s:" "$i" "${extra_master_nodes[$i]}"
-			printf "\-arch type: %s" "${extra_master_nodes_arch[$i]}"
+      node_number=$(( ${i} + 1 ))
+			printf "%s. %s:" "$node_number" "${extra_master_nodes[$i]}"
+			printf "* arch type: %s" "${extra_master_nodes_arch[$i]}"
 		done
 	fi
 	node_number=${#worker_nodes[@]}
@@ -1384,10 +1418,11 @@ load_config_from_file() {
 		echo "You have config follwing worker nodes:"
 		for i in "${!worker_nodes[@]}"; 
 		do 
-			printf "%s. %s:" "$i" "${worker_nodes[$i]}"
-			printf "\-arch type: %s" "${worker_nodes_arch[$i]}"
-			printf "\-gpu type: %s" "${worker_nodes_gpuType[$i]}"
-			printf "\-vendor: %s" "${worker_nodes_vendor[$i]}"
+      node_number=$(( ${i} + 1 ))
+			printf "%s. %s:" "$node_number" "${worker_nodes[$i]}"
+			printf "* arch type: %s" "${worker_nodes_arch[$i]}"
+			printf "* gpu type: %s" "${worker_nodes_gpuType[$i]}"
+			printf "* vendor: %s" "${worker_nodes_vendor[$i]}"
 		done
 	fi
 	printf "\nAre these configs correct? [ yes / (default)no ]"
@@ -1404,16 +1439,40 @@ load_config_from_file() {
 		exit
 	fi
 	node_number=1
-	for nodename in ${extra_master_nodes[@]}
-	do
+  worker_nodes_arch=()
+  extra_master_nodes_arch=()
+  for i in "${!extra_master_nodes[@]}";   
+  do   
+    nodename=${extra_master_nodes[$i]}
 		printf "Set up node %s ...\\n" "${nodename}"
 		setup_user_on_node $nodename
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+		if [ "${arch_result}" == "x86_64" ]
+		then
+			node_arch="amd64"
+		fi
+		if [ "${arch_result}" == "aarch64" ]
+		then
+			node_arch="arm64"
+		fi
+    extra_master_nodes_arch[${i}]=${node_arch}
 		echo OK
-	done
-	for nodename in ${worker_nodes[@]}
-	do
+  done  
+  for i in "${!worker_nodes[@]}";   
+  do   
+    nodename=${worker_nodes[$i]}
 		printf "Set up node %s ...\\n" "${nodename}"
 		setup_user_on_node $nodename
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+		if [ "${arch_result}" == "x86_64" ]
+		then
+			node_arch="amd64"
+		fi
+		if [ "${arch_result}" == "aarch64" ]
+		then
+			node_arch="arm64"
+		fi
+    worker_nodes_arch[${i}]=${node_arch}
 		echo OK
 	done
 
