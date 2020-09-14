@@ -828,7 +828,6 @@ init_environment() {
   EXTERNAL_NFS_MOUNT=0
   EXTERNAL_MOUNT_POINT=
   NFS_MOUNT_POINT="/mnt/nfs_share"
-  USE_MASTER_NODE_AS_WORKER=1
   HARBOR_REGISTRY=harbor.sigsus.cn
   CLUSTER_NAME="DLWorkspace"
 
