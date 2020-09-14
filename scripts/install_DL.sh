@@ -362,7 +362,21 @@ install_harbor () {
 }
 
 handle_docker_login_fail() {
-	
+	printf "!!!!docker auto login fail!!!!"
+	printf "continue process? [y/n(default)] >>>"
+	read -r ans
+	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && [ "$ans" != "y" ] && \
+			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ] && [ "$ans" != "n" ] 
+	do
+		printf "Please answer 'y' or 'n':'\\n"
+		printf ">>> "
+		read -r ans
+	done
+	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]; then
+		printf "OK. relauch when everything is reaady"
+		exit
+	fi
+	printf "Continue."
 }
 
 install_source_dir () {
@@ -801,11 +815,6 @@ EOF
 
 
 init_environment() {
-  ############################################################################
-  #
-  #   MAIN CODE START FROM HERE
-  #
-  ############################################################################
   DLWS_HOME="/home/dlwsadmin"
   NO_DOCKER=1
   NO_KUBECTL=1
@@ -1123,6 +1132,9 @@ do
 
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
+	
+	sshpass -p dlwsadmin ssh dlwsadmin@$masternode "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}" 
+    
 
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
@@ -1447,6 +1459,11 @@ config_init() {
 
 }
 
+############################################################################
+#
+#   MAIN CODE START FROM HERE
+#
+############################################################################
 config_init
 choose_start_from_which_step
 
