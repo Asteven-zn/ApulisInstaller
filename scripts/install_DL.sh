@@ -1378,7 +1378,7 @@ load_config_from_file() {
 		for i in "${!extra_master_nodes[@]}"; 
 		do 
 			printf "%s. %s:" "$i" "${extra_master_nodes[$i]}"
-			printf "- arch type: %s" "${extra_master_nodes_arch[$i]}"
+			printf "\-arch type: %s" "${extra_master_nodes_arch[$i]}"
 		done
 	fi
 	node_number=${#worker_nodes[@]}
@@ -1388,9 +1388,9 @@ load_config_from_file() {
 		for i in "${!worker_nodes[@]}"; 
 		do 
 			printf "%s. %s:" "$i" "${worker_nodes[$i]}"
-			printf "- arch type: %s" "${worker_nodes_arch[$i]}"
-			printf "- gpu type: %s" "${worker_nodes_gpuType[$i]}"
-			printf "- vendor: %s" "${worker_nodes_vendor[$i]}"
+			printf "\-arch type: %s" "${worker_nodes_arch[$i]}"
+			printf "\-gpu type: %s" "${worker_nodes_gpuType[$i]}"
+			printf "\-vendor: %s" "${worker_nodes_vendor[$i]}"
 		done
 	fi
 	printf "\nAre these configs correct? [ yes / (default)no ]"
