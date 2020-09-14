@@ -1366,14 +1366,14 @@ load_config_from_file() {
 	fi
 
 
-	if [ ${#extra_master_nodes[@]} -gt 0 && ${#worker_nodes[@]} -gt 0]
+	if [[ ${#extra_master_nodes[@]} -gt 0 && ${#worker_nodes[@]} -gt 0 ]]
 	then
 		echo "################################"
 		echo "now begin to deploy node account"
 		echo "################################"
 	fi
 	node_number=${#extra_master_nodes[@]}
-	if [ ${node_number} -gt 0]
+	if [ ${node_number} -gt 0 ]
 	then
 		echo "You have config follwing extra master nodes:"
 		for i in "${!extra_master_nodes[@]}"; 
@@ -1383,7 +1383,7 @@ load_config_from_file() {
 		done
 	fi
 	node_number=${#worker_nodes[@]}
-	if [ ${node_number} -gt 0]
+	if [ ${node_number} -gt 0 ]
 	then
 		echo "You have config follwing worker nodes:"
 		for i in "${!worker_nodes[@]}"; 
