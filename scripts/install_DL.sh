@@ -1280,9 +1280,6 @@ read -s -n1 -p "Please press any key to continue:>> "
 }
 
 choose_start_from_which_step(){
-  init_environment
-  protocol_agree
-  init_message_print
 
   echo '
     1. check_docker_installation
@@ -1365,7 +1362,7 @@ load_config_from_file() {
 	fi
 
 
-	if [[ ${#extra_master_nodes[@]} -gt 0 && ${#worker_nodes[@]} -gt 0 ]]
+	if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
 	then
 		echo "################################"
 		echo "now begin to deploy node account"
@@ -1463,7 +1460,10 @@ config_init() {
 #   MAIN CODE START FROM HERE
 #
 ############################################################################
+init_environment
+protocol_agree
 config_init
+init_message_print
 choose_start_from_which_step
 
 if [ $step -lt 2 ];
