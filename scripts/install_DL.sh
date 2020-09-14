@@ -1359,12 +1359,12 @@ EOF
 			exit
 		fi
 	done
-	if [ "$NFS_STORAGE_PATH" == "/mnt/local"]
+	if [ "$NFS_STORAGE_PATH" == "/mnt/local" ]
 	then
 		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset in your config file.!!!!\n"
 		exit
 	fi
-	if [ "$HARBOR_STORAGE_PATH" == "/data/harbor"]
+	if [ "$HARBOR_STORAGE_PATH" == "/data/harbor" ]
 	then
 		printf "\n!!!!Your harbor storage path has been set to /data/harbor, which is not allowed. Please reset in your config file.!!!!\n"
 		exit
