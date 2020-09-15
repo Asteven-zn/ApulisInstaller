@@ -339,8 +339,8 @@ install_harbor () {
     $HARBOR_INSTALL_DIR/harbor/install.sh
     sleep 10
     echo "Docker login harbor ..."
-    docker login ${HARBOR_REGISTRY}:8443 --username admin
-    echo "Check if docker login success ..."
+    docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
+   echo "Check if docker login success ..."
     echo "[y/n]>>>"
     read -r ans
     if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]; then
@@ -359,6 +359,24 @@ install_harbor () {
       },
       \"storage_limit\": -1
     }"
+}
+
+handle_docker_login_fail() {
+	printf "!!!!docker auto login fail!!!!"
+	printf "continue process? [y/n(default)] >>>"
+	read -r ans
+	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && [ "$ans" != "y" ] && \
+			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ] && [ "$ans" != "n" ] 
+	do
+		printf "Please answer 'y' or 'n':'\\n"
+		printf ">>> "
+		read -r ans
+	done
+	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]; then
+		printf "OK. relauch when everything is reaady"
+		exit
+	fi
+	printf "Continue."
 }
 
 install_source_dir () {
@@ -797,11 +815,6 @@ EOF
 
 
 init_environment() {
-  ############################################################################
-  #
-  #   MAIN CODE START FROM HERE
-  #
-  ############################################################################
   DLWS_HOME="/home/dlwsadmin"
   NO_DOCKER=1
   NO_KUBECTL=1
@@ -815,7 +828,6 @@ init_environment() {
   EXTERNAL_NFS_MOUNT=0
   EXTERNAL_MOUNT_POINT=
   NFS_MOUNT_POINT="/mnt/nfs_share"
-  USE_MASTER_NODE_AS_WORKER=1
   HARBOR_REGISTRY=harbor.sigsus.cn
   CLUSTER_NAME="DLWorkspace"
 
@@ -1050,167 +1062,6 @@ deploy_node(){
   echo "!"
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
-  printf "\\n"
-  printf "Do you want to use master as worknode? [yes|no] \\n"
-  printf "[no] >>> "
-
-    read -r ans
-    while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
-          [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-    do
-        printf "Please answer 'yes' or 'no':'\\n"
-        printf ">>> "
-        read -r ans
-    done
-
-  if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
-    then
-      printf "Not setup Up Master as a worknode.\\n"
-
-      USE_MASTER_NODE_AS_WORKER=0
-  fi
-
-
-declare -a worker_nodes=()
-declare -a worker_nodes_gpuType=()
-declare -a worker_nodes_vendor=()
-declare -a worker_nodes_arch=()
-declare -a extra_master_nodes=()
-declare -a extra_master_nodes_arch=()
-
-node_number=1
-
-echo '
-           _                 __  __           _
-  _____  _| |_ _ __ __ _    |  \/  | __ _ ___| |_ ___ _ __
- / _ \ \/ / __| |__/ _` |   | |\/| |/ _` / __| __/ _ \ |__|
-|  __/>  <| |_| | | (_| |   | |  | | (_| \__ \ ||  __/ |
- \___/_/\_\\__|_|  \__,_|___|_|  |_|\__,_|___/\__\___|_|
-                       |_____|
-'
-while true
-do
-    printf "\\n"
-    printf "Add More Master Nodes in the cluster"
-    printf "\\n"
-    printf "Please enter quit and finish setting hostname \\n"
-    printf "Or enter the hostname of node (Node Number: ${node_number} ). \\n"
-    printf ">>> "
-    read -r nodename
-    if [ $nodename = "quit" ]; then
-        printf "No more node is need to set up. \\n"
-        break;
-    else
-        printf "Set up node ...\\n"
-        setup_user_on_node $nodename
-        if [ $? = 0 ]; then
-			arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
-			if [ "${arch_result}" == "x86_64" ]
-			then
-				node_arch="amd64"
-			fi
-			if [ "${arch_result}" == "aarch64" ]
-			then
-				node_arch="arm64"
-			fi
-            extra_master_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
-			extra_master_nodes_arch[ $(( ${node_number} - 1 )) ]=${node_arch}
-            node_number=$(( ${node_number} + 1 ))
-        fi
-    fi
-done
-
-  node_number=1
-  echo '
-                      _
-  __      _____  _ __| | _____ _ __
-  \ \ /\ / / _ \| |__| |/ / _ \ |__|
-   \ V  V / (_) | |  |   <  __/ |
-    \_/\_/ \___/|_|  |_|\_\___|_|
-  '
-  while [ ${node_number} -le 5 ]
-  do
-      printf "\\n"
-      printf "Add More Worker Nodes in the cluster"
-      printf "\\n"
-      printf "Please enter quit and finish setting hostname \\n"
-      printf "Or enter the hostname of node (Node Number: ${node_number} ). \\n"
-      printf ">>> "
-      read -r nodename
-      if [ $nodename = "quit" ]; then
-          printf "No more node is need to set up. \\n"
-          break;
-      else
-          printf "Set up node ...\\n"
-          setup_user_on_node $nodename
-          if [ $? = 0 ]; then
-        printf "use default setting? \n type: gpu \n vendor: nvidia\n[(default)y/n]:"
-        read -r ans
-        while [ "$ans" != "yes" ] && [ "$ans" != "y" ] && [ "$ans" != "YES" ] && \
-          [ "$ans" != "no" ]  && [ "$ans" != "n" ]  && [ "$ans" != "NO" ] && [ "$ans" != "" ]
-        do
-          printf "Please answer 'yes' or 'no':'\\n"
-          printf ">>> "
-          read -r ans
-        done
-        if [ "$ans" == "yes" ] || [ "$ans" == "y" ] || [ "$ans" == "YES" ] || [ "$ans" == "" ]
-	    then
-          worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]="gpu"
-          worker_nodes_vendor[ $(( ${node_number} - 1 )) ]="nvidia"
-        else
-          ans="no"
-          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
-          do
-            printf "please input gpu type: "
-            read -r gpuType
-            printf "Your gpu type is \"${gpuType}\", is that correct?"
-            printf "[yes/no] >>> "
-
-            read -r ans
-            while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ] && \
-                [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-            do
-              printf "Please answer 'yes' or 'no':'\\n"
-              printf ">>> "
-              read -r ans
-            done
-          done
-          worker_nodes_gpuType[ $(( ${node_number} - 1 )) ]=${gpuType}
-          ans="no"
-          while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ]
-          do
-            printf "please input vendor: "
-            read -r vendor
-            printf "Your vendor is \"${vendor}\", is that correct?"
-            printf "[yes/no] >>> "
-
-            read -r ans
-            while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "y" ] && \
-                [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-            do
-              printf "Please answer 'yes' or 'no':'\\n"
-              printf ">>> "
-              read -r ans
-            done
-          done
-          worker_nodes_vendor[ $(( ${node_number} - 1 )) ]=${vendor}
-        fi
-              worker_nodes[ $(( ${node_number} - 1 )) ]=${nodename}
-        arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
-        if [ "${arch_result}" == "x86_64" ]
-        then
-          node_arch="amd64"
-        fi
-        if [ "${arch_result}" == "aarch64" ]
-        then
-          node_arch="arm64"
-        fi
-        worker_nodes_arch[ $(( ${node_number} - 1 )) ]=${node_arch}
-              node_number=$(( ${node_number} + 1 ))
-          fi
-      fi
-  done
-
   echo ${extra_master_nodes[@]}
   printf "Total number of extra master nodes: ${#extra_master_nodes[@]} \\n"
   echo ${worker_nodes[@]}
@@ -1225,6 +1076,43 @@ done
 
   runuser dlwsadmin -c "ssh-keyscan ${worker_nodes[@]} >> ~/.ssh/known_hosts"
 
+  ########### acquire node arch ###########################################
+  worker_nodes_arch=()
+  extra_master_nodes_arch=()
+  for i in "${!extra_master_nodes[@]}";   
+  do   
+    nodename=${extra_master_nodes[$i]}
+		printf "Set up node %s ...\\n" "${nodename}"
+		setup_user_on_node $nodename
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+		if [ "${arch_result}" == "x86_64" ]
+		then
+			node_arch="amd64"
+		fi
+		if [ "${arch_result}" == "aarch64" ]
+		then
+			node_arch="arm64"
+		fi
+    extra_master_nodes_arch[${i}]=${node_arch}
+		echo OK
+  done  
+  for i in "${!worker_nodes[@]}";   
+  do   
+    nodename=${worker_nodes[$i]}
+		printf "Set up node %s ...\\n" "${nodename}"
+		setup_user_on_node $nodename
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+		if [ "${arch_result}" == "x86_64" ]
+		then
+			node_arch="amd64"
+		fi
+		if [ "${arch_result}" == "aarch64" ]
+		then
+			node_arch="arm64"
+		fi
+    worker_nodes_arch[${i}]=${node_arch}
+		echo OK
+	done
   ############# Create NFS share ###################################################################
   if [ ${NO_NFS} = 0 ]; then
      create_nfs_share
@@ -1232,6 +1120,14 @@ done
 
 
 ############# Config extra master node ###################################################################
+echo '
+           _                 __  __           _
+  _____  _| |_ _ __ __ _    |  \/  | __ _ ___| |_ ___ _ __
+ / _ \ \/ / __| |__/ _` |   | |\/| |/ _` / __| __/ _ \ |__|
+|  __/>  <| |_| | | (_| |   | |  | | (_| \__ \ ||  __/ |
+ \___/_/\_\\__|_|  \__,_|___|_|  |_|\__,_|___/\__\___|_|
+                       |_____|
+'
 for masternode in "${extra_master_nodes[@]}"
 do
 	record_arch=${extra_master_nodes_arch[$i]}
@@ -1272,6 +1168,9 @@ do
 
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
+	
+	sshpass -p dlwsadmin ssh dlwsadmin@$masternode "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}" 
+    
 
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
@@ -1282,6 +1181,13 @@ do
 
 done
 ############# Config worker node ###################################################################
+  echo '
+                      _
+  __      _____  _ __| | _____ _ __
+  \ \ /\ / / _ \| |__| |/ / _ \ |__|
+   \ V  V / (_) | |  |   <  __/ |
+    \_/\_/ \___/|_|  |_|\_\___|_|
+  '
 for i in "${!worker_nodes[@]}"
 do
 	record_arch=${worker_nodes_arch[$i]}
@@ -1411,9 +1317,6 @@ read -s -n1 -p "Please press any key to continue:>> "
 }
 
 choose_start_from_which_step(){
-  init_environment
-  protocol_agree
-  init_message_print
 
   echo '
     1. check_docker_installation
@@ -1444,13 +1347,46 @@ load_config_from_file() {
 		alert_smtp_email_address
 		alert_smtp_email_password
 		alert_default_user_email
+    kube_vip
 		)
-	if [ ! -f "config/platform.cfg" ]; then
+	if [ ! -f "config/install_config.json" ]; then
 		echo " !!!!! Can't find config file (platform.cfg), please check there is a platform.cfg under ./config directory !!!!! "
 		echo " Please relaunch later while everything is ready. "
 		exit
 	fi
-	source config/platform.cfg
+  cat << EOF > read_config.py
+import json
+
+with open('config/install_config.json') as f:
+    data = json.load(f)
+    with open('output.cfg','w') as fout:
+        for key, value in data.items():
+            if key != "worker_nodes" and key != "extra_master_nodes" and "_comment" not in key:
+                fout.write(key)
+                fout.write("=")
+                fout.write(value + "\n")
+        fout.write("worker_nodes=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["host"] + "\n")
+        fout.write(")\n")
+        fout.write("worker_nodes_gpuType=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["gpuType"] + "\n")
+        fout.write(")\n")
+        fout.write("worker_nodes_vendor=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["vendor"] + "\n")
+        fout.write(")\n")
+        fout.write("extra_master_nodes=(\n")
+        for extra_master_nodes_info in data["extra_master_nodes"]:
+            fout.write(extra_master_nodes_info["host"] + "\n")
+        fout.write(")\n")
+EOF
+
+  python3 read_config.py
+  source output.cfg
+  rm output.cfg
+  rm read_config.py
 	for argument in NECCESSARY_ARGUMENT
 	do
 		eval value="$"$argument""
@@ -1460,12 +1396,12 @@ load_config_from_file() {
 			exit
 		fi
 	done
-	if [ "$NFS_STORAGE_PATH" == "/mnt/local"]
+	if [ "$NFS_STORAGE_PATH" == "/mnt/local" ]
 	then
 		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset in your config file.!!!!\n"
 		exit
 	fi
-	if [ "$HARBOR_STORAGE_PATH" == "/data/harbor"]
+	if [ "$HARBOR_STORAGE_PATH" == "/data/harbor" ]
 	then
 		printf "\n!!!!Your harbor storage path has been set to /data/harbor, which is not allowed. Please reset in your config file.!!!!\n"
 		exit
@@ -1494,21 +1430,76 @@ load_config_from_file() {
 		echo " OK. Please relaunch later while everything is ready. "
 		exit
 	fi
+
+
+	if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
+	then
+		echo "################################"
+		echo "now begin to deploy node account"
+		echo "################################"
+	fi
+	node_number=${#extra_master_nodes[@]}
+	if [ ${node_number} -gt 0 ]
+	then
+		echo "You have config follwing extra master nodes:"
+		for i in "${!extra_master_nodes[@]}"; 
+		do 
+      node_number=$(( ${i} + 1 ))
+			printf "%s. %s:" "$node_number" "${extra_master_nodes[$i]}"
+			printf "* arch type: %s" "${extra_master_nodes_arch[$i]}"
+		done
+	fi
+	node_number=${#worker_nodes[@]}
+	if [ ${node_number} -gt 0 ]
+	then
+		echo "You have config follwing worker nodes:"
+		for i in "${!worker_nodes[@]}"; 
+		do 
+      node_number=$(( ${i} + 1 ))
+			printf "%s. %s:" "$node_number" "${worker_nodes[$i]}"
+			printf "* arch type: %s" "${worker_nodes_arch[$i]}"
+			printf "* gpu type: %s" "${worker_nodes_gpuType[$i]}"
+			printf "* vendor: %s" "${worker_nodes_vendor[$i]}"
+		done
+	fi
+	printf "\nAre these configs correct? [ yes / (default)no ]"
+	read -r check_node_config
+	while [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] && [ "$check_node_config" != "" ] && \
+			[ "$check_node_config" != "no" ]  && [ "$check_node_config" != "No" ]  && [ "$check_node_config" != "NO" ]
+	do
+		printf "Please answer 'yes' or 'no':'\\n"
+		printf ">>> "
+		read -r check_node_config
+	done
+	if [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] ; then
+		echo " OK. Please relaunch later while everything is ready. "
+		exit
+	fi
+
 }
 
 config_init() {
 	load_config_from_file
 	echo "Congratulation! config file loaded completed."
-    echo "Now setting HA-VIP:"
-    while :
-    do
-        read -p "Please enter your VIP >>> " kube_vip
-        read -p "[$kube_vip] is right? y/n >>> " kube_vip_check
+	echo "Now complete reamain setting"
+	printf "Do you want to use master as worknode? [yes|no] \\n"
+	printf "[no] >>> "
 
-        if [ "$kube_vip_check" = "y" ]; then
-             break
-        fi
-    done
+	  read -r ans
+	  while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+	  	  [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+	  do
+	  	printf "Please answer 'yes' or 'no':'\\n"
+	  	printf ">>> "
+	  	read -r ans
+	  done
+
+	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
+	  then
+	    printf "Not setup Up Master as a worknode.\\n"
+
+	    USE_MASTER_NODE_AS_WORKER=0
+	fi
 
 	echo '
                     _
@@ -1523,7 +1514,15 @@ config_init() {
 
 }
 
+############################################################################
+#
+#   MAIN CODE START FROM HERE
+#
+############################################################################
+init_environment
+protocol_agree
 config_init
+init_message_print
 choose_start_from_which_step
 
 if [ $step -lt 2 ];
