@@ -1079,40 +1079,6 @@ deploy_node(){
   ########### acquire node arch ###########################################
   worker_nodes_arch=()
   extra_master_nodes_arch=()
-  for i in "${!extra_master_nodes[@]}";   
-  do   
-    nodename=${extra_master_nodes[$i]}
-		printf "Set up node %s ...\\n" "${nodename}"
-		setup_user_on_node $nodename
-		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
-		if [ "${arch_result}" == "x86_64" ]
-		then
-			node_arch="amd64"
-		fi
-		if [ "${arch_result}" == "aarch64" ]
-		then
-			node_arch="arm64"
-		fi
-    extra_master_nodes_arch[${i}]=${node_arch}
-		echo OK
-  done  
-  for i in "${!worker_nodes[@]}";   
-  do   
-    nodename=${worker_nodes[$i]}
-		printf "Set up node %s ...\\n" "${nodename}"
-		setup_user_on_node $nodename
-		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
-		if [ "${arch_result}" == "x86_64" ]
-		then
-			node_arch="amd64"
-		fi
-		if [ "${arch_result}" == "aarch64" ]
-		then
-			node_arch="arm64"
-		fi
-    worker_nodes_arch[${i}]=${node_arch}
-		echo OK
-	done
   ############# Create NFS share ###################################################################
   if [ ${NO_NFS} = 0 ]; then
      create_nfs_share
@@ -1166,6 +1132,17 @@ do
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
 
+    ######### acquire node arch ################################
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${masternode} "arch"`
+		if [ "${arch_result}" == "x86_64" ]
+		then
+			node_arch="amd64"
+		fi
+		if [ "${arch_result}" == "aarch64" ]
+		then
+			node_arch="arm64"
+		fi
+    extra_master_nodes_arch[${i}]=${node_arch}
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
 	
@@ -1221,6 +1198,17 @@ do
 
     sshpass -p dlwsadmin scp python2.7/${node_arch}/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_PYTHON_DIR}
 
+    ######### acquire node arch ################################
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+		if [ "${arch_result}" == "x86_64" ]
+		then
+			node_arch="amd64"
+		fi
+		if [ "${arch_result}" == "aarch64" ]
+		then
+			node_arch="arm64"
+		fi
+    worker_nodes_arch[${i}]=${node_arch}
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
 
@@ -1475,6 +1463,20 @@ EOF
 		echo " OK. Please relaunch later while everything is ready. "
 		exit
 	fi
+  for i in "${!extra_master_nodes[@]}";   
+  do   
+    nodename=${extra_master_nodes[$i]}
+		printf "Set up node %s ...\\n" "${nodename}"
+		setup_user_on_node $nodename
+		echo OK
+  done  
+  for i in "${!worker_nodes[@]}";   
+  do   
+    nodename=${worker_nodes[$i]}
+		printf "Set up node %s ...\\n" "${nodename}"
+		setup_user_on_node $nodename
+		echo OK
+	done
 
 }
 
