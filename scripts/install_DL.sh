@@ -1318,32 +1318,32 @@ load_config_from_file() {
 		exit
 	fi
   cat << EOF > read_config.py
-  import json
+import json
 
-  with open('config/install_config.json') as f:
-      data = json.load(f)
-      with open('output.cfg','w') as fout:
-          for key, value in data.items():
-              if key != "worker_nodes" and key != "extra_master_nodes" and "_comment" not in key:
-                  fout.write(key)
-                  fout.write("=")
-                  fout.write(value + "\n")
-          fout.write("worker_nodes=(\n")
-          for worker_node_info in data["worker_nodes"]:
-              fout.write(worker_node_info["host"] + "\n")
-          fout.write(")\n")
-          fout.write("worker_nodes_gpuType=(\n")
-          for worker_node_info in data["worker_nodes"]:
-              fout.write(worker_node_info["gpuType"] + "\n")
-          fout.write(")\n")
-          fout.write("worker_nodes_vendor=(\n")
-          for worker_node_info in data["worker_nodes"]:
-              fout.write(worker_node_info["vendor"] + "\n")
-          fout.write(")\n")
-          fout.write("extra_master_nodes=(\n")
-          for extra_master_nodes_info in data["extra_master_nodes"]:
-              fout.write(extra_master_nodes_info["host"] + "\n")
-          fout.write(")\n")
+with open('config/install_config.json') as f:
+    data = json.load(f)
+    with open('output.cfg','w') as fout:
+        for key, value in data.items():
+            if key != "worker_nodes" and key != "extra_master_nodes" and "_comment" not in key:
+                fout.write(key)
+                fout.write("=")
+                fout.write(value + "\n")
+        fout.write("worker_nodes=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["host"] + "\n")
+        fout.write(")\n")
+        fout.write("worker_nodes_gpuType=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["gpuType"] + "\n")
+        fout.write(")\n")
+        fout.write("worker_nodes_vendor=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["vendor"] + "\n")
+        fout.write(")\n")
+        fout.write("extra_master_nodes=(\n")
+        for extra_master_nodes_info in data["extra_master_nodes"]:
+            fout.write(extra_master_nodes_info["host"] + "\n")
+        fout.write(")\n")
 EOF
 
   python3 read_config.py
