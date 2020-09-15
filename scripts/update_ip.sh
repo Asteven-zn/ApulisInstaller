@@ -17,7 +17,16 @@ read -r dump
 # reset cluster
 yes | kubeadm reset
 # reset config.yaml
+if [ ! -f "config/install_config.json" ]
+then
+    printf "!!! Can't find config json file !!!\n" ${hostname}
+    printf " Please make sure everything is ready and relaunch again. \n"
+    exit
+fi
+new-kube-vip=`cat config/install_config.json.template | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
 cd ${DLWS_CONFIG_DIR}
+sed "s|kube-vip:.*|kube-vip: ${new-kube-vip}|g" -i config.yaml
+
 master_hostname=`hostname`
 for hostname in `cat config.yaml | grep " role: infrastructure" -B 1 |  grep -v "infrastructure" | sed "s/\://" | grep -v "^--"`
 do
@@ -33,17 +42,6 @@ do
     origin_config=`grep "${hostname}:" config.yaml -A 2 | grep "private-ip:" `
     sed "s/${origin_config}/${new_config}/g" -i config.yaml
 done
-
-cd -
-if [ ! -f "config/install_config.json" ]
-then
-    printf "!!! Can't find config json file !!!\n" ${hostname}
-    printf " Please make sure everything is ready and relaunch again. \n"
-    exit
-fi
-new-kube-vip=`cat config/install_config.json.template | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
-cd ${DLWS_CONFIG_DIR}
-sed "s|kube-vip:.*|kube-vip: ${new-kube-vip}|g" -i config.yaml
 
 # deploy cluster again
 ./deploy.py --verbose kubeadm init ha
