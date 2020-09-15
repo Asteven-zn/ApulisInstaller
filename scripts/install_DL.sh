@@ -1433,8 +1433,7 @@ EOF
 		for i in "${!extra_master_nodes[@]}"; 
 		do 
       node_number=$(( ${i} + 1 ))
-			printf "%s. %s:" "$node_number" "${extra_master_nodes[$i]}"
-			printf "* arch type: %s" "${extra_master_nodes_arch[$i]}"
+			printf "%s. %s\n" "$node_number" "${extra_master_nodes[$i]}"
 		done
 	fi
 	node_number=${#worker_nodes[@]}
@@ -1444,10 +1443,9 @@ EOF
 		for i in "${!worker_nodes[@]}"; 
 		do 
       node_number=$(( ${i} + 1 ))
-			printf "%s. %s:" "$node_number" "${worker_nodes[$i]}"
-			printf "* arch type: %s" "${worker_nodes_arch[$i]}"
-			printf "* gpu type: %s" "${worker_nodes_gpuType[$i]}"
-			printf "* vendor: %s" "${worker_nodes_vendor[$i]}"
+			printf "%s. %s:\n" "$node_number" "${worker_nodes[$i]}"
+			printf "* gpu type: %s\n" "${worker_nodes_gpuType[$i]}"
+			printf "* vendor: %s\n" "${worker_nodes_vendor[$i]}"
 		done
 	fi
 	printf "\nAre these configs correct? [ yes / (default)no ]"
