@@ -1076,6 +1076,43 @@ deploy_node(){
 
   runuser dlwsadmin -c "ssh-keyscan ${worker_nodes[@]} >> ~/.ssh/known_hosts"
 
+  ########### acquire node arch ###########################################
+  worker_nodes_arch=()
+  extra_master_nodes_arch=()
+  for i in "${!extra_master_nodes[@]}";   
+  do   
+    nodename=${extra_master_nodes[$i]}
+		printf "Set up node %s ...\\n" "${nodename}"
+		setup_user_on_node $nodename
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+		if [ "${arch_result}" == "x86_64" ]
+		then
+			node_arch="amd64"
+		fi
+		if [ "${arch_result}" == "aarch64" ]
+		then
+			node_arch="arm64"
+		fi
+    extra_master_nodes_arch[${i}]=${node_arch}
+		echo OK
+  done  
+  for i in "${!worker_nodes[@]}";   
+  do   
+    nodename=${worker_nodes[$i]}
+		printf "Set up node %s ...\\n" "${nodename}"
+		setup_user_on_node $nodename
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+		if [ "${arch_result}" == "x86_64" ]
+		then
+			node_arch="amd64"
+		fi
+		if [ "${arch_result}" == "aarch64" ]
+		then
+			node_arch="arm64"
+		fi
+    worker_nodes_arch[${i}]=${node_arch}
+		echo OK
+	done
   ############# Create NFS share ###################################################################
   if [ ${NO_NFS} = 0 ]; then
      create_nfs_share
@@ -1349,7 +1386,7 @@ EOF
   python3 read_config.py
   source output.cfg
   rm output.cfg
-  rm testoutpu.py
+  rm read_config.py
 	for argument in NECCESSARY_ARGUMENT
 	do
 		eval value="$"$argument""
@@ -1438,43 +1475,6 @@ EOF
 		echo " OK. Please relaunch later while everything is ready. "
 		exit
 	fi
-	node_number=1
-  worker_nodes_arch=()
-  extra_master_nodes_arch=()
-  for i in "${!extra_master_nodes[@]}";   
-  do   
-    nodename=${extra_master_nodes[$i]}
-		printf "Set up node %s ...\\n" "${nodename}"
-		setup_user_on_node $nodename
-		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
-		if [ "${arch_result}" == "x86_64" ]
-		then
-			node_arch="amd64"
-		fi
-		if [ "${arch_result}" == "aarch64" ]
-		then
-			node_arch="arm64"
-		fi
-    extra_master_nodes_arch[${i}]=${node_arch}
-		echo OK
-  done  
-  for i in "${!worker_nodes[@]}";   
-  do   
-    nodename=${worker_nodes[$i]}
-		printf "Set up node %s ...\\n" "${nodename}"
-		setup_user_on_node $nodename
-		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
-		if [ "${arch_result}" == "x86_64" ]
-		then
-			node_arch="amd64"
-		fi
-		if [ "${arch_result}" == "aarch64" ]
-		then
-			node_arch="arm64"
-		fi
-    worker_nodes_arch[${i}]=${node_arch}
-		echo OK
-	done
 
 }
 
