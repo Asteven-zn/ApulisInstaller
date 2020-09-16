@@ -1375,6 +1375,7 @@ EOF
   source output.cfg
   rm output.cfg
   rm read_config.py
+  # verify config 
 	for argument in NECCESSARY_ARGUMENT
 	do
 		eval value="$"$argument""
@@ -1394,6 +1395,7 @@ EOF
 		printf "\n!!!!Your harbor storage path has been set to /data/harbor, which is not allowed. Please reset in your config file.!!!!\n"
 		exit
 	fi
+  # check config 
 	echo "################################"
 	echo " Please check if every config is correct"
 	printf "\n * nfs storage path has been set to : %s" "$NFS_STORAGE_PATH"
@@ -1475,6 +1477,12 @@ EOF
 		setup_user_on_node $nodename
 		echo OK
 	done
+	if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
+	then
+		echo "################################"
+		echo "deploy node complete"
+		echo "################################"
+	fi
 
 }
 
