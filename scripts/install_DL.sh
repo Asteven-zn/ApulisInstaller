@@ -252,6 +252,7 @@ install_necessary_packages () {
 
 copy_bin_file (){
   DIS_DIR="/usr/bin/"
+  IS_EXIST=0
   for entry in ${THIS_DIR}/bin/${ARCH}/*
   do
       echo "$entry"
@@ -1265,6 +1266,7 @@ fi
 
 }
 deploy_services(){
+cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap
 ./deploy.py --verbose kubernetes start nvidia-device-plugin
 ./deploy.py --verbose kubernetes start  a910-device-plugin
 
@@ -1621,14 +1623,12 @@ then
   set_up_k8s_cluster
 fi
 if [ $step -lt 13 ];
+then
   if [ -z $DOCKER_HARBOR_LIBRARY ];then
     input_harbor_library_name
   fi
-then
   deploy_node
-
 fi
-
 if [ $step -lt 14 ];
 then
   deploy_services
