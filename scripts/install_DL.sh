@@ -1188,6 +1188,18 @@ done
   '
 for i in "${!worker_nodes[@]}"
 do
+    ######### acquire node arch ################################
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+		if [ "${arch_result}" == "x86_64" ]
+		then
+			node_arch="amd64"
+		fi
+		if [ "${arch_result}" == "aarch64" ]
+		then
+			node_arch="arm64"
+		fi
+    worker_nodes_arch[${i}]=${node_arch}
+
 	record_arch=${worker_nodes_arch[$i]}
 	if [ "${record_arch}" == "amd64" ]
 	then
@@ -1219,17 +1231,7 @@ do
 
     sshpass -p dlwsadmin scp python2.7/${node_arch}/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_PYTHON_DIR}
 
-    ######### acquire node arch ################################
-		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
-		if [ "${arch_result}" == "x86_64" ]
-		then
-			node_arch="amd64"
-		fi
-		if [ "${arch_result}" == "aarch64" ]
-		then
-			node_arch="arm64"
-		fi
-    worker_nodes_arch[${i}]=${node_arch}
+
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_worknode.sh | tee /tmp/installation.log.$TIMESTAMP"
 
