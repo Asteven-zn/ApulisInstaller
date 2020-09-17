@@ -1262,6 +1262,9 @@ fi
 ./deploy.py --verbose -y kubernetes labelservice
 ./deploy.py --verbose -y labelworker
 
+
+}
+deploy_services(){
 ./deploy.py --verbose kubernetes start nvidia-device-plugin
 ./deploy.py --verbose kubernetes start  a910-device-plugin
 
@@ -1321,6 +1324,7 @@ choose_start_from_which_step(){
     10. prepare_k8s_images
     11. set_up_k8s_cluster
     12. deploy_node
+    13. deploy_services
   '
   echo "Choose a step to start from: >>"
   read -r step
@@ -1624,3 +1628,9 @@ then
   deploy_node
 
 fi
+
+if [ $step -lt 14 ];
+then
+  deploy_services
+fi
+
