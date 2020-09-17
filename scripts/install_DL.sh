@@ -361,6 +361,25 @@ install_harbor () {
       },
       \"storage_limit\": -1
     }"
+
+
+    #### auto start at booting
+    cat << EOF > /lib/systemd/system/harbor.service
+[Unit]
+Description=Harbor
+After=docker.service systemd-networkd.service systemd-resolved.service
+Requires=docker.service
+Documentation=http://github.com/vmware/harbor
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/bin/docker-compose -f  /opt/harbor/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /opt/harbor/docker-compose.yml down
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemctl enable harbor
 }
 
 handle_docker_login_fail() {
