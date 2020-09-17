@@ -194,10 +194,15 @@ setImageList() {
 
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/bash:5"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/directxman12/k8s-prometheus-adapter:v0.7.0"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/emacski/tensorflow-serving:1.15.0"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/emacski/tensorflow-serving:2.2.0"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/tensorflow/serving:2.2.0-gpu"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/tensorflow/serving:1.15.0-gpu"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/directxman12/k8s-prometheus-adapter:v0.7.0-arm64"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow-serving:1.15.0"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow-serving:1.15.0-arm64"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow-serving:1.15.0-gpu"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow-serving:2.2.0"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow-serving:2.2.0-arm64"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow-serving:2.2.0-gpu"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/kfserving-pytorchserver:1.5.1"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/kfserving-pytorchserver:1.5.1-gpu"
 
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/golang:1.13.7-alpine3.11"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/jessestuart/prometheus-operator:v0.38.0"
@@ -237,6 +242,17 @@ setImageList() {
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/job-exporter:1.9"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/nginx:1.9"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/watchdog:1.9"
+
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/istio-proxy:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/istio-pilot:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-webhook:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-queue:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-controller:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-activator:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-autoscaler:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/kfserving-manager:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/kfserving-storage-initializer:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/kfserving-kube-rbac-proxy:latest"
   )
 
 }
