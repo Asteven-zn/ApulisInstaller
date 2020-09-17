@@ -256,7 +256,8 @@ copy_bin_file (){
   for entry in ${THIS_DIR}/bin/${ARCH}/*
   do
       echo "$entry"
-      if [ -f $$entry ];then
+      DIR_FILE="$DIS_DIR$(basename $entry)"
+      if [ -f $DIR_FILE ];then
         IS_EXIST=1
       fi
 
