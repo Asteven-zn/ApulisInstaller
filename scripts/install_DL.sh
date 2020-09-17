@@ -252,10 +252,12 @@ install_necessary_packages () {
 
 copy_bin_file (){
   DIS_DIR="/usr/bin/"
+  IS_EXIST=0
   for entry in ${THIS_DIR}/bin/${ARCH}/*
   do
       echo "$entry"
-      if [ -f $$entry ];then
+      DIR_FILE="$DIS_DIR$(basename $entry)"
+      if [ -f $DIR_FILE ];then
         IS_EXIST=1
       fi
 
@@ -1281,6 +1283,10 @@ fi
 ./deploy.py --verbose -y kubernetes labelservice
 ./deploy.py --verbose -y labelworker
 
+
+}
+deploy_services(){
+cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap
 ./deploy.py --verbose kubernetes start nvidia-device-plugin
 ./deploy.py --verbose kubernetes start  a910-device-plugin
 
@@ -1313,6 +1319,8 @@ read -s -n1 -p "Please press any key to continue:>> "
 ./deploy.py --background --sudo runscriptonall scripts/npu/npu_info_gen.py
 ./deploy.py --verbose kubernetes start monitor
 
+./deploy.py kubernetes start istio knative kfserving
+
 ./deploy.py --verbose kubernetes start webui3
 ./deploy.py kubernetes start custom-user-dashboard
 ./deploy.py kubernetes start image-label
@@ -1338,6 +1346,7 @@ choose_start_from_which_step(){
     10. prepare_k8s_images
     11. set_up_k8s_cluster
     12. deploy_node
+    13. deploy_services
   '
   echo "Choose a step to start from: >>"
   read -r step
@@ -1634,10 +1643,14 @@ then
   set_up_k8s_cluster
 fi
 if [ $step -lt 13 ];
+then
   if [ -z $DOCKER_HARBOR_LIBRARY ];then
     input_harbor_library_name
   fi
-then
   deploy_node
-
 fi
+if [ $step -lt 14 ];
+then
+  deploy_services
+fi
+
