@@ -1294,6 +1294,8 @@ read -s -n1 -p "Please press any key to continue:>> "
 ./deploy.py --background --sudo runscriptonall scripts/npu/npu_info_gen.py
 ./deploy.py --verbose kubernetes start monitor
 
+./deploy.py kubernetes start istio knative kfserving
+
 ./deploy.py --verbose kubernetes start webui3
 ./deploy.py kubernetes start custom-user-dashboard
 ./deploy.py kubernetes start image-label
