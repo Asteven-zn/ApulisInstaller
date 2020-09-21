@@ -1225,7 +1225,7 @@ do
 
     sshpass -p dlwsadmin scp apt/${node_arch}/*.deb dlwsadmin@${worker_nodes[$i]}:${REMOTE_APT_DIR}
 
-    sshpass -p dlwsadmin scp install_worknode.sh dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}
+    sshpass -p dlwsadmin scp install_*.sh dlwsadmin@${worker_nodes[$i]}:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp -r config/* dlwsadmin@${worker_nodes[$i]}:${REMOTE_CONFIG_DIR}
 
