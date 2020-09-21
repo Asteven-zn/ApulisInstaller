@@ -30,7 +30,7 @@ then
     printf " Please make sure everything is ready and relaunch again. \n"
     exit
 fi
-new_kube_vip=`cat config/install_config.json.template | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
+new_kube_vip=`cat config/install_config.json | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
 cd ${DLWS_CONFIG_DIR}
 sed "s|kube-vip:.*|kube-vip: ${new_kube_vip}|g" -i config.yaml
 
