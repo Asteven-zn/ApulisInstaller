@@ -44,6 +44,6 @@ do
 done
 
 # deploy cluster again
-. ./script.sh --source-only
+. ./install_DL.sh --source-only
 init_cluster
 deploy_services

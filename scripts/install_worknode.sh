@@ -17,7 +17,7 @@
 set -x
 
 ############### load function from install_DL.sh
-. ./script.sh --source-only
+. ./install_DL.sh --source-only
 
 
 usage() {
