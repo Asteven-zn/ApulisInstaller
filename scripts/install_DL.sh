@@ -1074,7 +1074,7 @@ init_message_print() {
 
 
 
-deploy_node(){
+setup_node_environment(){
   #################### Now, deploy node #########################################################################
 
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -1189,7 +1189,7 @@ done
 for i in "${!worker_nodes[@]}"
 do
     ######### acquire node arch ################################
-		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${nodename} "arch"`
+		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "arch"`
 		if [ "${arch_result}" == "x86_64" ]
 		then
 			node_arch="amd64"
@@ -1247,6 +1247,13 @@ do
 
 done
 
+###### start building cluster ####################################################################
+generate_config
+
+}
+
+init_cluster_config(){
+
 ###### apply weave network ###################################################################
 # kubectl apply -f config/weave-net.yaml # don't apply on command, deploy.py will handle the job
 
@@ -1254,10 +1261,6 @@ source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
 ###### deploy with deploy.py ###################################################################
 cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap # enter into deploy.py directory
-
-
-###### start building cluster ####################################################################
-generate_config
 
 ./deploy.py --verbose -y build
 
@@ -1273,7 +1276,11 @@ cd ../..
 mkdir -p ./deploy/etc
 cp /etc/hosts ./deploy/etc/hosts
 ./deploy.py --verbose copytoall ./deploy/etc/hosts  /etc/hosts
+}
 
+
+init_cluster(){
+cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap
 ./deploy.py --verbose kubeadm init ha
 ./deploy.py --verbose copytoall ./deploy/sshkey/admin.conf /root/.kube/config
 
@@ -1284,9 +1291,9 @@ fi
 ./deploy.py --verbose kubeadm join ha
 ./deploy.py --verbose -y kubernetes labelservice
 ./deploy.py --verbose -y labelworker
-
-
 }
+
+
 deploy_services(){
 cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap
 ./deploy.py --verbose kubernetes start nvidia-device-plugin
@@ -1347,8 +1354,10 @@ choose_start_from_which_step(){
     9. push_docker_images_to_harbor
     10. prepare_k8s_images
     11. set_up_k8s_cluster
-    12. deploy_node
-    13. deploy_services
+    12. setup_node_environment
+    13. init_cluster_config
+    14. init_cluster
+    15. deploy_services
   '
   echo "Choose a step to start from: >>"
   read -r step
@@ -1557,6 +1566,9 @@ config_init() {
 #   MAIN CODE START FROM HERE
 #
 ############################################################################
+
+main(){
+
 init_environment
 protocol_agree
 config_init
@@ -1644,15 +1656,38 @@ then
   fi
   set_up_k8s_cluster
 fi
+
 if [ $step -lt 13 ];
 then
   if [ -z $DOCKER_HARBOR_LIBRARY ];then
     input_harbor_library_name
   fi
-  deploy_node
+  setup_node_environment
 fi
+
 if [ $step -lt 14 ];
 then
+  init_cluster_config
+fi
+
+if [ $step -lt 15 ];
+then
+  init_cluster
+fi
+
+if [ $step -lt 16 ];
+then
   deploy_services
+fi
+
+}
+
+
+
+#######################################################
+#           script exec startpoint
+######################################################
+if [ "${1}" != "--source-only" ]; then
+  main "${@}"
 fi
 

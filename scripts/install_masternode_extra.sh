@@ -16,22 +16,13 @@
 
 set -x
 
+############### load function from install_DL.sh
+. ./script.sh --source-only
+
 usage() {
     cat <<EOF
 Usage: $0 [options] [command]
 EOF
-}
-
-check_docker_installation() {
-    ER=$(which docker)
-    if [ x"${ER}" = "x" ]; then
-	    printf "Docker Not Found. Will install later...\n"
-	    NO_DOCKER=1
-    else
-	    printf "Docker Found at ${ER} \n"
-	    NO_DOCKER=0
-    fi
-
 }
 
 config_docker_harbor_certs() {
@@ -43,110 +34,7 @@ config_docker_harbor_certs() {
   #docker login $HARBOR_REGISTRY --username admin
 }
 
-prepare_k8s_images() {
-  harbor_prefix=${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/
-  k8s_url=k8s.gcr.io
-  k8s_version=v1.18.2
-  if [ "${ARCH}" == "aarch64" ]
-  then
-	  arch_tail="-arm64"
-  else
-	  arch_tail=""
-  fi
-  k8s_images=(
-    $k8s_url/kube-proxy:$k8s_version
-    $k8s_url/kube-apiserver:$k8s_version
-    $k8s_url/kube-controller-manager:$k8s_version
-    $k8s_url/kube-scheduler:$k8s_version
-    $k8s_url/pause:3.2
-    $k8s_url/etcd:3.4.3-0
-    $k8s_url/coredns:1.6.7
-    plndr/kube-vip:0.1.7
-  )
-  for image in ${k8s_images[@]}
-  do
-    docker pull $harbor_prefix$image${arch_tail}
-    docker tag $harbor_prefix$image${arch_tail} $image
-  done
-}
-
-check_k8s_installation() {
-    ER=$(which kubectl)
-    if [ x"${ER}" = "x" ]; then
-	    printf "kubectl Not Found. Will install later...\n"
-	    NO_KUBECTL=1
-    else
-	    printf "kubectl Found at ${ER} \n"
-	    NO_KUBECTL=0
-    fi
-
-    ER=$(which kubeadm)
-    if [ x"${ER}" = "x" ]; then
-	    printf "kubeadm Not Found. Will install later...\n"
-	    NO_KUBEADM=1
-    else
-	    printf "kubeadm Found at ${ER} \n"
-	    NO_KUBEADM=0
-    fi
-
-}
-
-
-install_necessary_packages () {
-
-    TEMP_DIR="/tmp/install_ytung_apt".${TIMESTAMP}
-    mkdir -p ${TEMP_DIR}
-
-    cp ${THIS_DIR}/apt/${ARCH}/libseccomp2_2.4.3-1ubuntu3.18.04.3_${ARCHTYPE}.deb ${TEMP_DIR}/
-
-    for entry in apt/${ARCH}/*.deb
-    do
-        echo "$entry"
-        filename=$(basename $entry)
-        IFS='_' read -ra package <<< "$filename"
-
-        INFO=$(dpkg -l ${package[0]} )
-        RETURN_CODE=$?
-
-        if [ ${RETURN_CODE} = 1 ]; then
-	       echo "Looks like ${package[0]} has not been installed. Let's Install ...";
-	       cp ${entry} $TEMP_DIR
-        else
-            INFO2=$(echo ${INFO##*$'\n'})
-        	IFS=' ' read -ra detail <<< "$INFO2"
-	        if [ ${detail[0]} = "ii" ] ; then
-	            echo "Looks like ${package[0]} has been installed. Skip ...";
-	        else
-	            echo "Looks like ${package[0]} has not been installed yet. Let's Install ...";
-	            cp $entry $TEMP_DIR
-	        fi
-        fi
-    done
-
-    dpkg -i ${TEMP_DIR}/libseccomp2_2.4.3-1ubuntu3.18.04.3_${ARCHTYPE}.deb # fix 18.04.1 docker deps
-    dpkg -i ${TEMP_DIR}/*
-
-}
-
-copy_bin_file (){
-  DIS_DIR="/usr/bin/"
-  for entry in ${THIS_DIR}/bin/${ARCH}/*
-  do
-      echo "$entry"
-      if [ -f $$entry ];then
-        IS_EXIST=1
-      fi
-
-      if [ ${IS_EXIST} = 0 ]; then
-        echo "Looks like $entry has not been copy. Let's copy ...";
-        cp ${entry} $DIS_DIR
-      else
-        echo "Looks like ${package[0]} has been copy. Skip ...";
-      fi
-  done
-}
-
-install_source_dir () {
+install_source_dir_in_extra_master () {
 
     if [ ! -f "${INSTALLED_DIR}" ]; then
 	    mkdir -p ${INSTALLED_DIR}
@@ -165,61 +53,10 @@ install_source_dir () {
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 }
 
-
-set_up_password_less () {
-    ID_DIR="${DLWS_HOME}/.ssh"
-
-    echo "Test: ${ID_DIR}"
-    if [ -f "${ID_DIR}" ]; then
-	    printf "${ID_DIR} exists. \n"
-    else
-	    printf "Create Directory: ${ID_DIR} \n"
-	    runuser dlwsadmin -c "mkdir ${DLWS_HOME}/.ssh"
-    fi
-
-    ID_FILE="${ID_DIR}/id_rsa"
-    if [ -f "${ID_FILE}" ]; then
-	    echo "User 'dlwsadmin' has set up the key. Set up the local passwordless access..."
-    else
-	    printf "Create SSH Key ...\n"
-	    runuser dlwsadmin -c "ssh-keygen -t rsa -P '' -f ${ID_FILE}"
-    fi
-
-    runuser dlwsadmin -c "cat ${ID_DIR}/id_rsa.pub >> ${ID_DIR}/authorized_keys"
-
-}
-
 set_docker_config() {
     systemctl daemon-reload
     systemctl restart docker
     echo "set docker config done."
-}
-
-load_docker_images () {
-    if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
-	    printf "Copy docker images from source\n"
-	    DOCKER_IMAGE_DIRECTORY="${THIS_DIR}/docker-images/${ARCH}"
-
-	    for file in ${DOCKER_IMAGE_DIRECTORY}/*.tar
-	    do
-	        printf "Load docker image file: $file\n"
-	        docker load -i $file
-	    done
-
-    else
-	    printf "Pull docker images from Docker Hub...\n"
-
-	    ############ Will implement later ##################################
-
-    fi
-}
-
-set_up_k8s_cluster () {
-    echo "The Cluster Name will be set to: ${CLUSTER_NAME}"
-
-    swapoff -a
-    sed -i '/[ \t]swap[ \t]/ s/^\(.*\)$/#\1/g' /etc/fstab
-
 }
 
 ############################################################################
@@ -297,13 +134,12 @@ then
     check_k8s_installation
     set_up_k8s_cluster
 
-    install_source_dir && echo "Successfully installed source tree..."
+    install_source_dir_in_extra_master && echo "Successfully installed source tree..."
 
     #### load/copy docker images ###########################################
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 
     set_docker_config
-    #load_docker_images
 
 fi
 
