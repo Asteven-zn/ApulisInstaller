@@ -6,7 +6,7 @@ DLWS_CONFIG_DIR="${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
 #   MAIN CODE START FROM HERE
 #
 ############################################################################
-echo'
+echo '
 * Notice *
 1. Please make sure /etc/hosts has been updated.
 2. Please make sure ./config/install_config.json exists, and has been updated.
@@ -23,15 +23,15 @@ then
     printf " Please make sure everything is ready and relaunch again. \n"
     exit
 fi
-new-kube-vip=`cat config/install_config.json.template | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
+new_kube_vip=`cat config/install_config.json.template | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
 cd ${DLWS_CONFIG_DIR}
-sed "s|kube-vip:.*|kube-vip: ${new-kube-vip}|g" -i config.yaml
+sed "s|kube-vip:.*|kube-vip: ${new_kube_vip}|g" -i config.yaml
 
 master_hostname=`hostname`
 for hostname in `cat config.yaml | grep " role: infrastructure" -B 1 |  grep -v "infrastructure" | sed "s/\://" | grep -v "^--"`
 do
     host_ip=`grep "${hostname}" /etc/hosts | grep -v 127 | grep -v ${hostname}\. | awk '{print $1}'`
-    if [[ ${host_ip == "" }]]
+    if [[ ${host_ip} == "" ]]
     then
         printf "!!! Can't find node %s in /etc/hosts !!!\n" ${hostname}
         printf " Please make sure everything is ready and relaunch again. \n"
