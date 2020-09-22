@@ -6,6 +6,7 @@
 DLWS_HOME="/home/dlwsadmin"
 INSTALLED_DIR="/home/dlwsadmin/DLWorkspace"
 DLWS_CONFIG_DIR="${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
+CONFIG_JSON_PATH="config/install_config.json"
 ############################################################################
 #
 #   MAIN CODE START FROM HERE
@@ -16,27 +17,76 @@ DLWS_CONFIG_DIR="${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
 echo '
 * Notice *
 1. Please make sure /etc/hosts has been updated.
-2. Please make sure ./config/install_config.json exists, and has been updated.
+2. Please make sure ${CONFIG_JSON_PATH} exists, and has been updated.
 * Notice *
 Press any [Enter] to continue >>>
 '
 read -r dump
-# reset cluster
 # reset config.yaml
-if [ ! -f "config/install_config.json" ]
+if [ ! -f "${CONFIG_JSON_PATH}" ]
 then
     printf "!!! Can't find config json file !!!\n" ${hostname}
     printf " Please make sure everything is ready and relaunch again. \n"
     exit
 fi
+cat << EOF > read_config.py
+import json
+
+with open('${CONFIG_JSON_PATH}') as f:
+    data = json.load(f)
+    with open('output.cfg','w') as fout:
+        for key, value in data.items():
+            if key != "worker_nodes" and key != "extra_master_nodes" and "_comment" not in key:
+                fout.write(key)
+                fout.write("=")
+                fout.write(value + "\n")
+        fout.write("worker_nodes=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["host"] + "\n")
+        fout.write(")\n")
+        fout.write("worker_nodes_gpuType=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["gpuType"] + "\n")
+        fout.write(")\n")
+        fout.write("worker_nodes_vendor=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["vendor"] + "\n")
+        fout.write(")\n")
+        fout.write("extra_master_nodes=(\n")
+        for extra_master_nodes_info in data["extra_master_nodes"]:
+            fout.write(extra_master_nodes_info["host"] + "\n")
+        fout.write(")\n")
+EOF
+python3 read_config.py
+source output.cfg
+rm output.cfg
+rm read_config.py
+####### reset kubernetes 
+node_number=${#extra_master_nodes[@]}
+if [ ${node_number} -gt 0 ]
+then
+	echo "You have config follwing extra master nodes:"
+	for i in "${!extra_master_nodes[@]}"; 
+	do 
+		node_number=$(( ${i} + 1 ))
+		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "yes | kubeadm reset"
+		printf "%s. %s\n" "$node_number" "${extra_master_nodes[$i]}"
+	done
+fi
+node_number=${#worker_nodes[@]}
+if [ ${node_number} -gt 0 ]
+then
+	echo "You have config follwing worker nodes:"
+	for i in "${!worker_nodes[@]}"; 
+	do 
+		node_number=$(( ${i} + 1 ))
+		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "yes | kubeadm reset"
+		printf "%s. %s:\n" "$node_number" "${worker_nodes[$i]}"
+	done
+fi
+############ change kube-vip
 new_kube_vip=`cat config/install_config.json | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
 cd ${DLWS_CONFIG_DIR}
-./deploy.py execonall " yes | kubeadm reset ; touch /tmp/reset_finish"
-while [ ! -f "/tmp/reset_finish" ]
-do
-	echo "wait until reset finish"
-	sleep 5
-done
 sed "s|kube-vip:.*|kube-vip: ${new_kube_vip}|g" -i config.yaml
 
 master_hostname=`hostname`
