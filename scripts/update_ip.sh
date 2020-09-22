@@ -15,7 +15,6 @@ Press any [Enter] to continue >>>
 '
 read -r dump
 # reset cluster
-yes | kubeadm reset
 # reset config.yaml
 if [ ! -f "config/install_config.json" ]
 then
@@ -25,6 +24,7 @@ then
 fi
 new_kube_vip=`cat config/install_config.json | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
 cd ${DLWS_CONFIG_DIR}
+./deploy.py execonall " yes | kubeadm reset "
 sed "s|kube-vip:.*|kube-vip: ${new_kube_vip}|g" -i config.yaml
 
 master_hostname=`hostname`
