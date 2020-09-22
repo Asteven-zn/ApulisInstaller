@@ -62,6 +62,7 @@ source output.cfg
 rm output.cfg
 rm read_config.py
 ####### reset kubernetes 
+yes | kubeadm reset
 node_number=${#extra_master_nodes[@]}
 if [ ${node_number} -gt 0 ]
 then
