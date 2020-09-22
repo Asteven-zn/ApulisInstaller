@@ -31,7 +31,12 @@ then
 fi
 new_kube_vip=`cat config/install_config.json | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
 cd ${DLWS_CONFIG_DIR}
-./deploy.py execonall " yes | kubeadm reset "
+./deploy.py execonall " yes | kubeadm reset ; touch /tmp/reset_finish"
+while [ ! -f "/tmp/reset_finish" ]
+do
+	echo "wait until reset finish"
+	sleep 5
+done
 sed "s|kube-vip:.*|kube-vip: ${new_kube_vip}|g" -i config.yaml
 
 master_hostname=`hostname`
