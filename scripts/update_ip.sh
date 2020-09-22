@@ -61,8 +61,10 @@ python3 read_config.py
 source output.cfg
 rm output.cfg
 rm read_config.py
-####### reset kubernetes 
+####### reset kubernetes and nfs
 yes | kubeadm reset
+/etc/init.d/rpcbind restart
+/etc/init.d/nfs restart
 node_number=${#extra_master_nodes[@]}
 if [ ${node_number} -gt 0 ]
 then
@@ -71,6 +73,8 @@ then
 	do 
 		node_number=$(( ${i} + 1 ))
 		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "yes | kubeadm reset"
+		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "/etc/init.d/rpcbind restart"
+		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "/etc/init.d/nfs restart"
 		printf "%s. %s\n" "$node_number" "${extra_master_nodes[$i]}"
 	done
 fi
@@ -82,6 +86,8 @@ then
 	do 
 		node_number=$(( ${i} + 1 ))
 		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "yes | kubeadm reset"
+		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "/etc/init.d/rpcbind restart"
+		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "/etc/init.d/nfs restart"
 		printf "%s. %s:\n" "$node_number" "${worker_nodes[$i]}"
 	done
 fi
