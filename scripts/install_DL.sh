@@ -1248,6 +1248,7 @@ do
 done
 
 ###### start building cluster ####################################################################
+cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap
 generate_config
 
 }

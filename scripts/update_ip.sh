@@ -1,3 +1,8 @@
+#### import function from install_DL
+. ./install_DL.sh --source-only
+
+
+
 DLWS_HOME="/home/dlwsadmin"
 INSTALLED_DIR="/home/dlwsadmin/DLWorkspace"
 DLWS_CONFIG_DIR="${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
@@ -6,6 +11,8 @@ DLWS_CONFIG_DIR="${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
 #   MAIN CODE START FROM HERE
 #
 ############################################################################
+
+
 echo '
 * Notice *
 1. Please make sure /etc/hosts has been updated.
@@ -44,6 +51,6 @@ do
 done
 
 # deploy cluster again
-. ./install_DL.sh --source-only
+
 init_cluster
 deploy_services
