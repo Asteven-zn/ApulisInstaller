@@ -96,6 +96,7 @@ new_kube_vip=`cat config/install_config.json | grep kube_vip | sed "s?\"??g" | s
 cd ${DLWS_CONFIG_DIR}
 sed "s|kube-vip:.*|kube-vip: ${new_kube_vip}|g" -i config.yaml
 
+./deploy.py --verbose copytoall ./deploy/etc/hosts  /etc/hosts
 master_hostname=`hostname`
 for hostname in `cat config.yaml | grep " role: infrastructure" -B 1 |  grep -v "infrastructure" | sed "s/\://" | grep -v "^--"`
 do
