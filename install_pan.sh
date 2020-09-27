@@ -145,7 +145,7 @@ install_virtual_python2 () {
 	INSTALL_PYTHON_DIR=${INSTALLED_DIR}/python2.7/${ARCH}
     mkdir -p ${INSTALL_PYTHON_DIR}
 
-    virtualenv --python=/usr/bin/python2.7 ${INSTALL_PYTHON_DIR}
+    virtualenv --python=/usr/bin/python2.7 ${TEMP_DIR}/python2.7-venv
     (source ${TEMP_DIR}/python2.7-venv/bin/activate; cd ${INSTALL_PYTHON_DIR}; pip install setuptools; pip download aniso8601==8.0.0 certifi==2020.6.20 chardet==3.0.4 click==7.1.2 Flask==1.1.2 Flask-RESTful==0.3.8 \
      idna==2.10 itsdangerous==1.1.0 Jinja2==2.11.2 MarkupSafe==1.1.1 numpy==1.13.3 pytz==2020.1 PyYAML==5.3.1 requests==2.24.0 six==1.15.0 tzlocal==2.1 urllib3==1.25.9 Werkzeug==1.0.1 pycurl==7.43.0.5 subprocess32==3.5.4 setuptools==39.0.1 \
  )
@@ -397,10 +397,10 @@ mkdir -p ${INSTALLED_DIR}
 
 INSTALLED_DIR=$(cd "${INSTALLED_DIR}"; pwd)
 
-if [[ "$DOCKER_IMAGE_DIR" == "/*" ]]; then
-    INSTALLED_DOCKER_IMAGE_PATH=${DOCKER_IMAGE_DIR}
-elif [ ! -z "$DOCKER_IMAGE_DIR" ]; then
-    INSTALLED_DOCKER_IMAGE_PATH=${INSTALLED_DIR}/$DOCKER_IMAGE_DIR
+if [ ! -z "$DOCKER_IMAGE_DIR" ]; then
+    INSTALLED_DOCKER_IMAGE_PATH=$DOCKER_IMAGE_DIR
+else
+    INSTALLED_DOCKER_IMAGE_PATH="$INSTALLED_DIR/docker-images"
 fi
 
 INSTALLED_CONFIG_PATH=${INSTALLED_DIR}/config
