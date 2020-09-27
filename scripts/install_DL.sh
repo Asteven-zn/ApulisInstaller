@@ -342,7 +342,7 @@ install_harbor () {
     sleep 10
     echo "Docker login harbor ..."
     docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
-   echo "Check if docker login success ..."
+    echo "Check if docker login success ..."
     echo "[y/n]>>>"
     read -r ans
     if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]; then
@@ -362,6 +362,87 @@ install_harbor () {
       \"storage_limit\": -1
     }"
 
+
+    #### auto start at booting
+    cat << EOF > /lib/systemd/system/harbor.service
+[Unit]
+Description=Harbor
+After=docker.service systemd-networkd.service systemd-resolved.service
+Requires=docker.service
+Documentation=http://github.com/vmware/harbor
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/bin/docker-compose -f  /opt/harbor/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /opt/harbor/docker-compose.yml down
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemctl enable harbor
+}
+
+restore_harbor () {
+
+    # reutrn when harbor was install
+    curl -f -v -s -X GET "https://${HARBOR_REGISTRY}:8443/api/v2.0/projects/${DOCKER_HARBOR_LIBRARY}/repositories" -H 'Content-Type: application/json' -k -u admin:${HARBOR_ADMIN_PASSWORD} > /dev/null && echo "\nharbor has been already!\n" && return
+
+    ### copy harbor data
+    HARBOR_DIR=/data/harbor
+    mkdir -p /data
+    rm -rf $HARBOR_DIR
+    ln -s $HARBOR_STORAGE_PATH $HARBOR_DIR
+    tar -zxvf ${THIS_DIR}/harbor/harbor-data.tgz -C $HARBOR_DIR
+
+    #### install docker-compose
+    echo "Installing docker-compose ..."
+    chmod +x ${THIS_DIR}/harbor/docker-compose
+    cp ${THIS_DIR}/harbor/docker-compose /usr/bin/docker-compose
+
+    #### prepare harbor
+    echo "Preparing harbor ..."
+    HARBOR_INSTALL_DIR="/opt"
+    mkdir -p ${HARBOR_INSTALL_DIR}/harbor
+    tar -zxvf ${THIS_DIR}/harbor/harbor-install.tgz -C $HARBOR_INSTALL_DIR/harbor/
+    chmod 777 -R $HARBOR_INSTALL_DIR/harbor/common/
+
+    echo "Preparing docker certs, docker daemon will restart soon ..."
+    mkdir -p /etc/docker/certs.d
+    cp -r ${THIS_DIR}/config/harbor/docker-certs.d/* /etc/docker/certs.d/
+    systemctl restart docker
+
+    #### load harbor image
+    for file in ${THIS_DIR}/harbor/images/*.tar;
+    do
+      docker load -i $file
+    done
+
+    #### start harbor
+    docker-compose -f ${HARBOR_INSTALL_DIR}/harbor/docker-compose.yml up -d
+    # $HARBOR_INSTALL_DIR/harbor/install.sh
+    sleep 10
+    echo "Docker login harbor ..."
+    docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
+    echo "Check if docker login success ..."
+    echo "[y/n]>>>"
+    read -r ans
+    if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]; then
+      echo "Ensure docker login success, continue ..."
+    else
+      echo "Please check docker harbor problems"
+      exit 2
+    fi
+
+
+    #### create basic harbor library
+    curl -X POST "https://${HARBOR_REGISTRY}:8443/api/v2.0/projects" -H 'Content-Type: application/json' -k -u admin:${HARBOR_ADMIN_PASSWORD} --data-raw "
+    {
+      \"project_name\": \"${DOCKER_HARBOR_LIBRARY}\",
+      \"metadata\": {
+        \"public\": \"true\"
+      },
+      \"storage_limit\": -1
+    }"
 
     #### auto start at booting
     cat << EOF > /lib/systemd/system/harbor.service
@@ -565,6 +646,31 @@ set_up_k8s_cluster () {
 
     swapoff -a
     sed -i '/[ \t]swap[ \t]/ s/^\(.*\)$/#\1/g' /etc/fstab
+
+    rm /root/.kube/config -rf
+
+    echo "clean iptables and restart docker"
+    systemctl stop kubelet
+    systemctl stop docker
+    iptables --flush
+    iptables -tnat --flush
+    iptables -P INPUT ACCEPT
+    iptables -P FORWARD ACCEPT
+    iptables -P OUTPUT ACCEPT
+    iptables -F
+    systemctl start kubelet
+    systemctl start docker
+
+    echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+    echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+    echo 1 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
+    echo 1 > /proc/sys/net/ipv4/ip_forward
+    echo 1 > /proc/sys/net/ipv6/conf/default/forwarding
+    sysctl -w net.bridge.bridge-nf-call-iptables=1
+    echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+		echo "net.bridge.bridge-nf-call-iptables=1" >> /etc/sysctl.conf
+		echo "net.bridge.bridge-nf-call-ip6tables=1" >> /etc/sysctl.conf
+		sysctl -p
 }
 
 setup_user_on_node() {
@@ -1117,6 +1223,18 @@ echo '
 '
 for masternode in "${extra_master_nodes[@]}"
 do
+  ######### acquire node arch ################################
+  arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${masternode} "arch"`
+  if [ "${arch_result}" == "x86_64" ]
+  then
+    node_arch="amd64"
+  fi
+  if [ "${arch_result}" == "aarch64" ]
+  then
+    node_arch="arm64"
+  fi
+  extra_master_nodes_arch[${i}]=${node_arch}
+
 	record_arch=${extra_master_nodes_arch[$i]}
 	if [ "${record_arch}" == "amd64" ]
 	then
@@ -1142,7 +1260,7 @@ do
 
     sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
 
-    sshpass -p dlwsadmin scp install_masternode_extra.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+    sshpass -p dlwsadmin scp install_*.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_CONFIG_DIR}
 
@@ -1153,17 +1271,7 @@ do
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
 
-    ######### acquire node arch ################################
-		arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${masternode} "arch"`
-		if [ "${arch_result}" == "x86_64" ]
-		then
-			node_arch="amd64"
-		fi
-		if [ "${arch_result}" == "aarch64" ]
-		then
-			node_arch="arm64"
-		fi
-    extra_master_nodes_arch[${i}]=${node_arch}
+
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
 	
@@ -1297,19 +1405,19 @@ fi
 
 deploy_services(){
 cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap
-./deploy.py --verbose kubernetes start nvidia-device-plugin
-./deploy.py --verbose kubernetes start  a910-device-plugin
+./deploy.py kubernetes start nvidia-device-plugin
+./deploy.py kubernetes start  a910-device-plugin
 
-./deploy.py --verbose renderservice
-./deploy.py --verbose renderimage
-./deploy.py --verbose webui
-./deploy.py --verbose nginx webui3
+./deploy.py renderservice
+./deploy.py renderimage
+./deploy.py webui
+./deploy.py nginx webui3
 
-./deploy.py --verbose nginx fqdn
-./deploy.py --verbose nginx config
+./deploy.py nginx fqdn
+./deploy.py nginx config
 
 ./deploy.py runscriptonroles infra worker ./scripts/install_nfs.sh
-./deploy.py --verbose --force mount
+./deploy.py --force mount
 
 echo 'Please check if all nodes have mounted storage using below cmds:'
 echo "    cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
@@ -1324,21 +1432,18 @@ echo '    ./deploy.py execonall "python /opt/auto_share/auto_share.py"'
 echo '                                                                '
 read -s -n1 -p "Please press any key to continue:>> "
 
-./deploy.py --verbose kubernetes start mysql
-./deploy.py --verbose kubernetes start jobmanager2 restfulapi2 monitor nginx custommetrics repairmanager2 openresty
-./deploy.py --background --sudo runscriptonall scripts/npu/npu_info_gen.py
-./deploy.py --verbose kubernetes start monitor
+./deploy.py kubernetes start mysql
+./deploy.py kubernetes start jobmanager2 restfulapi2 nginx custommetrics repairmanager2 openresty
+./deploy.py --sudo --background runscriptonall scripts/npu/npu_info_gen.py
+./deploy.py kubernetes start monitor
 
-./deploy.py kubernetes start istio knative kfserving
+./deploy.py kubernetes start istio
+### knative need first
+./deploy.py kubernetes start knative kfserving
 
-./deploy.py --verbose kubernetes start webui3
-./deploy.py kubernetes start custom-user-dashboard
-./deploy.py kubernetes start image-label
-./deploy.py kubernetes start aiarts-frontend
-./deploy.py kubernetes start aiarts-backend
-./deploy.py kubernetes start data-platform
+./deploy.py kubernetes start webui3 custom-user-dashboard image-label aiarts-frontend aiarts-backend data-platform
 
-  . ../docker-images/init-container/prebuild.sh
+  # . ../docker-images/init-container/prebuild.sh
 }
 
 choose_start_from_which_step(){
@@ -1348,17 +1453,15 @@ choose_start_from_which_step(){
     2. check_k8s_installation
     3. install_necessary_packages
     4. prepare_nfs_storage_path
-    5. install_harbor
-    6. install_dlws_admin_ubuntu
-    7. install_source_dir
-    8. load_docker_images
-    9. push_docker_images_to_harbor
-    10. prepare_k8s_images
-    11. set_up_k8s_cluster
-    12. setup_node_environment
-    13. init_cluster_config
-    14. init_cluster
-    15. deploy_services
+    5. set_up_k8s_cluster_init_environment
+    6. restore_harbor
+    7. install_dlws_admin_ubuntu
+    8. install_source_dir
+    9. prepare_k8s_images
+    10. setup_node_environment
+    11. init_cluster_config
+    12. init_cluster
+    13. deploy_services
   '
   echo "Choose a step to start from: >>"
   read -r step
@@ -1576,40 +1679,32 @@ config_init
 init_message_print
 choose_start_from_which_step
 
-if [ $step -lt 2 ];
-then
+if [ $step -lt 2 ];then
   check_docker_installation
 fi
-if [ $step -lt 3 ];
-then
+if [ $step -lt 3 ];then
   check_k8s_installation
 fi
-if [ $step -lt 4 ];
-then
+if [ $step -lt 4 ];then
   install_necessary_packages
   copy_bin_file
 fi
-if [ $step -lt 5 ];
-then
+if [ $step -lt 5 ];then
   prepare_nfs_storage_path
 fi
-if [ $step -lt 6 ];
-then
-  # input_harbor_library_name
-
-  install_harbor
+if [ $step -lt 6 ];then
+  set_up_k8s_cluster
 fi
-if [ $step -lt 7 ];
-then
-  install_dlws_admin_ubuntu
 
+if [ $step -lt 7 ];then
+  # input_harbor_library_name
+  restore_harbor
+fi
+if [ $step -lt 8 ];then
+  install_dlws_admin_ubuntu
   set_up_password_less
 fi
-if [ $step -lt 8 ];
-then
-  if [ -z $DOCKER_HARBOR_LIBRARY ];then
-    input_harbor_library_name
-  fi
+if [ $step -lt 9 ];then
   #### set up DLWorkspace source tree ####################################
   install_source_dir && echo "Successfully installed source tree..."
 
@@ -1618,23 +1713,10 @@ then
 
   #### load/copy docker images ###########################################
 usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
+
 fi
-if [ $step -lt 9 ];
-then
-  load_docker_images
-fi
-if [ $step -lt 10 ];
-then
-  if [ -z $DOCKER_HARBOR_LIBRARY ];then
-    input_harbor_library_name
-  fi
-  push_docker_images_to_harbor
-fi
-if [ $step -lt 11 ];
-then
-  if [ -z $DOCKER_HARBOR_LIBRARY ];then
-    input_harbor_library_name
-  fi
+
+if [ $step -lt 10 ];then
   prepare_k8s_images
 
   #### check if A910 is presented ########################################
@@ -1649,35 +1731,20 @@ then
   fi
 
 fi
-if [ $step -lt 12 ];
-then
-  #### Now, this is basic setting of K8s services ####################
-  if [ -z $DOCKER_HARBOR_LIBRARY ];then
-    input_harbor_library_name
-  fi
-  set_up_k8s_cluster
-fi
 
-if [ $step -lt 13 ];
-then
-  if [ -z $DOCKER_HARBOR_LIBRARY ];then
-    input_harbor_library_name
-  fi
+if [ $step -lt 11 ];then
   setup_node_environment
 fi
 
-if [ $step -lt 14 ];
-then
+if [ $step -lt 12 ];then
   init_cluster_config
 fi
 
-if [ $step -lt 15 ];
-then
+if [ $step -lt 13 ];then
   init_cluster
 fi
 
-if [ $step -lt 16 ];
-then
+if [ $step -lt 14 ];then
   deploy_services
 fi
 

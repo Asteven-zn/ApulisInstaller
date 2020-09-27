@@ -183,6 +183,7 @@ setImageList() {
 
   LIB_IMAGES=(
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/grafana:6.7.4"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/a910-device-plugin:devel3"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/atc:0.0.1-amd64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/visualjob:1.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow:1.14.0-gpu-py3"
@@ -191,6 +192,7 @@ setImageList() {
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/pytorch:1.5"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/mxnet:2.0.0-gpu-py3"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/ubuntu:18.04-amd64"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/ubuntu:18.04-arm64"
 
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/bash:5"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/directxman12/k8s-prometheus-adapter:v0.7.0"
@@ -206,24 +208,36 @@ setImageList() {
 
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/golang:1.13.7-alpine3.11"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/jessestuart/prometheus-operator:v0.38.0"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/jessestuart/prometheus-operator:v0.38.0-arm64"
 
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/coredns:1.6.7"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/coredns:1.6.7-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/etcd:3.4.3-0"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/etcd:3.4.3-0-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-apiserver:v1.18.2"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-apiserver:v1.18.2-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-controller-manager:v1.18.2"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-controller-manager:v1.18.2-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-proxy:v1.18.2"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-proxy:v1.18.2-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-scheduler:v1.18.2"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/kube-scheduler:v1.18.2-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/pause:3.2"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/k8s.gcr.io/pause:3.2-arm64"
 
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/mysql/mysql-server:8.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/nvidia/k8s-device-plugin:1.11"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/plndr/kube-vip:0.1.7"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/prom/alertmanager:v0.20.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/prom/node-exporter:v0.18.1"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/prom/node-exporter:v0.18.1-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/prom/prometheus:v2.18.0"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/prom/prometheus:v2.18.0-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/redis:5.0.6-alpine"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/weaveworks/weave-kube:2.6.5"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/weaveworks/weave-npc:2.6.5"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/weaveworks/weave-kube:2.7.0"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/weaveworks/weave-kube:2.7.0-arm64"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/weaveworks/weave-npc:2.7.0"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/weaveworks/weave-npc:2.7.0-arm64"
   )
 
   APP_IMAGES=(
@@ -233,29 +247,36 @@ setImageList() {
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_custom-user-dashboard-frontend:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_data-platform-backend:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_gpu-reporter:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_gpu-reporter:latest-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_image-label:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_init-container:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_init-container:latest-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_openresty:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_repairmanager2:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_restfulapi2:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/dlworkspace_webui3:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/job-exporter:1.9"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/job-exporter:1.9-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/nginx:1.9"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/nginx:1.9-arm64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/watchdog:1.9"
 
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/istio-proxy:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/istio-pilot:latest"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-webhook:latest"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-queue:latest"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-controller:latest"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-activator:latest"
-    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-autoscaler:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-serving-webhook:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-serving-queue:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-serving-controller:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-serving-activator:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-serving-autoscaler:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-net-istio-webhook:latest"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/knative-net-istio-controller:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/kfserving-manager:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/kfserving-storage-initializer:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/kfserving-kube-rbac-proxy:latest"
   )
 
 }
+
 
 
 ############ Don't source the install file. Run it in sh or bash ##########
