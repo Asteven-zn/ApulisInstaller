@@ -72,9 +72,9 @@ then
 	for i in "${!extra_master_nodes[@]}"; 
 	do 
 		node_number=$(( ${i} + 1 ))
-		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "yes | kubeadm reset"
-		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "/etc/init.d/rpcbind restart"
-		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "/etc/init.d/nfs restart"
+		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "yes | sudo kubeadm reset"
+		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "sudo /etc/init.d/rpcbind restart"
+		sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[$i]} "sudo /etc/init.d/nfs restart"
 		printf "%s. %s\n" "$node_number" "${extra_master_nodes[$i]}"
 	done
 fi
@@ -85,9 +85,9 @@ then
 	for i in "${!worker_nodes[@]}"; 
 	do 
 		node_number=$(( ${i} + 1 ))
-		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "yes | kubeadm reset"
-		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "/etc/init.d/rpcbind restart"
-		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "/etc/init.d/nfs restart"
+		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "yes | sudo kubeadm reset"
+		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo /etc/init.d/rpcbind restart"
+		sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo /etc/init.d/nfs restart"
 		printf "%s. %s:\n" "$node_number" "${worker_nodes[$i]}"
 	done
 fi
