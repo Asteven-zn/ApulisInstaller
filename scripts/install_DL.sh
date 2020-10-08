@@ -957,6 +957,7 @@ init_environment() {
   NFS_MOUNT_POINT="/mnt/nfs_share"
   HARBOR_REGISTRY=harbor.sigsus.cn
   CLUSTER_NAME="DLWorkspace"
+	DEBUG_MODE=0
 
   ############# Don't source the install file. Run it in sh or bash ##########
   if ! echo "$0" | grep '\.sh$' > /dev/null; then
@@ -991,6 +992,7 @@ init_environment() {
   -u           install A910 device plugin. Default: False
   -r           remote docker registry
   -f           load docker images from local. Default: True
+  --debug      running in debug mode. while proceeding, will wait for extra operation to continue
 
   -h	     print usage page.
   "
@@ -1047,6 +1049,10 @@ init_environment() {
               ;;
           -z)
               NO_NFS=0
+              shift;
+              ;;
+          --debug)
+              DEBUG_MODE=1
               shift;
               ;;
             --)
@@ -1682,8 +1688,16 @@ choose_start_from_which_step
 if [ $step -lt 2 ];then
   check_docker_installation
 fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
+fi
 if [ $step -lt 3 ];then
   check_k8s_installation
+fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
 fi
 if [ $step -lt 4 ];then
   install_necessary_packages
@@ -1692,8 +1706,16 @@ fi
 if [ $step -lt 5 ];then
   prepare_nfs_storage_path
 fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
+fi
 if [ $step -lt 6 ];then
   set_up_k8s_cluster
+fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
 fi
 
 if [ $step -lt 7 ];then
@@ -1703,6 +1725,10 @@ fi
 if [ $step -lt 8 ];then
   install_dlws_admin_ubuntu
   set_up_password_less
+fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
 fi
 if [ $step -lt 9 ];then
   #### set up DLWorkspace source tree ####################################
@@ -1714,6 +1740,10 @@ if [ $step -lt 9 ];then
   #### load/copy docker images ###########################################
 usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 
+fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
 fi
 
 if [ $step -lt 10 ];then
@@ -1731,17 +1761,33 @@ if [ $step -lt 10 ];then
   fi
 
 fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
+fi
 
 if [ $step -lt 11 ];then
   setup_node_environment
+fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
 fi
 
 if [ $step -lt 12 ];then
   init_cluster_config
 fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
+fi
 
 if [ $step -lt 13 ];then
   init_cluster
+fi
+if [ ${DEBUG_MODE} == "1" ];then
+	printf "!!! one step has finish, press Enter to continue !!!>>>"
+	read -r dump
 fi
 
 if [ $step -lt 14 ];then
