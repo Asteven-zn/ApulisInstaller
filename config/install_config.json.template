@@ -7,6 +7,7 @@
 	"alert_smtp_email_password": "TEST_PASSWD",
 	"alert_default_user_email": "receiver@test.com",
 	"HARBOR_ADMIN_PASSWORD": "Harbor12345",
+	"language": "zh",
 
 	"worker_nodes": [
 		{
