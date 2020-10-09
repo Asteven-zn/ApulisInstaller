@@ -1469,6 +1469,7 @@ choose_start_from_which_step(){
 }
 
 load_config_from_file() {
+
 	NECCESSARY_ARGUMENT=(
 		NFS_STORAGE_PATH
 		HARBOR_STORAGE_PATH
@@ -1480,11 +1481,13 @@ load_config_from_file() {
 		alert_default_user_email
     kube_vip
 		)
+
 	if [ ! -f "config/install_config.json" ]; then
 		echo " !!!!! Can't find config file (platform.cfg), please check there is a platform.cfg under ./config directory !!!!! "
 		echo " Please relaunch later while everything is ready. "
 		exit
 	fi
+
   cat << EOF > read_config.py
 import json
 
@@ -1518,6 +1521,7 @@ EOF
   source output.cfg
   rm output.cfg
   rm read_config.py
+
   # verify config 
 	for argument in NECCESSARY_ARGUMENT
 	do
@@ -1528,16 +1532,19 @@ EOF
 			exit
 		fi
 	done
+
 	if [ "$NFS_STORAGE_PATH" == "/mnt/local" ]
 	then
 		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset in your config file.!!!!\n"
 		exit
 	fi
+
 	if [ "$HARBOR_STORAGE_PATH" == "/data/harbor" ]
 	then
 		printf "\n!!!!Your harbor storage path has been set to /data/harbor, which is not allowed. Please reset in your config file.!!!!\n"
 		exit
 	fi
+
   # check config 
 	echo "################################"
 	echo " Please check if every config is correct"
@@ -1551,6 +1558,7 @@ EOF
 	printf "\n * smtp default receiver has been set to : %s" "$alert_default_user_email"
 	printf "\n################################"
 	printf "\nAre these config correct? [ yes / (default)no ]"
+
 	read -r check_config_string
 	while [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] && [ "$check_config_string" != "" ] && \
 			[ "$check_config_string" != "no" ]  && [ "$check_config_string" != "No" ]  && [ "$check_config_string" != "NO" ]
@@ -1559,6 +1567,7 @@ EOF
 		printf ">>> "
 		read -r check_config_string
 	done
+
 	if [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] ; then
 		echo " OK. Please relaunch later while everything is ready. "
 		exit
@@ -1571,6 +1580,7 @@ EOF
 		echo "now begin to deploy node account"
 		echo "################################"
 	fi
+
 	node_number=${#extra_master_nodes[@]}
 	if [ ${node_number} -gt 0 ]
 	then
@@ -1581,6 +1591,7 @@ EOF
 			printf "%s. %s\n" "$node_number" "${extra_master_nodes[$i]}"
 		done
 	fi
+
 	node_number=${#worker_nodes[@]}
 	if [ ${node_number} -gt 0 ]
 	then
@@ -1593,6 +1604,7 @@ EOF
 			printf "* vendor: %s\n" "${worker_nodes_vendor[$i]}"
 		done
 	fi
+
 	printf "\nAre these configs correct? [ yes / (default)no ]"
 	read -r check_node_config
 	while [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] && [ "$check_node_config" != "" ] && \
@@ -1602,10 +1614,12 @@ EOF
 		printf ">>> "
 		read -r check_node_config
 	done
+
 	if [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] ; then
 		echo " OK. Please relaunch later while everything is ready. "
 		exit
 	fi
+  
   for i in "${!extra_master_nodes[@]}";   
   do   
     nodename=${extra_master_nodes[$i]}
@@ -1613,6 +1627,7 @@ EOF
 		setup_user_on_node $nodename
 		echo OK
   done  
+  
   for i in "${!worker_nodes[@]}";   
   do   
     nodename=${worker_nodes[$i]}
@@ -1620,17 +1635,18 @@ EOF
 		setup_user_on_node $nodename
 		echo OK
 	done
-	if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
+	
+  if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
 	then
 		echo "################################"
 		echo "deploy node complete"
 		echo "################################"
 	fi
-
 }
 
 config_init() {
 	load_config_from_file
+  
 	echo "Congratulation! config file loaded completed."
 	echo "Now complete reamain setting"
 	printf "Do you want to use master as worknode? [yes|no] \\n"
