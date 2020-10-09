@@ -894,6 +894,10 @@ else
 EOF
 fi
 
+cat << EOF >> config.yaml
+language: ${language}
+EOF
+
 # write extra master nodes info
 for masternode in "${extra_master_nodes[@]}"
 do
@@ -1642,20 +1646,20 @@ config_init() {
 	printf "Do you want to use master as worknode? [yes|no] \\n"
 	printf "[no] >>> "
 
-	  read -r ans
-	  while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
-	  	  [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-	  do
-	  	printf "Please answer 'yes' or 'no':'\\n"
-	  	printf ">>> "
-	  	read -r ans
-	  done
+	read -r ans
+	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+	do
+		printf "Please answer 'yes' or 'no':'\\n"
+		printf ">>> "
+		read -r ans
+	done
 
 	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
-	  then
-	    printf "Not setup Up Master as a worknode.\\n"
+	then
+		printf "Not setup Up Master as a worknode.\\n"
 
-	    USE_MASTER_NODE_AS_WORKER=0
+		USE_MASTER_NODE_AS_WORKER=0
 	fi
 
 	echo '
