@@ -67,6 +67,17 @@ getNeededAptPackages () {
   fi
 }
 
+getNeededArmAptPackages () {
+  #####################  Create Installation Disk apt packages ##########################
+  mkdir -p ${INSTALLED_DIR}/apt/aarch64
+
+  if [ ${COMPLETED_APT_DOWNLOAD} = "1" ]; then
+      ( cd ${INSTALLED_DIR}/apt/aarch64; apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES_ARM64} | grep "^\w" | sort -u) )
+  else
+      ( cd ${INSTALLED_DIR}/apt/aarch64; apt-get download $(apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES_ARM64} | grep "^\w" | sort -u)  )
+  fi
+}
+
 getAllNeededBinFile(){
   mkdir -p ${INSTALLED_DIR}/bin/x86_64
   mkdir -p ${INSTALLED_DIR}/bin/aarch64
@@ -100,8 +111,8 @@ getAllNeededDockerImages () {
 
       echo "docker save $image > ${new_image}.tar"
       docker pull $image
-      docker save $image > ${INSTALLED_DOCKER_IMAGE_PATH}/${new_image}.tar
-      echo "image saved! path: ${INSTALLED_DOCKER_IMAGE_PATH}/${new_image}.tar"
+      docker save $image > ${INSTALLED_DOCKER_IMAGE_PATH}/x86_64/${new_image}.tar
+      echo "image saved! path: ${INSTALLED_DOCKER_IMAGE_PATH}/x86_64/${new_image}.tar"
   done
 
 
@@ -112,8 +123,8 @@ getAllNeededDockerImages () {
 
       echo "docker save $image > ${new_image}.tar"
       docker pull $image
-      docker save $image > ${INSTALLED_DOCKER_IMAGE_PATH}/${new_image}.tar
-      echo "image saved! path: ${INSTALLED_DOCKER_IMAGE_PATH}/${new_image}.tar"
+      docker save $image > ${INSTALLED_DOCKER_IMAGE_PATH}/x86_64/${new_image}.tar
+      echo "image saved! path: ${INSTALLED_DOCKER_IMAGE_PATH}/x86_64/${new_image}.tar"
   done
 
 }
@@ -148,6 +159,24 @@ install_virtual_python2 () {
     virtualenv --python=/usr/bin/python2.7 ${TEMP_DIR}/python2.7-venv
     (source ${TEMP_DIR}/python2.7-venv/bin/activate; cd ${INSTALL_PYTHON_DIR}; pip install setuptools; pip download aniso8601==8.0.0 certifi==2020.6.20 chardet==3.0.4 click==7.1.2 Flask==1.1.2 Flask-RESTful==0.3.8 \
      idna==2.10 itsdangerous==1.1.0 Jinja2==2.11.2 MarkupSafe==1.1.1 numpy==1.13.3 pytz==2020.1 PyYAML==5.3.1 requests==2.24.0 six==1.15.0 tzlocal==2.1 urllib3==1.25.9 Werkzeug==1.0.1 pycurl==7.43.0.5 subprocess32==3.5.4 setuptools==39.0.1 \
+     wheel
+ )
+
+    #(cd ${TEMP_DIR}; tar -cvzf ${INSTALLED_DIR}/python2.tar.gz python2.7-venv )
+
+    rm -rf ${TEMP_DIR}/python2.7-venv
+}
+
+install_virtual_python2_arm64 () {
+
+  # exec on x86
+	INSTALL_PYTHON_DIR=${INSTALLED_DIR}/python2.7/aarch64
+  mkdir -p ${INSTALL_PYTHON_DIR}
+
+  virtualenv --python=/usr/bin/python2.7 ${TEMP_DIR}/python2.7-venv
+  (source ${TEMP_DIR}/python2.7-venv/bin/activate; cd ${INSTALL_PYTHON_DIR}; pip install setuptools; pip download aniso8601==8.0.0 certifi==2020.6.20 chardet==3.0.4 click==7.1.2 Flask==1.1.2 Flask-RESTful==0.3.8 \
+   idna==2.10 itsdangerous==1.1.0 Jinja2==2.11.2 MarkupSafe==1.1.1 numpy==1.13.3 pytz==2020.1 PyYAML==5.3.1 requests==2.24.0 six==1.15.0 tzlocal==2.1 urllib3==1.25.9 Werkzeug==1.0.1 pycurl==7.43.0.5 subprocess32==3.5.4 setuptools==39.0.1 \
+   wheel --platform=aarch64  --no-deps
  )
 
     #(cd ${TEMP_DIR}; tar -cvzf ${INSTALLED_DIR}/python2.tar.gz python2.7-venv )
@@ -307,6 +336,9 @@ RM="/bin/rm"
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
 NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common portmap kubeadm kubectl docker.io pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget\\
   python-dev python-pip virtualenv nvidia-modprobe nvidia-docker2"
+NEEDED_PACKAGES_ARM64="libcurl4-openssl-dev:arm64 libssl-dev:arm64 nfs-kernel-server:arm64 nfs-common:arm64 portmap:arm64 kubeadm:arm64 kubectl:arm64 docker.io:arm64 pass:arm64 gnupg2:arm64 ssh:arm64 sshpass:arm64 \\
+  build-essential:arm64 gcc:arm64 g++:arm64 python3:arm64 python3-dev:arm64 python3-pip:arm64 apt-transport-https:arm64 curl:arm64 wget:arm64\\
+  python-dev:arm64 python-pip:arm64 virtualenv:arm64 nvidia-modprobe:arm64 nvidia-docker2:arm64"
 COMPLETED_APT_DOWNLOAD=0
 SAVE_DOCKER_IMAGES_ONLY=0
 PROJECT_NAME=""
@@ -425,6 +457,8 @@ getDLWorkspace
 
 getNeededAptPackages
 
+getNeededArmAptPackages
+
 getAllNeededBinFile
 
 getHarborPackages
@@ -434,6 +468,8 @@ getAllNeededConfigs
 install_scripts
 
 install_virtual_python2
+
+install_virtual_python2_arm64
 
 ${RM} -rf ${TEMP_DIR}
 
