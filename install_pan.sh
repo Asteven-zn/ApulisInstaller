@@ -103,6 +103,7 @@ getAllNeededDockerImages () {
   fi
 
   mkdir -p ${INSTALLED_DOCKER_IMAGE_PATH}
+  mkdir -p ${INSTALLED_DOCKER_IMAGE_PATH}/x86_64
 
   #####################  pull library images ##########################
   for image in "${LIB_IMAGES[@]}"
