@@ -89,11 +89,11 @@
 ```json
 {
     "storage":{
-        "type":"nfs",
-        "path":"/mnt/storage/nfs",
-        "mount_cmd":"mount -t ceph 10.31.3.63:6789,10.31.3.64:6789,10.31.3.65:6789:/ /mnt/ceph  -o name=admin,secret=AQA31HJf4z0/LxAAgGW9Q/DG5nOdAABsTsOYXQ=="
+        "type":"ceph",
+        "path":"{mount_path}", 
+        "mountcmd":"mount -t ceph {monitor_server} {mount_path} -o name={ceph_user_name},secret={ceph_user_secret}"
     },
-    "HARBOR_STORAGE_PATH":"/mnt/storage/harbor",
+    "HARBOR_STORAGE_PATH": "/mntdlws/service/harbor",
     "DOCKER_HARBOR_LIBRARY":"sz_gongdianju",
     "alert_host":"smtp.test.com:25",
     "alert_smtp_email_address":"test_smtp@test.com",
@@ -119,3 +119,12 @@
     "kube_vip":"10.31.3.82"
 }
 ```
+
+注1：   
+当storage.type=ceph时，需要用实际数值替换其中的变量。例如：
+```
+     {mount_path}替换为       /mnt/ceph
+     {monitor_server}替换为   10.31.3.63:6789,10.31.3.64:6789,10.31.3.65:6789:/
+     {ceph_user_name}替换为   admin
+     {ceph_user_secret}替换为 AQA31HJf4z0/LxAAgGW9Q/DG5nOdAABsTsOYXQ==
+``` 
