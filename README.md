@@ -84,3 +84,38 @@
 
 安装时间比较长，请保持耐心等待。
 
+### 5. 配置文件样例
+    config/install_config.json
+```json
+{
+    "storage":{
+        "type":"nfs",
+        "path":"/mnt/storage/nfs",
+        "mount_cmd":"mount -t ceph 10.31.3.63:6789,10.31.3.64:6789,10.31.3.65:6789:/ /mnt/ceph  -o name=admin,secret=AQA31HJf4z0/LxAAgGW9Q/DG5nOdAABsTsOYXQ=="
+    },
+    "HARBOR_STORAGE_PATH":"/mnt/storage/harbor",
+    "DOCKER_HARBOR_LIBRARY":"sz_gongdianju",
+    "alert_host":"smtp.test.com:25",
+    "alert_smtp_email_address":"test_smtp@test.com",
+    "alert_smtp_email_password":"Apulis123",
+    "alert_default_user_email":"receiver@test.com",
+    "HARBOR_ADMIN_PASSWORD":"Apulis123",
+    "worker_nodes":[
+        {
+            "host":"worker01",
+            "gpuType":"gpu",
+            "vendor":"nvidia"
+        }
+    ],
+    "_comment_extra_master_nodes":"if there is no extra_master_nodes, leave this array empty",
+    "extra_master_nodes":[
+        {
+            "host":"master02"
+        },
+        {
+            "host":"master03"
+        }
+    ],
+    "kube_vip":"10.31.3.82"
+}
+```

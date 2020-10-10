@@ -270,11 +270,11 @@ copy_bin_file (){
   done
 }
 
-prepare_nfs_storage_path () {
+prepare_storage_path () {
 #	reset_nfs_path="no"
-#	if [ "$NFS_STORAGE_PATH" != "/mnt/local"]
+#	if [ "$DLTS_STORAGE_PATH" != "/mnt/local"]
 #	then
-#		printf "nfs storage has been set to :%s \naccept it?[(default)yes/no]:" "$NFS_STORAGE_PATH"
+#		printf "nfs storage has been set to :%s \naccept it?[(default)yes/no]:" "$DLTS_STORAGE_PATH"
 #		read -r ans
 #		while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
 #				[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
@@ -294,20 +294,20 @@ prepare_nfs_storage_path () {
 #	then
 #		echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
 #		echo '[e.g. /mnt/disk]'
-#		read -r NFS_STORAGE_PATH
-#		if [ -d "$NFS_STORAGE_PATH" ]; then
-#		  echo "$NFS_STORAGE_PATH exists"
+#		read -r DLTS_STORAGE_PATH
+#		if [ -d "$DLTS_STORAGE_PATH" ]; then
+#		  echo "$DLTS_STORAGE_PATH exists"
 #		else
-#		  echo "$NFS_STORAGE_PATH not exists"
+#		  echo "$DLTS_STORAGE_PATH not exists"
 #		  exit 1
 #		fi
 #	fi
 
-    NFS_DIR=/mnt/local
+    STORAGE_DIR=/mnt/local
     mkdir -p /mnt
-    rm -rf $NFS_DIR
-    ln -s $NFS_STORAGE_PATH $NFS_DIR
-    echo 'NFS prepared success'
+    rm -rf $STORAGE_DIR
+    ln -s $DLTS_STORAGE_PATH $STORAGE_DIR
+    echo 'storage prepared success'
 }
 
 install_harbor () {
@@ -812,11 +812,12 @@ onpremise_cluster:
 
 mountpoints:
   nfsshare1:
-    type: nfs
+    type: ${storage_type}
     server: ${master_hostname}
     filesharename: /mnt/local
     curphysicalmountpoint: /mntdlws
     mountpoints: ""
+    mountcmd: ${storage_mount_cmd}
 
 jwt:
   secret_key: "Sign key for JWT"
@@ -1452,7 +1453,7 @@ choose_start_from_which_step(){
     1. check_docker_installation
     2. check_k8s_installation
     3. install_necessary_packages
-    4. prepare_nfs_storage_path
+    4. prepare_storage_path
     5. set_up_k8s_cluster_init_environment
     6. restore_harbor
     7. install_dlws_admin_ubuntu
@@ -1471,7 +1472,7 @@ choose_start_from_which_step(){
 load_config_from_file() {
 
 	NECCESSARY_ARGUMENT=(
-		NFS_STORAGE_PATH
+		DLTS_STORAGE_PATH
 		HARBOR_STORAGE_PATH
 		DOCKER_HARBOR_LIBRARY
 		HARBOR_ADMIN_PASSWORD
@@ -1495,26 +1496,41 @@ with open('config/install_config.json') as f:
     data = json.load(f)
     with open('output.cfg','w') as fout:
         for key, value in data.items():
-            if key != "worker_nodes" and key != "extra_master_nodes" and "_comment" not in key:
+            if key != "worker_nodes" and key != "extra_master_nodes" and key != "storage" and "_comment" not in key:
                 fout.write(key)
                 fout.write("=")
                 fout.write(value + "\n")
+
         fout.write("worker_nodes=(\n")
         for worker_node_info in data["worker_nodes"]:
             fout.write(worker_node_info["host"] + "\n")
         fout.write(")\n")
+
         fout.write("worker_nodes_gpuType=(\n")
         for worker_node_info in data["worker_nodes"]:
             fout.write(worker_node_info["gpuType"] + "\n")
         fout.write(")\n")
+
         fout.write("worker_nodes_vendor=(\n")
         for worker_node_info in data["worker_nodes"]:
             fout.write(worker_node_info["vendor"] + "\n")
         fout.write(")\n")
+
         fout.write("extra_master_nodes=(\n")
         for extra_master_nodes_info in data["extra_master_nodes"]:
             fout.write(extra_master_nodes_info["host"] + "\n")
         fout.write(")\n")
+
+        fout.write("storage_type=")
+        fout.write(data["storage"]["type"] + "\n")
+        fout.write("DLTS_STORAGE_PATH=")
+        fout.write(data["storage"]["path"] + "\n")
+        
+        if "mount_cmd" in data["storage"]:
+            fout.write("storage_mount_cmd=")
+            fout.write(data["storage"]["mount_cmd"] + "\n")
+        else:
+            fout.write("storage_mount_cmd=")
 EOF
 
   python3 read_config.py
@@ -1533,7 +1549,7 @@ EOF
 		fi
 	done
 
-	if [ "$NFS_STORAGE_PATH" == "/mnt/local" ]
+	if [ "$DLTS_STORAGE_PATH" == "/mnt/local" ]
 	then
 		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset in your config file.!!!!\n"
 		exit
@@ -1548,10 +1564,14 @@ EOF
   # check config 
 	echo "################################"
 	echo " Please check if every config is correct"
-	printf "\n * nfs storage path has been set to : %s" "$NFS_STORAGE_PATH"
+	printf "\n * storage type has been set to : %s" "$storage_type"
+  printf "\n * storage path has been set to : %s" "$DLTS_STORAGE_PATH"
+	printf "\n * storage mount cmd has been set to : %s" "$storage_mount_cmd"
+
 	printf "\n * harbor storage path has been set to : %s" "$HARBOR_STORAGE_PATH"
 	printf "\n * docker library name has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
 	printf "\n * harbor admin password has been set to : %s" "$HARBOR_ADMIN_PASSWORD"
+
 	printf "\n * smtp server host has been set to : %s" "$alert_host"
 	printf "\n * smtp server email has been set to : %s" "$alert_smtp_email_address"
 	printf "\n * smtp server password has been set to : %s" "$alert_smtp_email_password"
@@ -1646,7 +1666,7 @@ EOF
 
 config_init() {
 	load_config_from_file
-  
+
 	echo "Congratulation! config file loaded completed."
 	echo "Now complete reamain setting"
 	printf "Do you want to use master as worknode? [yes|no] \\n"
@@ -1706,7 +1726,7 @@ if [ $step -lt 4 ];then
   copy_bin_file
 fi
 if [ $step -lt 5 ];then
-  prepare_nfs_storage_path
+  prepare_storage_path
 fi
 if [ $step -lt 6 ];then
   set_up_k8s_cluster
