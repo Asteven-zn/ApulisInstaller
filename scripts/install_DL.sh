@@ -305,6 +305,8 @@ prepare_storage_path () {
 
     STORAGE_DIR=/mnt/local
     mkdir -p /mnt
+    mkdir -p $DLTS_STORAGE_PATH
+
     rm -rf $STORAGE_DIR
     ln -s $DLTS_STORAGE_PATH $STORAGE_DIR
     echo 'storage prepared success'
@@ -314,6 +316,8 @@ install_harbor () {
 
     HARBOR_DIR=/data/harbor
     mkdir -p /data
+    mkdir -p $HARBOR_STORAGE_PATH
+
     rm -rf $HARBOR_DIR
     ln -s $HARBOR_STORAGE_PATH $HARBOR_DIR
 
@@ -390,6 +394,8 @@ restore_harbor () {
     ### copy harbor data
     HARBOR_DIR=/data/harbor
     mkdir -p /data
+    mkdir -p $HARBOR_STORAGE_PATH
+
     rm -rf $HARBOR_DIR
     ln -s $HARBOR_STORAGE_PATH $HARBOR_DIR
     tar -zxvf ${THIS_DIR}/harbor/harbor-data.tgz -C $HARBOR_DIR
