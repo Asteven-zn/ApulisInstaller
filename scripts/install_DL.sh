@@ -817,7 +817,7 @@ mountpoints:
     filesharename: /mnt/local
     curphysicalmountpoint: /mntdlws
     mountpoints: ""
-    mountcmd: ${storage_mount_cmd}
+    mountcmd: "${storage_mount_cmd}"
 
 jwt:
   secret_key: "Sign key for JWT"
@@ -1524,19 +1524,25 @@ with open('config/install_config.json') as f:
         fout.write("storage_type=")
         fout.write(data["storage"]["type"] + "\n")
         fout.write("DLTS_STORAGE_PATH=")
-        fout.write(data["storage"]["path"] + "\n")
+        fout.write("\\"")
+        fout.write(data["storage"]["path"])
+        fout.write("\\"" + "\n")
         
-        if "mount_cmd" in data["storage"]:
+        if "mountcmd" in data["storage"]:
             fout.write("storage_mount_cmd=")
-            fout.write(data["storage"]["mount_cmd"] + "\n")
+            fout.write("\\"")
+            fout.write(data["storage"]["mountcmd"] + "\n")
+            fout.write("\\"" + "\n")
         else:
             fout.write("storage_mount_cmd=")
+            fout.write("\\"")
+            fout.write("\\"" + "\n")
 EOF
 
   python3 read_config.py
   source output.cfg
-  rm output.cfg
-  rm read_config.py
+  #rm output.cfg
+  #rm read_config.py
 
   # verify config 
 	for argument in NECCESSARY_ARGUMENT
@@ -1565,7 +1571,7 @@ EOF
 	echo "################################"
 	echo " Please check if every config is correct"
 	printf "\n * storage type has been set to : %s" "$storage_type"
-  printf "\n * storage path has been set to : %s" "$DLTS_STORAGE_PATH"
+    printf "\n * storage path has been set to : %s" "$DLTS_STORAGE_PATH"
 	printf "\n * storage mount cmd has been set to : %s" "$storage_mount_cmd"
 
 	printf "\n * harbor storage path has been set to : %s" "$HARBOR_STORAGE_PATH"
