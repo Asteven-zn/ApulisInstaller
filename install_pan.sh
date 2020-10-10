@@ -71,6 +71,19 @@ getNeededArmAptPackages () {
   #####################  Create Installation Disk apt packages ##########################
   mkdir -p ${INSTALLED_DIR}/apt/aarch64
 
+  dpkg --add-architecture arm64
+cat <<EOF > /etc/apt/sources.list.d/sources-arm64.list
+# source urls for arm64
+deb [arch=arm64] http://ports.ubuntu.com/ xenial main restricted
+deb [arch=arm64] http://ports.ubuntu.com/ xenial-updates main restricted
+deb [arch=arm64] http://ports.ubuntu.com/ xenial universe
+deb [arch=arm64] http://ports.ubuntu.com/ xenial-updates universe
+deb [arch=arm64] http://ports.ubuntu.com/ xenial multiverse
+deb [arch=arm64] http://ports.ubuntu.com/ xenial-updates multiverse
+deb [arch=arm64] http://ports.ubuntu.com/ xenial-backports main restricted universe multiverse
+EOF
+  apt-get update
+
   if [ ${COMPLETED_APT_DOWNLOAD} = "1" ]; then
       ( cd ${INSTALLED_DIR}/apt/aarch64; apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES_ARM64} | grep "^\w" | sort -u) )
   else
@@ -153,14 +166,13 @@ install_scripts () {
 
 
 install_virtual_python2 () {
-
+  apt install virtualenv
 	INSTALL_PYTHON_DIR=${INSTALLED_DIR}/python2.7/${ARCH}
-    mkdir -p ${INSTALL_PYTHON_DIR}
-
-    virtualenv --python=/usr/bin/python2.7 ${TEMP_DIR}/python2.7-venv
-    (source ${TEMP_DIR}/python2.7-venv/bin/activate; cd ${INSTALL_PYTHON_DIR}; pip install setuptools; pip download aniso8601==8.0.0 certifi==2020.6.20 chardet==3.0.4 click==7.1.2 Flask==1.1.2 Flask-RESTful==0.3.8 \
-     idna==2.10 itsdangerous==1.1.0 Jinja2==2.11.2 MarkupSafe==1.1.1 numpy==1.13.3 pytz==2020.1 PyYAML==5.3.1 requests==2.24.0 six==1.15.0 tzlocal==2.1 urllib3==1.25.9 Werkzeug==1.0.1 pycurl==7.43.0.5 subprocess32==3.5.4 setuptools==39.0.1 \
-     wheel
+  mkdir -p ${INSTALL_PYTHON_DIR}
+  virtualenv --python=/usr/bin/python2.7 ${TEMP_DIR}/python2.7-venv
+  (source ${TEMP_DIR}/python2.7-venv/bin/activate; cd ${INSTALL_PYTHON_DIR}; pip install setuptools; pip download aniso8601==8.0.0 certifi==2020.6.20 chardet==3.0.4 click==7.1.2 Flask==1.1.2 Flask-RESTful==0.3.8 \
+   idna==2.10 itsdangerous==1.1.0 Jinja2==2.11.2 MarkupSafe==1.1.1 numpy==1.13.3 pytz==2020.1 PyYAML==5.3.1 requests==2.24.0 six==1.15.0 tzlocal==2.1 urllib3==1.25.9 Werkzeug==1.0.1 pycurl==7.43.0.5 subprocess32==3.5.4 setuptools==39.0.1 \
+   wheel
  )
 
     #(cd ${TEMP_DIR}; tar -cvzf ${INSTALLED_DIR}/python2.tar.gz python2.7-venv )
@@ -169,7 +181,7 @@ install_virtual_python2 () {
 }
 
 install_virtual_python2_arm64 () {
-
+  apt install virtualenv
   # exec on x86
 	INSTALL_PYTHON_DIR=${INSTALLED_DIR}/python2.7/aarch64
   mkdir -p ${INSTALL_PYTHON_DIR}
