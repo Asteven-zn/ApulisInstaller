@@ -350,9 +350,11 @@ RM="/bin/rm"
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
 NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common portmap kubeadm kubectl docker.io pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget\\
   python-dev python-pip virtualenv nvidia-modprobe nvidia-docker2"
-NEEDED_PACKAGES_ARM64="libcurl4-openssl-dev:arm64 libssl-dev:arm64 nfs-kernel-server:arm64 nfs-common:arm64 portmap:arm64 kubeadm:arm64 kubectl:arm64 docker.io:arm64 pass:arm64 gnupg2:arm64 ssh:arm64 sshpass:arm64 \\
-  build-essential:arm64 gcc:arm64 g++:arm64 python3:arm64 python3-dev:arm64 python3-pip:arm64 apt-transport-https:arm64 curl:arm64 wget:arm64\\
-  python-dev:arm64 python-pip:arm64 virtualenv:arm64 nvidia-modprobe:arm64 nvidia-docker2:arm64"
+NEEDED_PACKAGES_ARM64=""
+for PACKAGE in ${NEEDED_PACKAGES}
+do
+	${NEEDED_PACKAGES}="${NEEDED_PACKAGES} ${PACKAGE}:arm64"
+done
 COMPLETED_APT_DOWNLOAD=0
 SAVE_DOCKER_IMAGES_ONLY=0
 PROJECT_NAME=""
