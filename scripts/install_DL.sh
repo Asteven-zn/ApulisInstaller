@@ -319,14 +319,14 @@ install_harbor () {
 
     #### install docker-compose
     echo "Installing docker-compose ..."
-    chmod +x ${THIS_DIR}/harbor/docker-compose
-    cp ${THIS_DIR}/harbor/docker-compose /usr/bin/docker-compose
+    chmod +x ${THIS_DIR}/harbor/${ARCH}/docker-compose
+    cp ${THIS_DIR}/harbor/${ARCH}/docker-compose /usr/bin/docker-compose
 
     #### prepare harbor
     echo "Preparing harbor ..."
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}
-    tar -zxvf ${THIS_DIR}/harbor/harbor.tgz -C $HARBOR_INSTALL_DIR
+    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/harbor.tgz -C $HARBOR_INSTALL_DIR
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
@@ -339,7 +339,7 @@ install_harbor () {
     #### install harbor
     echo "Installing harbor ..."
     $HARBOR_INSTALL_DIR/harbor/install.sh
-    sleep 10
+    sleep 10 # harbor need some time to be prepared, otherwise login might fail
     echo "Docker login harbor ..."
     docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
     echo "Check if docker login success ..."
