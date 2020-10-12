@@ -1583,6 +1583,10 @@ EOF
 		exit
 	fi
 
+	# backup config.json
+	mkdir ~/.config/DLWorkspace
+	cp config/install_config.json ~/.config/DLWorkspace/install_config.json
+
 
 	if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
 	then
