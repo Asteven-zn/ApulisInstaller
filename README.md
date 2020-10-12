@@ -93,7 +93,7 @@
         "path":"{mount_path}", 
         "mountcmd":"mount -t ceph {monitor_server} /mntdlws -o name={ceph_user_name},secret={ceph_user_secret}"
     },
-    "HARBOR_STORAGE_PATH": "{mount_path}/service/harbor",
+    "HARBOR_STORAGE_PATH": "/mnt/harbor",
     "DOCKER_HARBOR_LIBRARY":"sz_gongdianju",
     "alert_host":"smtp.test.com:25",
     "alert_smtp_email_address":"test_smtp@test.com",
