@@ -157,6 +157,7 @@ install_scripts () {
   /usr/bin/install scripts/install_DL.sh ${INSTALLED_DIR}/install_DL.sh
   /usr/bin/install scripts/install_masternode_extra.sh ${INSTALLED_DIR}/install_masternode_extra.sh
   /usr/bin/install scripts/install_worknode.sh ${INSTALLED_DIR}/install_worknode.sh
+  /usr/bin/install compress_harbor.sh ${INSTALLED_DIR}/compress_harbor.sh
   #cp  ${DOCKER_IMAGE_DIR}/* ${INSTALLED_DOCKER_IMAGE_PATH}
 
   mkdir -p ${INSTALLED_DIR}/tools
