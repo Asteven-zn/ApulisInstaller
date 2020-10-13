@@ -84,3 +84,58 @@
 
 安装时间比较长，请保持耐心等待。
 
+### 5. 配置文件样例
+ - 样例  
+    目录：config/install_config.json  
+    样例：
+    ```json
+    {
+        "storage":{
+            "type":"ceph",
+            "path":"{mount_path}", 
+            "mountcmd":"mount -t ceph {monitor_server} /mntdlws -o name={ceph_user_name},secret={ceph_user_secret}"
+        },
+        "HARBOR_STORAGE_PATH": "/mnt/harbor",
+        "DOCKER_HARBOR_LIBRARY":"sz_gongdianju",
+        "alert_host":"smtp.test.com:25",
+        "alert_smtp_email_address":"test_smtp@test.com",
+        "alert_smtp_email_password":"Apulis123",
+        "alert_default_user_email":"receiver@test.com",
+        "HARBOR_ADMIN_PASSWORD":"Apulis123",
+        "worker_nodes":[
+            {
+                "host":"worker01",
+                "gpuType":"gpu",
+                "vendor":"nvidia"
+            }
+        ],
+        "_comment_extra_master_nodes":"if there is no extra_master_nodes, leave this array empty",
+        "extra_master_nodes":[
+            {
+                "host":"master02"
+            },
+            {
+                "host":"master03"
+            }
+        ],
+        "kube_vip":"10.31.3.82"
+    }
+    ```
+- 样例说明  
+    当storage.type=ceph时，需要用实际数值替换其中的变量。例如：
+    ```
+    {mount_path}替换为       /mnt/ceph
+    {monitor_server}替换为   10.31.3.63:6789,10.31.3.64:6789,10.31.3.65:6789:/
+    {ceph_user_name}替换为   admin
+    {ceph_user_secret}替换为 AQA31HJf4z0/LxAAgGW9Q/DG5nOdAABsTsOYXQ==
+    mountcmd完整例子：        mount -t ceph 10.31.3.63:6789,10.31.3.64:6789,10.31.3.65:6789:/ /mntdlws -o name=admin,secret=AQA31HJf4z0/LxAAgGW9Q/DG5nOdAABsTsOYXQ==
+    ```
+
+    当storage.type=nfs时, mountcmd放空，storage信息配置如下：
+    ```
+    "storage":{
+        "type":"nfs",
+        "path":"{mount_path}", 
+        "mountcmd":""
+    }
+    ``` 

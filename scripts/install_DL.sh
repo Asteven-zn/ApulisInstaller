@@ -15,6 +15,223 @@
 # limitations under the License.
 
 #set -x
+load_config_from_file() {
+
+	NECCESSARY_ARGUMENT=(
+		NFS_STORAGE_PATH
+		HARBOR_STORAGE_PATH
+		DOCKER_HARBOR_LIBRARY
+		HARBOR_ADMIN_PASSWORD
+		alert_host
+		alert_smtp_email_address
+		alert_smtp_email_password
+		alert_default_user_email
+    kube_vip
+		)
+
+	if [ ! -f "config/install_config.json" ]; then
+		echo " !!!!! Can't find config file (platform.cfg), please check there is a platform.cfg under ./config directory !!!!! "
+		echo " Please relaunch later while everything is ready. "
+		exit
+	fi
+
+  cat << EOF > read_config.py
+import json
+
+with open('config/install_config.json') as f:
+    data = json.load(f)
+    with open('output.cfg','w') as fout:
+        for key, value in data.items():
+            if key != "worker_nodes" and key != "extra_master_nodes" and "_comment" not in key:
+                fout.write(key)
+                fout.write("=")
+                fout.write(value + "\n")
+        fout.write("worker_nodes=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["host"] + "\n")
+        fout.write(")\n")
+        fout.write("worker_nodes_gpuType=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["gpuType"] + "\n")
+        fout.write(")\n")
+        fout.write("worker_nodes_vendor=(\n")
+        for worker_node_info in data["worker_nodes"]:
+            fout.write(worker_node_info["vendor"] + "\n")
+        fout.write(")\n")
+        fout.write("extra_master_nodes=(\n")
+        for extra_master_nodes_info in data["extra_master_nodes"]:
+            fout.write(extra_master_nodes_info["host"] + "\n")
+        fout.write(")\n")
+EOF
+
+  python3 read_config.py
+  source output.cfg
+  rm output.cfg
+  rm read_config.py
+
+  # verify config
+	for argument in NECCESSARY_ARGUMENT
+	do
+		eval value="$"$argument""
+		if [ ! $value ]
+		then
+			printf "\n!!!! Argument %s is not set in config file, Please add on and relauch !!!!\n" "$argument"
+			exit
+		fi
+	done
+
+	if [ "$NFS_STORAGE_PATH" == "/mnt/local" ]
+	then
+		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset in your config file.!!!!\n"
+		exit
+	fi
+
+	if [ "$HARBOR_STORAGE_PATH" == "/data/harbor" ]
+	then
+		printf "\n!!!!Your harbor storage path has been set to /data/harbor, which is not allowed. Please reset in your config file.!!!!\n"
+		exit
+	fi
+
+  # check config
+	echo "################################"
+	echo " Please check if every config is correct"
+	printf "\n * nfs storage path has been set to : %s" "$NFS_STORAGE_PATH"
+	printf "\n * harbor storage path has been set to : %s" "$HARBOR_STORAGE_PATH"
+	printf "\n * docker library name has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
+	printf "\n * harbor admin password has been set to : %s" "$HARBOR_ADMIN_PASSWORD"
+	printf "\n * smtp server host has been set to : %s" "$alert_host"
+	printf "\n * smtp server email has been set to : %s" "$alert_smtp_email_address"
+	printf "\n * smtp server password has been set to : %s" "$alert_smtp_email_password"
+	printf "\n * smtp default receiver has been set to : %s" "$alert_default_user_email"
+	printf "\n################################"
+	printf "\nAre these config correct? [ yes / (default)no ]"
+
+	read -r check_config_string
+	while [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] && [ "$check_config_string" != "" ] && \
+			[ "$check_config_string" != "no" ]  && [ "$check_config_string" != "No" ]  && [ "$check_config_string" != "NO" ]
+	do
+		printf "Please answer 'yes' or 'no':'\\n"
+		printf ">>> "
+		read -r check_config_string
+	done
+
+	if [ "$check_config_string" != "yes" ] && [ "$check_config_string" != "Yes" ] && [ "$check_config_string" != "YES" ] ; then
+		echo " OK. Please relaunch later while everything is ready. "
+		exit
+	fi
+
+	# backup config.json
+	mkdir ~/.config/DLWorkspace
+	cp config/install_config.json ~/.config/DLWorkspace/install_config.json
+
+
+	if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
+	then
+		echo "################################"
+		echo "now begin to deploy node account"
+		echo "################################"
+	fi
+
+	node_number=${#extra_master_nodes[@]}
+	if [ ${node_number} -gt 0 ]
+	then
+		echo "You have config follwing extra master nodes:"
+		for i in "${!extra_master_nodes[@]}";
+		do
+      node_number=$(( ${i} + 1 ))
+			printf "%s. %s\n" "$node_number" "${extra_master_nodes[$i]}"
+		done
+	fi
+
+	node_number=${#worker_nodes[@]}
+	if [ ${node_number} -gt 0 ]
+	then
+		echo "You have config follwing worker nodes:"
+		for i in "${!worker_nodes[@]}";
+		do
+      node_number=$(( ${i} + 1 ))
+			printf "%s. %s:\n" "$node_number" "${worker_nodes[$i]}"
+			printf "* gpu type: %s\n" "${worker_nodes_gpuType[$i]}"
+			printf "* vendor: %s\n" "${worker_nodes_vendor[$i]}"
+		done
+	fi
+
+	printf "\nAre these configs correct? [ yes / (default)no ]"
+	read -r check_node_config
+	while [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] && [ "$check_node_config" != "" ] && \
+			[ "$check_node_config" != "no" ]  && [ "$check_node_config" != "No" ]  && [ "$check_node_config" != "NO" ]
+	do
+		printf "Please answer 'yes' or 'no':'\\n"
+		printf ">>> "
+		read -r check_node_config
+	done
+
+	if [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] ; then
+		echo " OK. Please relaunch later while everything is ready. "
+		exit
+	fi
+
+  for i in "${!extra_master_nodes[@]}";
+  do
+    nodename=${extra_master_nodes[$i]}
+		printf "Set up node %s ...\\n" "${nodename}"
+		setup_user_on_node $nodename
+		echo OK
+  done
+
+  for i in "${!worker_nodes[@]}";
+  do
+    nodename=${worker_nodes[$i]}
+		printf "Set up node %s ...\\n" "${nodename}"
+		setup_user_on_node $nodename
+		echo OK
+	done
+
+  if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
+	then
+		echo "################################"
+		echo "deploy node complete"
+		echo "################################"
+	fi
+}
+
+init_json_config() {
+	load_config_from_file
+
+	echo "Congratulation! config file loaded completed."
+	echo "Now complete reamain setting"
+	printf "Do you want to use master as worknode? [yes|no] \\n"
+	printf "[no] >>> "
+
+	read -r ans
+	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+	do
+		printf "Please answer 'yes' or 'no':'\\n"
+		printf ">>> "
+		read -r ans
+	done
+
+	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
+	then
+		printf "Not setup Up Master as a worknode.\\n"
+
+		USE_MASTER_NODE_AS_WORKER=0
+	fi
+
+	echo '
+                    _
+ _ __ ___  __ _  __| |_   _
+| \__/ _ \/ _` |/ _` | | | |
+| | |  __/ (_| | (_| | |_| |
+|_|  \___|\__,_|\__,_|\__, |
+                      |___/
+
+	'
+	read -s -n1 -p "press any key to continue installing"
+
+}
+
 
 input_harbor_library_name() {
 	reset_library_name="no"
@@ -270,11 +487,11 @@ copy_bin_file (){
   done
 }
 
-prepare_nfs_storage_path () {
+prepare_storage_path () {
 #	reset_nfs_path="no"
-#	if [ "$NFS_STORAGE_PATH" != "/mnt/local"]
+#	if [ "$DLTS_STORAGE_PATH" != "/mnt/local"]
 #	then
-#		printf "nfs storage has been set to :%s \naccept it?[(default)yes/no]:" "$NFS_STORAGE_PATH"
+#		printf "nfs storage has been set to :%s \naccept it?[(default)yes/no]:" "$DLTS_STORAGE_PATH"
 #		read -r ans
 #		while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && \
 #				[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
@@ -294,39 +511,43 @@ prepare_nfs_storage_path () {
 #	then
 #		echo 'Please input nfs storage path: (Path of current machine. Please ensure the dir disk is big enough. Do NOT use /mnt/local)'
 #		echo '[e.g. /mnt/disk]'
-#		read -r NFS_STORAGE_PATH
-#		if [ -d "$NFS_STORAGE_PATH" ]; then
-#		  echo "$NFS_STORAGE_PATH exists"
+#		read -r DLTS_STORAGE_PATH
+#		if [ -d "$DLTS_STORAGE_PATH" ]; then
+#		  echo "$DLTS_STORAGE_PATH exists"
 #		else
-#		  echo "$NFS_STORAGE_PATH not exists"
+#		  echo "$DLTS_STORAGE_PATH not exists"
 #		  exit 1
 #		fi
 #	fi
 
-    NFS_DIR=/mnt/local
+    STORAGE_DIR=/mnt/local
     mkdir -p /mnt
-    rm -rf $NFS_DIR
-    ln -s $NFS_STORAGE_PATH $NFS_DIR
-    echo 'NFS prepared success'
+    mkdir -p $DLTS_STORAGE_PATH
+
+    rm -rf $STORAGE_DIR
+    ln -s $DLTS_STORAGE_PATH $STORAGE_DIR
+    echo 'storage prepared success'
 }
 
 install_harbor () {
 
     HARBOR_DIR=/data/harbor
     mkdir -p /data
+    mkdir -p $HARBOR_STORAGE_PATH
+
     rm -rf $HARBOR_DIR
     ln -s $HARBOR_STORAGE_PATH $HARBOR_DIR
 
     #### install docker-compose
     echo "Installing docker-compose ..."
-    chmod +x ${THIS_DIR}/harbor/docker-compose
-    cp ${THIS_DIR}/harbor/docker-compose /usr/bin/docker-compose
+    chmod +x ${THIS_DIR}/harbor/${ARCH}/docker-compose
+    cp ${THIS_DIR}/harbor/${ARCH}/docker-compose /usr/bin/docker-compose
 
     #### prepare harbor
     echo "Preparing harbor ..."
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}
-    tar -zxvf ${THIS_DIR}/harbor/harbor.tgz -C $HARBOR_INSTALL_DIR
+    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/harbor.tgz -C $HARBOR_INSTALL_DIR
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
@@ -339,7 +560,7 @@ install_harbor () {
     #### install harbor
     echo "Installing harbor ..."
     $HARBOR_INSTALL_DIR/harbor/install.sh
-    sleep 10
+    sleep 10 # harbor need some time to be prepared, otherwise login might fail
     echo "Docker login harbor ..."
     docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
     echo "Check if docker login success ..."
@@ -390,20 +611,21 @@ restore_harbor () {
     ### copy harbor data
     HARBOR_DIR=/data/harbor
     mkdir -p /data
+    mkdir -p $HARBOR_STORAGE_PATH
+
     rm -rf $HARBOR_DIR
     ln -s $HARBOR_STORAGE_PATH $HARBOR_DIR
-    tar -zxvf ${THIS_DIR}/harbor/harbor-data.tgz -C $HARBOR_DIR
+    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/harbor-data.tgz -C $HARBOR_DIR
 
     #### install docker-compose
     echo "Installing docker-compose ..."
-    chmod +x ${THIS_DIR}/harbor/docker-compose
-    cp ${THIS_DIR}/harbor/docker-compose /usr/bin/docker-compose
+		pip3 install ${THIS_DIR}/harbor/${ARCH}/docker-compose/*
 
     #### prepare harbor
     echo "Preparing harbor ..."
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}/harbor
-    tar -zxvf ${THIS_DIR}/harbor/harbor-install.tgz -C $HARBOR_INSTALL_DIR/harbor/
+    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/*harbor*.tgz -C $HARBOR_INSTALL_DIR/harbor/
     chmod 777 -R $HARBOR_INSTALL_DIR/harbor/common/
 
     echo "Preparing docker certs, docker daemon will restart soon ..."
@@ -412,7 +634,7 @@ restore_harbor () {
     systemctl restart docker
 
     #### load harbor image
-    for file in ${THIS_DIR}/harbor/images/*.tar;
+    for file in ${THIS_DIR}/harbor/${ARCH}/images/*.tar;
     do
       docker load -i $file
     done
@@ -824,11 +1046,12 @@ onpremise_cluster:
 
 mountpoints:
   nfsshare1:
-    type: nfs
+    type: ${storage_type}
     server: ${master_hostname}
     filesharename: /mnt/local
     curphysicalmountpoint: /mntdlws
     mountpoints: ""
+    mountcmd: "${storage_mount_cmd}"
 
 jwt:
   secret_key: "Sign key for JWT"
@@ -1090,6 +1313,16 @@ init_environment() {
 
   printf "Install directory: $INSTALLED_DIR \n"
   printf "Cluster Name:  $CLUSTER_NAME \n"
+
+	# load install config from json file
+	init_json_config
+
+	# check if there is harbor install file
+	if [ "`ls ${THIS_DIR}/harbor/${ARCH}/*.tgz`"="" ]; then
+		echo " !!!!! can't find harbor install relate file under harbor/${ARCH} (a tgz compress file) !!!!! "
+		echo " Please relaunch later while everything is ready. "
+		exit
+	fi
 }
 
 
@@ -1499,7 +1732,7 @@ choose_start_from_which_step(){
 load_config_from_file() {
 
 	NECCESSARY_ARGUMENT=(
-		NFS_STORAGE_PATH
+		DLTS_STORAGE_PATH
 		HARBOR_STORAGE_PATH
 		DOCKER_HARBOR_LIBRARY
 		HARBOR_ADMIN_PASSWORD
@@ -1523,32 +1756,53 @@ with open('config/install_config.json') as f:
     data = json.load(f)
     with open('output.cfg','w') as fout:
         for key, value in data.items():
-            if key != "worker_nodes" and key != "extra_master_nodes" and "_comment" not in key:
+            if key != "worker_nodes" and key != "extra_master_nodes" and key != "storage" and "_comment" not in key:
                 fout.write(key)
                 fout.write("=")
                 fout.write(value + "\n")
+
         fout.write("worker_nodes=(\n")
         for worker_node_info in data["worker_nodes"]:
             fout.write(worker_node_info["host"] + "\n")
         fout.write(")\n")
+
         fout.write("worker_nodes_gpuType=(\n")
         for worker_node_info in data["worker_nodes"]:
             fout.write(worker_node_info["gpuType"] + "\n")
         fout.write(")\n")
+
         fout.write("worker_nodes_vendor=(\n")
         for worker_node_info in data["worker_nodes"]:
             fout.write(worker_node_info["vendor"] + "\n")
         fout.write(")\n")
+
         fout.write("extra_master_nodes=(\n")
         for extra_master_nodes_info in data["extra_master_nodes"]:
             fout.write(extra_master_nodes_info["host"] + "\n")
         fout.write(")\n")
+
+        fout.write("storage_type=")
+        fout.write(data["storage"]["type"] + "\n")
+        fout.write("DLTS_STORAGE_PATH=")
+        fout.write("\\"")
+        fout.write(data["storage"]["path"])
+        fout.write("\\"" + "\n")
+
+        if "mountcmd" in data["storage"]:
+            fout.write("storage_mount_cmd=")
+            fout.write("\\"")
+            fout.write(data["storage"]["mountcmd"] + "\n")
+            fout.write("\\"" + "\n")
+        else:
+            fout.write("storage_mount_cmd=")
+            fout.write("\\"")
+            fout.write("\\"" + "\n")
 EOF
 
   python3 read_config.py
   source output.cfg
-  rm output.cfg
-  rm read_config.py
+  #rm output.cfg
+  #rm read_config.py
 
   # verify config 
 	for argument in NECCESSARY_ARGUMENT
@@ -1561,7 +1815,7 @@ EOF
 		fi
 	done
 
-	if [ "$NFS_STORAGE_PATH" == "/mnt/local" ]
+	if [ "$DLTS_STORAGE_PATH" == "/mnt/local" ]
 	then
 		printf "\n!!!!Your nfs storage path has been set to /mnt/local, which is not allowed. Please reset in your config file.!!!!\n"
 		exit
@@ -1576,10 +1830,14 @@ EOF
   # check config 
 	echo "################################"
 	echo " Please check if every config is correct"
-	printf "\n * nfs storage path has been set to : %s" "$NFS_STORAGE_PATH"
+	printf "\n * storage type has been set to : %s" "$storage_type"
+    printf "\n * storage path has been set to : %s" "$DLTS_STORAGE_PATH"
+	printf "\n * storage mount cmd has been set to : %s" "$storage_mount_cmd"
+
 	printf "\n * harbor storage path has been set to : %s" "$HARBOR_STORAGE_PATH"
 	printf "\n * docker library name has been set to : %s" "$DOCKER_HARBOR_LIBRARY"
 	printf "\n * harbor admin password has been set to : %s" "$HARBOR_ADMIN_PASSWORD"
+
 	printf "\n * smtp server host has been set to : %s" "$alert_host"
 	printf "\n * smtp server email has been set to : %s" "$alert_smtp_email_address"
 	printf "\n * smtp server password has been set to : %s" "$alert_smtp_email_password"
@@ -1600,10 +1858,6 @@ EOF
 		echo " OK. Please relaunch later while everything is ready. "
 		exit
 	fi
-
-	# backup config.json
-	mkdir ~/.config/DLWorkspace
-	cp config/install_config.json ~/.config/DLWorkspace/install_config.json
 
 
 	if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
@@ -1678,26 +1932,26 @@ EOF
 
 config_init() {
 	load_config_from_file
-  
+
 	echo "Congratulation! config file loaded completed."
 	echo "Now complete reamain setting"
 	printf "Do you want to use master as worknode? [yes|no] \\n"
 	printf "[no] >>> "
 
-	read -r ans
-	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
-			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
-	do
-		printf "Please answer 'yes' or 'no':'\\n"
-		printf ">>> "
-		read -r ans
-	done
+	  read -r ans
+	  while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && \
+	  	  [ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ]
+	  do
+	  	printf "Please answer 'yes' or 'no':'\\n"
+	  	printf ">>> "
+	  	read -r ans
+	  done
 
 	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
-	then
-		printf "Not setup Up Master as a worknode.\\n"
+	  then
+	    printf "Not setup Up Master as a worknode.\\n"
 
-		USE_MASTER_NODE_AS_WORKER=0
+	    USE_MASTER_NODE_AS_WORKER=0
 	fi
 
 	echo '
@@ -1723,7 +1977,6 @@ main(){
 
 init_environment
 protocol_agree
-config_init
 init_message_print
 choose_start_from_which_step
 
