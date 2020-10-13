@@ -128,4 +128,12 @@
      {ceph_user_name}替换为   admin
      {ceph_user_secret}替换为 AQA31HJf4z0/LxAAgGW9Q/DG5nOdAABsTsOYXQ==
      mountcmd完整例子：        mount -t ceph 10.31.3.63:6789,10.31.3.64:6789,10.31.3.65:6789:/ /mntdlws -o name=admin,secret=AQA31HJf4z0/LxAAgGW9Q/DG5nOdAABsTsOYXQ==
+
+注2：
+当storage.type=nfs时, mountcmd放空，storage信息配置如下：
+    "storage":{
+        "type":"nfs",
+        "path":"{mount_path}", 
+        "mountcmd":""
+    }
 ``` 
