@@ -609,7 +609,7 @@ restore_harbor () {
     mkdir -p /data
     rm -rf $HARBOR_DIR
     ln -s $HARBOR_STORAGE_PATH $HARBOR_DIR
-    tar -zxvf ${THIS_DIR}/harbor/harbor-data.tgz -C $HARBOR_DIR
+    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/harbor-data.tgz -C $HARBOR_DIR
 
     #### install docker-compose
     echo "Installing docker-compose ..."
@@ -619,7 +619,7 @@ restore_harbor () {
     echo "Preparing harbor ..."
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}/harbor
-    tar -zxvf ${THIS_DIR}/harbor/harbor-install.tgz -C $HARBOR_INSTALL_DIR/harbor/
+    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/*harbor*.tgz -C $HARBOR_INSTALL_DIR/harbor/
     chmod 777 -R $HARBOR_INSTALL_DIR/harbor/common/
 
     echo "Preparing docker certs, docker daemon will restart soon ..."
@@ -628,7 +628,7 @@ restore_harbor () {
     systemctl restart docker
 
     #### load harbor image
-    for file in ${THIS_DIR}/harbor/images/*.tar;
+    for file in ${THIS_DIR}/harbor/${ARCH}/images/*.tar;
     do
       docker load -i $file
     done
