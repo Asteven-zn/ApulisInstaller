@@ -505,6 +505,7 @@ install_source_dir () {
     cp -r ./config/* $TEMP_CONFIG_DIR
     sed -i "s|:\ .*:8443/\${library}/|:\ ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" ${TEMP_CONFIG_DIR}/weave-net.yaml
 
+    usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 }
 
 
@@ -639,6 +640,17 @@ prepare_k8s_images() {
     docker pull $harbor_prefix$image${arch_tail}
     docker tag $harbor_prefix$image${arch_tail} $image
   done
+
+  #### check if A910 is presented ########################################
+  if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
+    echo "Load A910 device plugin images ..."
+    if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
+        gzip "${INSTALLED_DIR}/docker-images/A910_driver/${ARCH}/device-plugin.tar.gz" | docker load
+    else
+        echo "Build Device Plugin images ..."
+        # docker build ...
+    fi
+  fi
 }
 
 set_up_k8s_cluster () {
@@ -1456,23 +1468,29 @@ read -s -n1 -p "Please press any key to continue:>> "
   # . ../docker-images/init-container/prebuild.sh
 }
 
+run_func=(
+  check_docker_installation
+      check_k8s_installation
+      install_necessary_packages
+      copy_bin_file
+      prepare_nfs_storage_path
+      set_up_k8s_cluster_init_environment
+      restore_harbor
+      install_dlws_admin_ubuntu
+      set_up_password_less
+      install_source_dir
+      prepare_k8s_images
+      setup_node_environment
+      init_cluster_config
+      init_cluster deploy_services
+      )
+
 choose_start_from_which_step(){
 
-  echo '
-    1. check_docker_installation
-    2. check_k8s_installation
-    3. install_necessary_packages
-    4. prepare_nfs_storage_path
-    5. set_up_k8s_cluster_init_environment
-    6. restore_harbor
-    7. install_dlws_admin_ubuntu
-    8. install_source_dir
-    9. prepare_k8s_images
-    10. setup_node_environment
-    11. init_cluster_config
-    12. init_cluster
-    13. deploy_services
-  '
+  for i in "${!run_func[@]}";do
+    echo "`expr $i + 1` . ${run_func[$i]}"
+  done
+
   echo "Choose a step to start from: >>"
   read -r step
 
@@ -1709,118 +1727,15 @@ config_init
 init_message_print
 choose_start_from_which_step
 
-if [ $step -lt 2 ];then
-  check_docker_installation
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-if [ $step -lt 3 ];then
-  check_k8s_installation
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-if [ $step -lt 4 ];then
-  install_necessary_packages
-  copy_bin_file
-fi
-if [ $step -lt 5 ];then
-  prepare_nfs_storage_path
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-if [ $step -lt 6 ];then
-  set_up_k8s_cluster
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-
-if [ $step -lt 7 ];then
-  # input_harbor_library_name
-  restore_harbor
-fi
-if [ $step -lt 8 ];then
-  install_dlws_admin_ubuntu
-  set_up_password_less
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-if [ $step -lt 9 ];then
-  #### set up DLWorkspace source tree ####################################
-  install_source_dir && echo "Successfully installed source tree..."
-
-  #### check if there are nVidia Cards ###################################
-  #${INSTALLED_DIR}/src/ClusterBootstrap/scripts/prepare_ubuntu.sh
-
-  #### load/copy docker images ###########################################
-usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
-
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-
-if [ $step -lt 10 ];then
-  prepare_k8s_images
-
-  #### check if A910 is presented ########################################
-  if [ -f "/dev/davinci0" ] && [ -f "/dev/davinci_manager" ] && [ -f "/dev/hisi_hdc" ]; then
-    echo "Load A910 device plugin images ..."
-    if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
-        gzip "${INSTALLED_DIR}/docker-images/A910_driver/${ARCH}/device-plugin.tar.gz" | docker load
-    else
-        echo "Build Device Plugin images ..."
-        # docker build ...
-    fi
+choice_run_func=("${run_func[@]:`expr $step - 1`}")
+for one in ${choice_run_func[@]};do
+  $one
+  if [ ${DEBUG_MODE} == "1" ];then
+    printf "!!! one step has finish, press Enter to continue !!!>>>"
+    read -r dump
   fi
-
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-
-if [ $step -lt 11 ];then
-  setup_node_environment
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-
-if [ $step -lt 12 ];then
-  init_cluster_config
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-
-if [ $step -lt 13 ];then
-  init_cluster
-fi
-if [ ${DEBUG_MODE} == "1" ];then
-	printf "!!! one step has finish, press Enter to continue !!!>>>"
-	read -r dump
-fi
-
-if [ $step -lt 14 ];then
-  deploy_services
-fi
-
+done
 }
-
-
 
 #######################################################
 #           script exec startpoint
