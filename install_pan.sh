@@ -17,6 +17,11 @@
 
 
 set -x
+installEnvPrepare() {
+	# to enable pip3 install pycurl and docker-compose related dependency
+	apt install -y libcurl4-openssl-dev libssl-dev
+	python3 -m pip install --upgrade pip
+}
 getCudaPackage() {
   mkdir -p ${CUDA_PACKAGE_PATH}
   cd ${CUDA_PACKAGE_PATH}
@@ -511,6 +516,8 @@ CUDA_PACKAGE_PATH=${INSTALLED_DIR}/cuda
 HARBOR_PACKAGE_PATH=${INSTALL_DIR}/harbor
 LIB_IMAGES=()
 APP_IMAGES=()
+
+installEnvPrepare
 
 printConfigs
 
