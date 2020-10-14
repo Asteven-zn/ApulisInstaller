@@ -15,8 +15,8 @@
 
 ### 1. 使用install_pan.sh进行安装盘制作
 
-```shel
-./install_pan.sh -c -d <docker_images_directory> -p <install_dirrectory>
+```shell
+./install_pan.sh -c -d <docker_images_directory> -p <install_dirrectory> -r <private_harbor_name>
 ```
 
 #### 参数解释
@@ -29,7 +29,7 @@
 #### 注意事项
 
 1. 请使用root用户执行脚本。
-2. 使用脚本时，在实例命令中将"<>"内的内容替换为相应的路径位置。
+2. 使用脚本时，在实例命令中将"<>"内的内容以及"<>"替换为相应的路径位置。
 
 2. 使用安装脚本的主机与安装目标主机需要拥有相同的操作系统、架构类型，并保证apt安装源最新。
 
