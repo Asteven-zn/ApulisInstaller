@@ -175,7 +175,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: harbor.sigsus.cn:8443/${library}/weaveworks/weave-kube:2.6.5
+              image: harbor.sigsus.cn:8443/${library}/weaveworks/weave-kube:2.7.0
               readinessProbe:
                 httpGet:
                   host: 127.0.0.1
@@ -208,7 +208,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: harbor.sigsus.cn:8443/${library}/weaveworks/weave-npc:2.6.5
+              image: harbor.sigsus.cn:8443/${library}/weaveworks/weave-npc:2.7.0
               resources:
                 requests:
                   cpu: 10m
@@ -293,7 +293,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: harbor.sigsus.cn:8443/${library}/weaveworks/weave-kube:2.6.5-arm64
+              image: harbor.sigsus.cn:8443/${library}/weaveworks/weave-kube:2.7.0-arm64
               readinessProbe:
                 httpGet:
                   host: 127.0.0.1
@@ -326,7 +326,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: harbor.sigsus.cn:8443/${library}/weaveworks/weave-npc:2.6.5-arm64
+              image: harbor.sigsus.cn:8443/${library}/weaveworks/weave-npc:2.7.0-arm64
               resources:
                 requests:
                   cpu: 10m
