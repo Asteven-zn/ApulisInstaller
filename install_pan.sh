@@ -60,6 +60,7 @@ getDLWorkspace () {
 }
 
 getNeededAptPackages () {
+  ##################### get x86 version package #########################
   #################### update nvidia docker source ##############################
   updateNvidiaPluginRequirementSource
   #####################  Create Installation Disk apt packages ##########################
@@ -70,14 +71,15 @@ getNeededAptPackages () {
   else
       ( cd ${INSTALLED_DIR}/apt/${ARCH}; apt-get download $(apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES} | grep "^\w" | sort -u)  )
   fi
-}
 
-getNeededArmAptPackages () {
-  #####################  Create Installation Disk apt packages ##########################
-  mkdir -p ${INSTALLED_DIR}/apt/aarch64
-
-  dpkg --add-architecture arm64
-cat <<EOF > /etc/apt/sources.list.d/sources-arm64.list
+  ##################### get arm version package #########################
+	if [ ! ${ARCH} == "aarch64" ]; then
+		#####################  Create Installation Disk apt packages ##########################
+		mkdir -p ${INSTALLED_DIR}/apt/aarch64
+		##################### get arm version package #########################
+		dpkg --add-architecture arm64
+		##################### add arm source ########################
+		cat <<EOF > /etc/apt/sources.list.d/sources-arm64.list
 # source urls for arm64
 deb [arch=arm64] http://ports.ubuntu.com/ xenial main restricted
 deb [arch=arm64] http://ports.ubuntu.com/ xenial-updates main restricted
@@ -87,13 +89,14 @@ deb [arch=arm64] http://ports.ubuntu.com/ xenial multiverse
 deb [arch=arm64] http://ports.ubuntu.com/ xenial-updates multiverse
 deb [arch=arm64] http://ports.ubuntu.com/ xenial-backports main restricted universe multiverse
 EOF
-  apt-get update
+		apt-get update
+		if [ ${COMPLETED_APT_DOWNLOAD} = "1" ]; then
+				( cd ${INSTALLED_DIR}/apt/aarch64; apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES_ARM64} | grep "^\w" | sort -u) )
+		else
+				( cd ${INSTALLED_DIR}/apt/aarch64; apt-get download $(apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES_ARM64} | grep "^\w" | sort -u)  )
+		fi
+	fi
 
-  if [ ${COMPLETED_APT_DOWNLOAD} = "1" ]; then
-      ( cd ${INSTALLED_DIR}/apt/aarch64; apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES_ARM64} | grep "^\w" | sort -u) )
-  else
-      ( cd ${INSTALLED_DIR}/apt/aarch64; apt-get download $(apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES_ARM64} | grep "^\w" | sort -u)  )
-  fi
 }
 
 getAllNeededBinFile(){
@@ -409,7 +412,7 @@ NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common po
 NEEDED_PACKAGES_ARM64=""
 for PACKAGE in ${NEEDED_PACKAGES}
 do
-	${NEEDED_PACKAGES}="${NEEDED_PACKAGES} ${PACKAGE}:arm64"
+	${NEEDED_PACKAGES_ARM64}="${NEEDED_PACKAGES} ${PACKAGE}:arm64"
 done
 COMPLETED_APT_DOWNLOAD=0
 SAVE_DOCKER_IMAGES_ONLY=0
@@ -530,8 +533,6 @@ getAllNeededDockerImages
 getDLWorkspace
 
 getNeededAptPackages
-
-getNeededArmAptPackages
 
 getAllNeededBinFile
 
