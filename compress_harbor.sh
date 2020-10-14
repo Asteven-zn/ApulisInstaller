@@ -6,13 +6,16 @@ mkdir -p HARBOR_STORAGE_PATH
 HARBOR_ADMIN_PASSWORD=Apulis123
 HARBOR_REGISTRY=harbor.sigsus.cn
 DOCKER_HARBOR_LIBRARY=sz_gongdianju
+INSTALLED_DIR=./target
 
 prepare_harbor(){
   cd /opt/harbor/
   docker-compose down
+  mkdir -p $INSTALLED_DIR/harbor/images
   for i in `docker images|grep ^goharbor |awk '{print $1":"$2}'`;do
     new_image="$(sed s/[/]/-/g <<< $i)"
-    docker save $i -o $THIS_DIR/harbor/images/${new_image}.tar
+
+    docker save $i -o $INSTALLED_DIR/harbor/images/${new_image}.tar
   done
 
   ###
