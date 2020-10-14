@@ -64,6 +64,9 @@ getNeededAptPackages () {
   #################### update nvidia docker source ##############################
   updateNvidiaPluginRequirementSource
   #####################  Create Installation Disk apt packages ##########################
+	if [ -f "/etc/apt/sources.list.d/sources-arm64.list" ];then
+		rm /etc/apt/sources.list.d/sources-arm64.list # avoid extra package download
+	fi
   mkdir -p ${INSTALLED_DIR}/apt/${ARCH}
 
   if [ ${COMPLETED_APT_DOWNLOAD} = "1" ]; then
