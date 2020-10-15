@@ -1,5 +1,10 @@
 {
-	"NFS_STORAGE_PATH": "/mnt",
+  "_comment_storage": "please check readme for further information about storage setting",
+	"storage":{
+		"type":"ceph",
+		"path":"{mount_path}", 
+		"mountcmd":"mount -t ceph {monitor_server} /mntdlws -o name={ceph_user_name},secret={ceph_user_secret}"
+	},
 	"HARBOR_STORAGE_PATH": "/data",
 	"DOCKER_HARBOR_LIBRARY": "default_library", 
 	"alert_host": "smtp.test.com:25",
