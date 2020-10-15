@@ -1859,51 +1859,50 @@ EOF
 		exit
 	fi
 
-
+	# only prompt if set more than on node
 	if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
 	then
 		echo "################################"
 		echo "now begin to deploy node account"
 		echo "################################"
-	fi
-
-	node_number=${#extra_master_nodes[@]}
-	if [ ${node_number} -gt 0 ]
-	then
-		echo "You have config follwing extra master nodes:"
-		for i in "${!extra_master_nodes[@]}"; 
-		do 
-      node_number=$(( ${i} + 1 ))
-			printf "%s. %s\n" "$node_number" "${extra_master_nodes[$i]}"
-		done
-	fi
-
-	node_number=${#worker_nodes[@]}
-	if [ ${node_number} -gt 0 ]
-	then
-		echo "You have config follwing worker nodes:"
-		for i in "${!worker_nodes[@]}"; 
-		do 
-      node_number=$(( ${i} + 1 ))
-			printf "%s. %s:\n" "$node_number" "${worker_nodes[$i]}"
-			printf "* gpu type: %s\n" "${worker_nodes_gpuType[$i]}"
-			printf "* vendor: %s\n" "${worker_nodes_vendor[$i]}"
-		done
-	fi
-
-	printf "\nAre these configs correct? [ yes / (default)no ]"
-	read -r check_node_config
-	while [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] && [ "$check_node_config" != "" ] && \
-			[ "$check_node_config" != "no" ]  && [ "$check_node_config" != "No" ]  && [ "$check_node_config" != "NO" ]
-	do
-		printf "Please answer 'yes' or 'no':'\\n"
-		printf ">>> "
+		# print extra master config
+		node_number=${#extra_master_nodes[@]}
+		if [ ${node_number} -gt 0 ]
+		then
+			echo "You have config follwing extra master nodes:"
+			for i in "${!extra_master_nodes[@]}"; 
+			do 
+				node_number=$(( ${i} + 1 ))
+				printf "%s. %s\n" "$node_number" "${extra_master_nodes[$i]}"
+			done
+		fi
+		# print worker config
+		node_number=${#worker_nodes[@]}
+		if [ ${node_number} -gt 0 ]
+		then
+			echo "You have config follwing worker nodes:"
+			for i in "${!worker_nodes[@]}"; 
+			do 
+				node_number=$(( ${i} + 1 ))
+				printf "%s. %s:\n" "$node_number" "${worker_nodes[$i]}"
+				printf "* gpu type: %s\n" "${worker_nodes_gpuType[$i]}"
+				printf "* vendor: %s\n" "${worker_nodes_vendor[$i]}"
+			done
+		fi
+		# confirm
+		printf "\nAre these configs correct? [ yes / (default)no ]"
 		read -r check_node_config
-	done
-
-	if [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] ; then
-		echo " OK. Please relaunch later while everything is ready. "
-		exit
+		while [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] && [ "$check_node_config" != "" ] && \
+				[ "$check_node_config" != "no" ]  && [ "$check_node_config" != "No" ]  && [ "$check_node_config" != "NO" ]
+		do
+			printf "Please answer 'yes' or 'no':'\\n"
+			printf ">>> "
+			read -r check_node_config
+		done
+		if [ "$check_node_config" != "yes" ] && [ "$check_node_config" != "Yes" ] && [ "$check_node_config" != "YES" ] ; then
+			echo " OK. Please relaunch later while everything is ready. "
+			exit
+		fi
 	fi
   
   for i in "${!extra_master_nodes[@]}";   
