@@ -1362,9 +1362,6 @@ fi
     printf "\\n"
     printf "In order to continue the installation process, please review the license\\n"
     printf "agreement.\\n"
-    printf "Please, press ENTER to continue\\n"
-    printf ">>> "
-    read -r dummy
     pager="cat"
     if command -v "more" > /dev/null 2>&1; then
       pager="more"
