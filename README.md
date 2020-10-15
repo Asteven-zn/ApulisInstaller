@@ -139,3 +139,5 @@
         "mountcmd":""
     }
     ``` 
+- 注意事项
+		nfs存储路径请勿指定"/mnt/local", harbor存储地址请勿指定为"/data/harbor"
