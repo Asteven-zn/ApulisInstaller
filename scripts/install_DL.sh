@@ -1318,7 +1318,7 @@ init_environment() {
 	init_json_config
 
 	# check if there is harbor install file
-	if [ "`ls ${THIS_DIR}/harbor/${ARCH}/*.tgz`"="" ]; then
+	if [ ! -n "`find ${THIS_DIR}/harbor/${ARCH}/ -name '*.tgz'`" ]; then
 		echo " !!!!! can't find harbor install relate file under harbor/${ARCH} (a tgz compress file) !!!!! "
 		echo " Please relaunch later while everything is ready. "
 		exit
