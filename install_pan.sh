@@ -289,6 +289,7 @@ setImageList() {
   LIB_IMAGES=(
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/grafana:6.7.4"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/a910-device-plugin:devel3"
+    "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/a910-device-plugin:latest"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/atc:0.0.1-amd64"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/visualjob:1.0"
     "harbor.sigsus.cn:8443/${PROJECT_NAME}/apulistech/tensorflow:1.14.0-gpu-py3"
@@ -411,7 +412,7 @@ RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
 NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common portmap kubeadm kubectl docker.io pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget\\
-  python-dev python-pip virtualenv nvidia-modprobe nvidia-docker2"
+  python-dev python-pip virtualenv=15.1.0+ds-1.1 nvidia-modprobe nvidia-docker2"
 NEEDED_PACKAGES_ARM64=""
 for PACKAGE in ${NEEDED_PACKAGES}
 do
