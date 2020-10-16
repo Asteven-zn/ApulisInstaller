@@ -1700,20 +1700,21 @@ read -s -n1 -p "Please press any key to continue:>> "
 
 run_func=(
   check_docker_installation
-      check_k8s_installation
-      install_necessary_packages
-      copy_bin_file
-      prepare_nfs_storage_path
-      set_up_k8s_cluster_init_environment
-      restore_harbor
-      install_dlws_admin_ubuntu
-      set_up_password_less
-      install_source_dir
-      prepare_k8s_images
-      setup_node_environment
-      init_cluster_config
-      init_cluster deploy_services
-      )
+	check_k8s_installation
+	install_necessary_packages
+	copy_bin_file
+	prepare_storage_path
+	set_up_k8s_cluster
+	install_harbor
+	install_dlws_admin_ubuntu
+	set_up_password_less
+	install_source_dir
+	prepare_k8s_images
+	setup_node_environment
+	init_cluster_config
+	init_cluster
+	deploy_services
+	)
 
 choose_start_from_which_step(){
 
