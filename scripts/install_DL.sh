@@ -540,14 +540,13 @@ install_harbor () {
 
     #### install docker-compose
     echo "Installing docker-compose ..."
-    chmod +x ${THIS_DIR}/harbor/${ARCH}/docker-compose
-    cp ${THIS_DIR}/harbor/${ARCH}/docker-compose /usr/bin/docker-compose
+		pip3 install ${THIS_DIR}/harbor/${ARCH}/docker-compose/*
 
     #### prepare harbor
     echo "Preparing harbor ..."
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}
-    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/harbor.tgz -C $HARBOR_INSTALL_DIR
+    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/*harbor*.tgz -C $HARBOR_INSTALL_DIR/harbor/
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
