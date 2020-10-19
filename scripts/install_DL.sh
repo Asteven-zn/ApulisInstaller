@@ -882,7 +882,7 @@ set_up_k8s_cluster () {
 
     rm /root/.kube/config -rf
 
-    echo "clean iptables and restart docker"
+    echo "clean iptables and restart docker. It takes a while, please wait......"
     systemctl stop kubelet
     systemctl stop docker
     iptables --flush
