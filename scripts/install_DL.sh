@@ -1128,10 +1128,6 @@ else
 EOF
 fi
 
-cat << EOF >> config.yaml
-language: ${language}
-EOF
-
 # write extra master nodes info
 for masternode in "${extra_master_nodes[@]}"
 do
@@ -1174,6 +1170,22 @@ cat << EOF >> config.yaml
 
 extranet_protocol: http
 
+EOF
+
+cat << EOF >> config.yaml
+i18n: ${i18n}
+EOF
+cat << EOF >> config.yaml
+secret_key_for_password: ${secret_key_for_password}
+EOF
+cat << EOF >> config.yaml
+platform_name: ${platform_name}
+EOF
+cat << EOF >> config.yaml
+enable_vc: ${enable_vc}
+EOF
+cat << EOF >> config.yaml
+enable_avisuals: ${enable_avisuals}
 EOF
 
 }

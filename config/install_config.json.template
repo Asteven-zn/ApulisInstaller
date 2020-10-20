@@ -35,4 +35,9 @@
 	],
 
 	"kube_vip": "0.0.0.0"
+	"secret_key_for_password": "123abcABC!@#",
+	"platform_name": "Apulis Platform",
+	"enable_vc": true,
+	"i18n": true,
+	"enable_avisuals": true,
 }
