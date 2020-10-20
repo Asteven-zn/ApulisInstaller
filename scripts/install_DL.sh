@@ -1113,45 +1113,80 @@ machines:
   ${master_hostname}:
     role: infrastructure
     private-ip: ${master_ip}
+EOF
+# generate archtype
+if [ ${ARCH} = "x86_64" ]; then
+  cat << EOF >> config.yaml
     archtype: amd64
 EOF
-
+elif [ ${ARCH} = "aarch64" ]; then
+  cat << EOF >> config.yaml
+    archtype: arm64
+EOF
+fi
+# generate depends on master role and archtype
 if [ ${USE_MASTER_NODE_AS_WORKER} = 0 ]; then
     cat << EOF >> config.yaml
     type: cpu
 EOF
 else
+	if [ ${ARCH} = "x86_64" ]; then
     cat << EOF >> config.yaml
     type: gpu
     vendor: nvidia
     os: ubuntu
 EOF
+	elif [ ${ARCH} = "aarch64" ]; then
+    cat << EOF >> config.yaml
+    type: npu
+    vendor: huawei
+    os: ubuntu
+EOF
+	fi
 fi
 
 # write extra master nodes info
-for masternode in "${extra_master_nodes[@]}"
+for i in "${!extra_master_nodes[@]}"
 do
-   extra_master_ip=`grep "${masternode}" /etc/hosts | grep -v 127 | grep -v ${masternode}\. | awk '{print $1}'`
+   extra_master_ip=`grep "${extra_master_nodes[$i]}" /etc/hosts | grep -v 127 | grep -v ${extra_master_nodes[$i]}\. | awk '{print $1}'`
    cat << EOF >> config.yaml
 
-  ${masternode}:
+  ${extra_master_nodes[$i]}:
     role: infrastructure
     private-ip: ${extra_master_ip}
+EOF
+## generate archtype
+	if [ ${extra_master_nodes_arch[$i]} = "x86_64" ]; then
+  cat << EOF >> config.yaml
     archtype: amd64
 EOF
-    if [ ${USE_MASTER_NODE_AS_WORKER} = 0 ]; then
-        cat << EOF >> config.yaml
+	elif [ ${extra_master_nodes_arch[$i]} = "aarch64" ]; then
+  cat << EOF >> config.yaml
+    archtype: arm64
+EOF
+	fi
+## generate depends on master role and archtype
+	if [ ${USE_MASTER_NODE_AS_WORKER} = 0 ]; then
+    cat << EOF >> config.yaml
     type: cpu
 EOF
-    else
-            cat << EOF >> config.yaml
+else
+	if [ ${extra_master_nodes_arch[$i]} = "x86_64" ]; then
+    cat << EOF >> config.yaml
     type: gpu
     vendor: nvidia
     os: ubuntu
 EOF
-    fi
+	elif [ ${extra_master_nodes_arch[$i]} = "aarch64" ]; then
+    cat << EOF >> config.yaml
+    type: npu
+    vendor: huawei
+    os: ubuntu
+EOF
+	fi
+fi
 done
-# write worker nodes info
+## write worker nodes info
 for i in "${!worker_nodes[@]}"
 do
    cat << EOF >> config.yaml
