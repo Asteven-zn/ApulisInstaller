@@ -215,8 +215,9 @@ init_json_config() {
 	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
 	then
 		printf "Not setup Up Master as a worknode.\\n"
-
 		USE_MASTER_NODE_AS_WORKER=0
+	else
+		USE_MASTER_NODE_AS_WORKER=1
 	fi
 
 	echo '
@@ -1243,6 +1244,7 @@ init_environment() {
   HARBOR_REGISTRY=harbor.sigsus.cn
   CLUSTER_NAME="DLWorkspace"
 	DEBUG_MODE=0
+	USE_MASTER_NODE_AS_WORKER=0
 
   ############# Don't source the install file. Run it in sh or bash ##########
   if ! echo "$0" | grep '\.sh$' > /dev/null; then
