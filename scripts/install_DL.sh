@@ -547,7 +547,7 @@ install_harbor () {
     echo "Preparing harbor ..."
     HARBOR_INSTALL_DIR="/opt"
     mkdir -p ${HARBOR_INSTALL_DIR}
-    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/*harbor*.tgz -C $HARBOR_INSTALL_DIR/harbor/
+    tar -zxvf ${THIS_DIR}/harbor/${ARCH}/*harbor*.tgz -C $HARBOR_INSTALL_DIR
     cp ${THIS_DIR}/config/harbor/harbor.yml $HARBOR_INSTALL_DIR/harbor/
     sed -i "s/\${admin_password}/$HARBOR_ADMIN_PASSWORD/" $HARBOR_INSTALL_DIR/harbor/harbor.yml
     echo "Preparing docker certs, docker daemon will restart soon ..."
