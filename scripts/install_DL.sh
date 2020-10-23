@@ -1754,6 +1754,8 @@ run_func=(
 	prepare_storage_path
 	set_up_k8s_cluster
 	install_harbor
+	load_docker_images
+	push_docker_images_to_harbor
 	install_dlws_admin_ubuntu
 	set_up_password_less
 	install_source_dir
