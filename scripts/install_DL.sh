@@ -541,7 +541,19 @@ install_harbor () {
 
     #### install docker-compose
     echo "Installing docker-compose ..."
-		pip3 install ${THIS_DIR}/harbor/${ARCH}/docker-compose/*
+    for pack in `ls ${THIS_DIR}/harbor/${ARCH}/docker-compose/setuptools*`
+    do
+            pip3 install ${pack}
+    done
+    for pack in `ls ${THIS_DIR}/harbor/${ARCH}/docker-compose/wheel*`
+    do
+            pip3 install ${pack}
+    done
+    echo "Installing docker-compose ..."
+    for pack in `ls ${THIS_DIR}/harbor/${ARCH}/docker-compose/* |grep -v setuptools | grep -v wheel`
+    do
+            pip3 install ${pack}
+    done
 
     #### prepare harbor
     echo "Preparing harbor ..."
