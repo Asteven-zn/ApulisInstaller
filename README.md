@@ -120,7 +120,7 @@
         ],
         "kube_vip":"10.31.3.82",
         secret_key_for_password: '123abcABC!@#',
-        platform_name: Apulis Platform,
+        platform_name: ApulisPlatform,
         enable_vc: true,
         i18n: true,
         enable_avisuals: true
@@ -149,6 +149,7 @@
        ```
 
     2. secret_key_for_password 请替换为一个复杂的字符串，否则会有安全问题
+
     3. platform_name: 可配置的平台名称
 
     3. enable_vc: `true | false`, 可选填 true 或 false，是否启用 VC，配置 aiarts 的项目填 false
@@ -156,6 +157,9 @@
     4. i18n: `true | zh-CN | en-US` 是否启用多语言配置，填 true 表示启用全部语言，选填 zh-CN 或 en-US 可指定一种语言
 
     5. enable_avisuals: 是否部署可视化建模
+
+    6. 注意所有的值都不应该有空格
+
 
 - 注意事项
    nfs存储路径请勿指定"/mnt/local", harbor存储地址请勿指定为"/data/harbor"
