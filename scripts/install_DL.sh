@@ -215,8 +215,9 @@ init_json_config() {
 	if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]
 	then
 		printf "Not setup Up Master as a worknode.\\n"
-
 		USE_MASTER_NODE_AS_WORKER=0
+	else
+		USE_MASTER_NODE_AS_WORKER=1
 	fi
 
 	echo '
@@ -1113,49 +1114,80 @@ machines:
   ${master_hostname}:
     role: infrastructure
     private-ip: ${master_ip}
+EOF
+# generate archtype
+if [ ${ARCH} = "x86_64" ]; then
+  cat << EOF >> config.yaml
     archtype: amd64
 EOF
-
+elif [ ${ARCH} = "aarch64" ]; then
+  cat << EOF >> config.yaml
+    archtype: arm64
+EOF
+fi
+# generate depends on master role and archtype
 if [ ${USE_MASTER_NODE_AS_WORKER} = 0 ]; then
     cat << EOF >> config.yaml
     type: cpu
 EOF
 else
+	if [ ${ARCH} = "x86_64" ]; then
     cat << EOF >> config.yaml
     type: gpu
     vendor: nvidia
     os: ubuntu
 EOF
+	elif [ ${ARCH} = "aarch64" ]; then
+    cat << EOF >> config.yaml
+    type: npu
+    vendor: huawei
+    os: ubuntu
+EOF
+	fi
 fi
 
-cat << EOF >> config.yaml
-language: ${language}
-EOF
-
 # write extra master nodes info
-for masternode in "${extra_master_nodes[@]}"
+for i in "${!extra_master_nodes[@]}"
 do
-   extra_master_ip=`grep "${masternode}" /etc/hosts | grep -v 127 | grep -v ${masternode}\. | awk '{print $1}'`
+   extra_master_ip=`grep "${extra_master_nodes[$i]}" /etc/hosts | grep -v 127 | grep -v ${extra_master_nodes[$i]}\. | awk '{print $1}'`
    cat << EOF >> config.yaml
 
-  ${masternode}:
+  ${extra_master_nodes[$i]}:
     role: infrastructure
     private-ip: ${extra_master_ip}
+EOF
+## generate archtype
+	if [ ${extra_master_nodes_arch[$i]} = "x86_64" ]; then
+  cat << EOF >> config.yaml
     archtype: amd64
 EOF
-    if [ ${USE_MASTER_NODE_AS_WORKER} = 0 ]; then
-        cat << EOF >> config.yaml
+	elif [ ${extra_master_nodes_arch[$i]} = "aarch64" ]; then
+  cat << EOF >> config.yaml
+    archtype: arm64
+EOF
+	fi
+## generate depends on master role and archtype
+	if [ ${USE_MASTER_NODE_AS_WORKER} = 0 ]; then
+    cat << EOF >> config.yaml
     type: cpu
 EOF
-    else
-            cat << EOF >> config.yaml
+else
+	if [ ${extra_master_nodes_arch[$i]} = "x86_64" ]; then
+    cat << EOF >> config.yaml
     type: gpu
     vendor: nvidia
     os: ubuntu
 EOF
-    fi
+	elif [ ${extra_master_nodes_arch[$i]} = "aarch64" ]; then
+    cat << EOF >> config.yaml
+    type: npu
+    vendor: huawei
+    os: ubuntu
+EOF
+	fi
+fi
 done
-# write worker nodes info
+## write worker nodes info
 for i in "${!worker_nodes[@]}"
 do
    cat << EOF >> config.yaml
@@ -1174,6 +1206,22 @@ cat << EOF >> config.yaml
 
 extranet_protocol: http
 
+EOF
+
+cat << EOF >> config.yaml
+i18n: ${i18n}
+EOF
+cat << EOF >> config.yaml
+secret_key_for_password: ${secret_key_for_password}
+EOF
+cat << EOF >> config.yaml
+platform_name: ${platform_name}
+EOF
+cat << EOF >> config.yaml
+enable_vc: ${enable_vc}
+EOF
+cat << EOF >> config.yaml
+enable_avisuals: ${enable_avisuals}
 EOF
 
 }
@@ -1196,6 +1244,7 @@ init_environment() {
   HARBOR_REGISTRY=harbor.sigsus.cn
   CLUSTER_NAME="DLWorkspace"
 	DEBUG_MODE=0
+	USE_MASTER_NODE_AS_WORKER=0
 
   ############# Don't source the install file. Run it in sh or bash ##########
   if ! echo "$0" | grep '\.sh$' > /dev/null; then
