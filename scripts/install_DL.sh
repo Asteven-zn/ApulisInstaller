@@ -855,7 +855,7 @@ prepare_k8s_images() {
     $k8s_url/pause:3.2
     $k8s_url/etcd:3.4.3-0
     $k8s_url/coredns:1.6.7
-    plndr/kube-vip:0.1.7
+    plndr/kube-vip:0.1.8
   )
   for image in ${k8s_images[@]}
   do

@@ -123,6 +123,57 @@ getHarborPackages () {
 	# 4. There is no arm64 version in github release. Though we can complie one by ourselves, as it says above, we don't want to maintant it.
 	# 5. Seems pip3 source is the only way. But when run with '--platform', which allow us to download two archs version, it encounters problems when let it download dependency automatically. We can only download one by one to avoid problems.
 	# So that's it. Anyway, please improve and simplify the code if you can solve these problems.
+  mkdir -p ${INSTALLED_DIR}/harbor/${ARCH}
+  mkdir -p ${INSTALLED_DIR}/harbor/${ARCH}/docker-compose
+	if [ ${ARCH} == "x86_64" ];then
+		wget https://github.com/goharbor/harbor/releases/download/v2.0.1/harbor-offline-installer-v2.0.1.tgz -O ${INSTALLED_DIR}/harbor/x86_64/harbor.tgz
+	fi
+	# we maintain our own arm64 harbor version
+	for package in ${DOCKER_COMPOSE_DEPENDENCY[@]}
+	do
+		pip3 download ${package} -d ${INSTALLED_DIR}/harbor/${ARCH}/docker-compose
+	done
+}
+
+
+getHarborPackages_old() {
+	DOCKER_COMPOSE_DEPENDENCY=(
+		attrs==20.2.0
+		chardet==3.0.4
+		dockerpty==0.4.1
+		paramiko==2.7.2
+		PyYAML==5.3.1
+		urllib3==1.25.10
+		bcrypt==3.2.0
+		cryptography==3.1.1
+		docopt==0.6.2
+		pycparser==2.20
+		requests==2.24.0
+		websocket_client==0.57.0
+		cached_property==1.5.2
+		distro==1.5.0
+		idna==2.10
+		PyNaCl==1.4.0
+		setuptools==50.3.0
+		zipp==3.3.0
+		certifi==2020.6.20
+		docker==4.3.1
+		importlib_metadata==2.0.0
+		pyrsistent==0.17.3
+		six==1.15.0
+		cffi==1.14.3
+		docker_compose==1.27.4
+		jsonschema==3.2.0
+		python_dotenv==0.14.0
+		texttable==1.6.3
+		)
+	#=== this tedious, idiot list comes from the follwing reasons:
+	# 1. we don't want to maintant docker-compose by ourselves. So we seek to acquire it from Official source.
+	# 2. There are only three ways to get docker-compose: apt source, github release and pip3 source. Yes, even pip2 itself can't install docker-compose because one dependency needs python>=3.5
+	# 3. The apt source version on ubuntu 18.04, which is the version we build our platform on, is too low to satisfy the needs to launch harbor.
+	# 4. There is no arm64 version in github release. Though we can complie one by ourselves, as it says above, we don't want to maintant it.
+	# 5. Seems pip3 source is the only way. But when run with '--platform', which allow us to download two archs version, it encounters problems when let it download dependency automatically. We can only download one by one to avoid problems.
+	# So that's it. Anyway, please improve and simplify the code if you can solve these problems.
 
   #####################  Create Installation harbor packages ##########################
 	# download x86 version
@@ -545,6 +596,7 @@ setImageList
 if [ ${ADD_ON_MODE} = "1" ]; then
 	getNeededAptPackages
 	install_virtual_python2
+	getHarborPackages
 	${RM} -rf ${TEMP_DIR}
 	exit
 fi
