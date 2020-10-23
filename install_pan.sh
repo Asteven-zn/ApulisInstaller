@@ -20,7 +20,7 @@ set -x
 installEnvPrepare() {
 	# to enable pip3 install pycurl and docker-compose related dependency
 	apt install -y libcurl4-openssl-dev libssl-dev
-	python3 -m pip install --upgrade pip
+	# python3 -m pip install --upgrade pip
 }
 getCudaPackage() {
   mkdir -p ${CUDA_PACKAGE_PATH}
