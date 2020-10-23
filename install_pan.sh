@@ -166,6 +166,7 @@ getHarborPackages_old() {
 		jsonschema==3.2.0
 		python_dotenv==0.14.0
 		texttable==1.6.3
+		wheel
 		)
 	#=== this tedious, idiot list comes from the follwing reasons:
 	# 1. we don't want to maintant docker-compose by ourselves. So we seek to acquire it from Official source.
