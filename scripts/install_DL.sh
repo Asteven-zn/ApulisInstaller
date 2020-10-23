@@ -1805,7 +1805,8 @@ with open('config/install_config.json') as f:
             if key != "worker_nodes" and key != "extra_master_nodes" and key != "storage" and "_comment" not in key:
                 fout.write(key)
                 fout.write("=")
-                fout.write(value + "\n")
+                value_str="{}\n".format(value)
+                fout.write(value_str)
 
         fout.write("worker_nodes=(\n")
         for worker_node_info in data["worker_nodes"]:
