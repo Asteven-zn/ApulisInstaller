@@ -871,8 +871,8 @@ prepare_k8s_images() {
   )
   for image in ${k8s_images[@]}
   do
-    docker pull $harbor_prefix$image${arch_tail}
-    docker tag $harbor_prefix$image${arch_tail} $image
+    docker pull ${harbor_prefix}${image}${arch_tail}
+    docker tag ${harbor_prefix}${image}${arch_tail} $image
   done
 
   #### check if A910 is presented ########################################
