@@ -69,6 +69,13 @@ getNeededAptPackages () {
 	fi
   mkdir -p ${INSTALLED_DIR}/apt/${ARCH}
 
+  if [ ${ARCH} == "aarch64" ];then
+		${NEEDED_PACKAGES}=${NEEDED_PACKAGES}" "${NEEDED_PACKAGES_SPECIFIC_FOR_ARM64}
+	fi
+  if [ ${ARCH} == "x86_64" ];then
+		${NEEDED_PACKAGES}=${NEEDED_PACKAGES}" "${NEEDED_PACKAGES_SPECIFIC_FOR_AMD64}
+	fi
+
   if [ ${COMPLETED_APT_DOWNLOAD} = "1" ]; then
       ( cd ${INSTALLED_DIR}/apt/${ARCH}; apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES} | grep "^\w" | sort -u) )
   else
@@ -470,11 +477,8 @@ RM="/bin/rm"
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
 NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common portmap kubeadm=1.18.6-00 kubectl=1.18.6-00 kubelet=1.18.6-00 docker.io pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget\\
   python-dev python-pip virtualenv=15.1.0+ds-1.1 nvidia-modprobe nvidia-docker2"
-NEEDED_PACKAGES_ARM64=""
-for PACKAGE in ${NEEDED_PACKAGES}
-do
-	NEEDED_PACKAGES_ARM64=${NEEDED_PACKAGES_ARM64}" "${PACKAGE}:arm64
-done
+NEEDED_PACKAGES_SPECIFIC_FOR_ARM64="libffi-dev"
+NEEDED_PACKAGES_SPECIFIC_FOR_AMD64=""
 COMPLETED_APT_DOWNLOAD=0
 SAVE_DOCKER_IMAGES_ONLY=0
 PROJECT_NAME=""
