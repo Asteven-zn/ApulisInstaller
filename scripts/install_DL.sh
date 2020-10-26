@@ -1227,6 +1227,16 @@ cat << EOF >> config.yaml
 enable_avisuals: ${enable_avisuals}
 EOF
 
+if [ ${ARCHTYPE} == "x86_64" ]; then
+	db_archtype="amd64"
+fi
+if [ ${ARCHTYPE} == "x86_64" ]; then
+	db_archtype="arm64"
+fi
+cat << EOF >> config.yaml
+database_archtype: ${db_archtype}
+EOF
+
 }
 
 
