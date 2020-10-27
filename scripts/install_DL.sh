@@ -1234,7 +1234,7 @@ if [ ${ARCHTYPE} == "x86_64" ]; then
 	db_archtype="arm64"
 fi
 cat << EOF >> config.yaml
-database_archtype: ${db_archtype}
+db_archtype: ${db_archtype}
 EOF
 
 }
