@@ -119,11 +119,11 @@
             }
         ],
         "kube_vip":"10.31.3.82",
-        secret_key_for_password: '123abcABC!@#',
-        platform_name: ApulisPlatform,
-        enable_vc: true,
-        i18n: true,
-        enable_avisuals: true
+        "secret_key_for_password": "123abcABC!@#",
+        "platform_name": "ApulisPlatform",
+        "enable_vc": true,
+        "i18n": true,
+        "enable_avisuals": true
     }
     ```
 - 样例说明  
