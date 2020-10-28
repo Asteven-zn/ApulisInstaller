@@ -140,6 +140,10 @@ getHarborPackages () {
 	do
 		pip3 download ${package} -d ${INSTALLED_DIR}/harbor/${ARCH}/docker-compose
 	done
+
+	if [ ${ARCH} == "aarch64" ];then
+    pip3 download wheel -d ${INSTALLED_DIR}/harbor/${ARCH}/docker-compose
+  fi
 }
 
 

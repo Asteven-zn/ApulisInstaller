@@ -575,15 +575,6 @@ install_harbor () {
     sleep 10 # harbor need some time to be prepared, otherwise login might fail
     echo "Docker login harbor ..."
     docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
-    echo "Check if docker login success ..."
-    echo "[y/n]>>>"
-    read -r ans
-    if [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ]; then
-      echo "Ensure docker login success, continue ..."
-    else
-      echo "Please check docker harbor problems"
-      exit 2
-    fi
 
     #### create basic harbor library
     curl -X POST "https://${HARBOR_REGISTRY}:8443/api/v2.0/projects" -H 'Content-Type: application/json' -k -u admin:${HARBOR_ADMIN_PASSWORD} --data-raw "
@@ -1234,6 +1225,16 @@ enable_vc: ${enable_vc}
 EOF
 cat << EOF >> config.yaml
 enable_avisuals: ${enable_avisuals}
+EOF
+
+if [ ${ARCHTYPE} == "x86_64" ]; then
+	db_archtype="amd64"
+fi
+if [ ${ARCHTYPE} == "x86_64" ]; then
+	db_archtype="arm64"
+fi
+cat << EOF >> config.yaml
+db_archtype: ${db_archtype}
 EOF
 
 }
