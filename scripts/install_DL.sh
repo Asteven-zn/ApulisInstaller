@@ -1227,12 +1227,6 @@ cat << EOF >> config.yaml
 enable_avisuals: ${enable_avisuals}
 EOF
 
-if [ ${ARCHTYPE} == "x86_64" ]; then
-	db_archtype="amd64"
-fi
-if [ ${ARCHTYPE} == "x86_64" ]; then
-	db_archtype="arm64"
-fi
 cat << EOF >> config.yaml
 db_archtype: ${db_archtype}
 EOF
@@ -1802,6 +1796,7 @@ load_config_from_file() {
 		alert_smtp_email_password
 		alert_default_user_email
     kube_vip
+    db_archtype
 		)
 
 	if [ ! -f "config/install_config.json" ]; then

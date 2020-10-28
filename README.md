@@ -123,10 +123,11 @@
         "platform_name": "ApulisPlatform",
         "enable_vc": true,
         "i18n": true,
+        "db_archtype": "amd64",
         "enable_avisuals": true
     }
     ```
-- 样例说明  
+- 样例说明
 
     1. 当storage.type=ceph时，需要用实际数值替换其中的变量。例如：
 
@@ -159,6 +160,8 @@
     5. enable_avisuals: 是否部署可视化建模
 
     6. 注意所有的值都不应该有空格
+
+    7. db_source 可以填入"arm64"或者"amd64"
 
 
 - 注意事项

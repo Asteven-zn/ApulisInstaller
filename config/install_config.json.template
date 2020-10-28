@@ -39,5 +39,6 @@
 	"platform_name": "ApulisPlatform",
 	"enable_vc": true,
 	"i18n": true,
+	"db_archtype": "amd64",
 	"enable_avisuals": true
 }
