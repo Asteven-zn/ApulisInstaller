@@ -693,7 +693,7 @@ handle_docker_login_fail() {
 	printf "continue process? [y/n(default)] >>>"
 	read -r ans
 	while [ "$ans" != "yes" ] && [ "$ans" != "Yes" ] && [ "$ans" != "YES" ] && [ "$ans" != "" ] && [ "$ans" != "y" ] && \
-			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ] && [ "$ans" != "n" ] 
+			[ "$ans" != "no" ]  && [ "$ans" != "No" ]  && [ "$ans" != "NO" ] && [ "$ans" != "n" ]
 	do
 		printf "Please answer 'y' or 'n':'\\n"
 		printf ">>> "
@@ -1581,9 +1581,9 @@ do
 
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
-	
-	sshpass -p dlwsadmin ssh dlwsadmin@$masternode "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}" 
-    
+
+	sshpass -p dlwsadmin ssh dlwsadmin@$masternode "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
+
 
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
@@ -1714,6 +1714,7 @@ deploy_services(){
 cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap
 ./deploy.py kubernetes start nvidia-device-plugin
 ./deploy.py kubernetes start  a910-device-plugin
+./deploy.py kubernetes start  volcanosh
 
 ./deploy.py renderservice
 ./deploy.py renderimage
@@ -1861,7 +1862,7 @@ EOF
   #rm output.cfg
   #rm read_config.py
 
-  # verify config 
+  # verify config
 	for argument in NECCESSARY_ARGUMENT
 	do
 		eval value="$"$argument""
@@ -1884,7 +1885,7 @@ EOF
 		exit
 	fi
 
-  # check config 
+  # check config
 	echo "################################"
 	echo " Please check if every config is correct"
 	printf "\n * storage type has been set to : %s" "$storage_type"
@@ -1927,8 +1928,8 @@ EOF
 		if [ ${node_number} -gt 0 ]
 		then
 			echo "You have config follwing extra master nodes:"
-			for i in "${!extra_master_nodes[@]}"; 
-			do 
+			for i in "${!extra_master_nodes[@]}";
+			do
 				node_number=$(( ${i} + 1 ))
 				printf "%s. %s\n" "$node_number" "${extra_master_nodes[$i]}"
 			done
@@ -1938,8 +1939,8 @@ EOF
 		if [ ${node_number} -gt 0 ]
 		then
 			echo "You have config follwing worker nodes:"
-			for i in "${!worker_nodes[@]}"; 
-			do 
+			for i in "${!worker_nodes[@]}";
+			do
 				node_number=$(( ${i} + 1 ))
 				printf "%s. %s:\n" "$node_number" "${worker_nodes[$i]}"
 				printf "* gpu type: %s\n" "${worker_nodes_gpuType[$i]}"
@@ -1961,23 +1962,23 @@ EOF
 			exit
 		fi
 	fi
-  
-  for i in "${!extra_master_nodes[@]}";   
-  do   
+
+  for i in "${!extra_master_nodes[@]}";
+  do
     nodename=${extra_master_nodes[$i]}
 		printf "Set up node %s ...\\n" "${nodename}"
 		setup_user_on_node $nodename
 		echo OK
-  done  
-  
-  for i in "${!worker_nodes[@]}";   
-  do   
+  done
+
+  for i in "${!worker_nodes[@]}";
+  do
     nodename=${worker_nodes[$i]}
 		printf "Set up node %s ...\\n" "${nodename}"
 		setup_user_on_node $nodename
 		echo OK
 	done
-	
+
   if [[ ${#extra_master_nodes[@]} -gt 0 || ${#worker_nodes[@]} -gt 0 ]]
 	then
 		echo "################################"

@@ -479,7 +479,7 @@ CONFIG_DIR=./config
 RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
-NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common portmap kubeadm=1.18.6-00 kubectl=1.18.6-00 kubelet=1.18.6-00 docker.io pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget\\
+NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common portmap kubelet=1.18.6-00 kubeadm=1.18.6-00 kubectl=1.18.6-00 docker.io pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget\\
   python-dev python-pip virtualenv=15.1.0+ds-1.1 nvidia-modprobe nvidia-docker2"
 NEEDED_PACKAGES_SPECIFIC_FOR_ARM64="libffi-dev"
 NEEDED_PACKAGES_SPECIFIC_FOR_AMD64=""
