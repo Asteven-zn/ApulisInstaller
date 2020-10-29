@@ -53,6 +53,30 @@ getDLWorkspace () {
 
   ############## Use Https instead of ssh #################################################
   git clone --single-branch --branch no_network https://github.com/apulis/DLWorkspace.git ${TEMP_DIR}/YTung
+  while [ ! $? -eq 0 ]
+  do
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "!!!! project clone fail !!!!"
+    echo "Please select a number to choose further process\n"
+    echo " *1 : Clone project again."
+    echo " *2 : Ignore and continue."
+    echo " *3 : Exit"
+    printf ">>> "
+    read -r ans
+    while [ "$ans" != "1" ] && [ "$ans" != "2" ] && [ "$ans" != "3" ]
+    do
+      echo "Please input a correct number!"
+      printf ">>> "
+      read -r ans
+    done
+    if [ ${ans} = "1" ];then
+      git clone --single-branch --branch no_network https://github.com/apulis/DLWorkspace.git ${TEMP_DIR}/YTung
+    elif [ ${ans} = "3" ];then
+      printf "OK. relauch when everything is ready"
+      exit
+    fi
+  done
+	echo "Continue."
 
   (cd ${TEMP_DIR}; tar -cvzf ${INSTALLED_DIR}/YTung.tar.gz ./YTung --exclude "./YTung/.git" )
 
