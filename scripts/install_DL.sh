@@ -674,6 +674,7 @@ prepare_k8s_images() {
     $k8s_url/kube-proxy:$k8s_version
     $k8s_url/kube-apiserver:$k8s_version
     $k8s_url/kube-controller-manager:$k8s_version
+
     $k8s_url/kube-scheduler:$k8s_version
     $k8s_url/pause:3.2
     $k8s_url/etcd:3.4.3-0
@@ -1402,7 +1403,8 @@ do
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
 
-	sshpass -p dlwsadmin ssh dlwsadmin@$masternode "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
+    ### login docker harbor for save image function
+    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
 
 
     if [ ${NO_NFS} = 0 ]; then
@@ -1472,6 +1474,8 @@ do
 
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo systemctl enable nfs-kernel-server"
+    ### login docker harbor for save image function
+    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
 
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
