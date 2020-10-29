@@ -545,10 +545,9 @@ install_source_dir () {
 
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 
-    TEMP_CONFIG_DIR=${INSTALLED_DIR}/temp-config
-    mkdir -p $TEMP_CONFIG_DIR
-    cp -r ./config/* $TEMP_CONFIG_DIR
-    sed -i "s|:\ .*:8443/\${library}/|:\ ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" ${TEMP_CONFIG_DIR}/weave-net.yaml
+    mkdir -p $INSTALL_CONFIG_DIR
+    cp -r ./config/* $INSTALL_CONFIG_DIR
+    sed -i "s|:\ .*:8443/\${library}/|:\ ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" ${INSTALL_CONFIG_DIR}/weave-net.yaml
 
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 }
@@ -1051,6 +1050,14 @@ cat << EOF >> config.yaml
 db_archtype: ${db_archtype}
 EOF
 
+if [ ! ${saml_idp_metadata_url} == "" ] && [ ! ${saml_root_url} == "" ]; then
+  cat << EOF >> config.yaml
+saml_idp_metadata_url: ${saml_idp_metadata_url}
+EOF
+  cat << EOF >> config.yaml
+saml_root_url: ${saml_root_url}
+EOF
+fi
 }
 
 
@@ -1064,6 +1071,7 @@ init_environment() {
   COPY_DOCKER_IMAGE=1
   DOCKER_REGISTRY=
   INSTALLED_DIR="/home/dlwsadmin/DLWorkspace"
+  INSTALL_CONFIG_DIR=${INSTALLED_DIR}/config
   NO_NFS=1
   EXTERNAL_NFS_MOUNT=0
   EXTERNAL_MOUNT_POINT=
@@ -1572,6 +1580,16 @@ read -s -n1 -p "Please press any key to continue:>> "
 ./deploy.py kubernetes start webui3 custom-user-dashboard image-label aiarts-frontend aiarts-backend data-platform
 
   # . ../docker-images/init-container/prebuild.sh
+
+### deploy saml
+if [ ! ${saml_idp_metadata_url} == "" ] && [ ! ${saml_root_url} == "" ]; then
+  SAML_CONFIG_DIR=${INSTALL_CONFIG_DIR}/saml-config
+  SAML_KEY_PATH=${SAML_CONFIG_DIR}/saml-sp.key
+  SAML_CERT_PATH=${SAML_CONFIG_DIR}/saml-sp.cert
+  mkdir -p ${SAML_CONFIG_DIR}
+  openssl req -x509 -newkey rsa:2048 -keyout ${SAML_KEY_PATH} -out ${SAML_CERT_PATH} -days 365 -nodes -subj "/CN=auth.apulis.com"
+  kubectrl create secrete tls saml-sp-secret --key=${SAML_KEY_PATH} --cert=${SAML_CERT_PATH}
+fi
 }
 
 run_func=(

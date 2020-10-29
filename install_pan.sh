@@ -53,6 +53,7 @@ getDLWorkspace () {
 
   ############## Use Https instead of ssh #################################################
   git clone --single-branch --branch no_network https://github.com/apulis/DLWorkspace.git ${TEMP_DIR}/YTung
+  # TODO handle git clone error
 
   (cd ${TEMP_DIR}; tar -cvzf ${INSTALLED_DIR}/YTung.tar.gz ./YTung --exclude "./YTung/.git" )
 
@@ -480,7 +481,7 @@ RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
 NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common portmap kubelet=1.18.6-00 kubeadm=1.18.6-00 kubectl=1.18.6-00 docker.io pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget\\
-  python-dev python-pip virtualenv=15.1.0+ds-1.1 nvidia-modprobe nvidia-docker2"
+  python-dev python-pip virtualenv=15.1.0+ds-1.1 nvidia-modprobe nvidia-docker2 openssl"
 NEEDED_PACKAGES_SPECIFIC_FOR_ARM64="libffi-dev"
 NEEDED_PACKAGES_SPECIFIC_FOR_AMD64=""
 COMPLETED_APT_DOWNLOAD=0
