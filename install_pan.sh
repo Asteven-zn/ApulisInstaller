@@ -628,9 +628,9 @@ if [ ${ADD_ON_MODE} = "1" ]; then
 	exit
 fi
 
-getAllNeededDockerImages
-
 getDLWorkspace
+
+getAllNeededDockerImages
 
 getNeededAptPackages
 
