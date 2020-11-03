@@ -394,7 +394,12 @@ install_harbor () {
     $HARBOR_INSTALL_DIR/harbor/install.sh
     sleep 10 # harbor need some time to be prepared, otherwise login might fail
     echo "Docker login harbor ..."
+    echo "user root login harbor......"
     docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
+    echo "user root login success!"
+    echo "now user dlwsadmin login harbor......"
+    runuser -l dlwsadmin -c "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}" || handle_docker_login_fail
+    echo "user dlwsadmin login success!"
 
     #### create basic harbor library
     curl -X POST "https://${HARBOR_REGISTRY}:8443/api/v2.0/projects" -H 'Content-Type: application/json' -k -u admin:${HARBOR_ADMIN_PASSWORD} --data-raw "
@@ -1199,6 +1204,9 @@ init_environment() {
 		echo " Please relaunch later while everything is ready. "
 		exit
 	fi
+
+  # create install user
+	install_dlws_admin_ubuntu
 }
 
 
@@ -1588,7 +1596,6 @@ run_func=(
 	install_harbor
 	load_docker_images
 	push_docker_images_to_harbor
-	install_dlws_admin_ubuntu
 	set_up_password_less
 	install_source_dir
 	prepare_k8s_images
