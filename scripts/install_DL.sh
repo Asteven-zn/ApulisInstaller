@@ -15,6 +15,37 @@
 # limitations under the License.
 
 #set -x
+set_docker_config() {
+    if [ "${ARCH}" == "x86_64" ];then
+      cat << EOF > /etc/docker/daemon.json
+          {
+          "default-runtime": "nvidia",
+          "runtimes": {
+              "nvidia": {
+                  "path": "nvidia-container-runtime",
+                  "runtimeArgs": []
+              }
+          }
+      }
+EOF
+    else
+      cat << EOF > /etc/docker/daemon.json
+          {
+          "runtimes": {
+              "nvidia": {
+                  "path": "nvidia-container-runtime",
+                  "runtimeArgs": []
+              }
+          }
+      }
+EOF
+    fi
+
+
+    systemctl daemon-reload
+    systemctl restart docker
+}
+
 init_json_config() {
 	load_config_from_file
 
@@ -712,6 +743,10 @@ set_up_k8s_cluster () {
 
     rm /root/.kube/config -rf
 
+    if [ USE_MASTER_NODE_AS_WORKER = "1" ];then
+      set_docker_config
+    fi
+
     echo "clean iptables and restart docker. It takes a while, please wait......"
     systemctl stop kubelet
     systemctl stop docker
@@ -1403,10 +1438,14 @@ do
     # sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
 
     sshpass -p dlwsadmin scp python2.7/${node_arch}/* dlwsadmin@$masternode:${REMOTE_PYTHON_DIR}
-
+/etc/docker/daemon.json
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
 
+    if [ USE_MASTER_NODE_AS_WORKER = "1" ]; then
+      sshpass -p dlwsadmin scp /etc/docker/daemon.json dlwsadmin@$masternode:/etc/docker
+      sshpass -p dlwsadmin ssh dlwsadmin@$masternode " systemctl daemon-reload; systemctl restart docker"
+    fi
 
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"

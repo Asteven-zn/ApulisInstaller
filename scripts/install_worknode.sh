@@ -55,37 +55,6 @@ install_source_dir_in_worker () {
 }
 
 
-set_docker_config() {
-    if [ "${ARCH}" == "x86_64" ];then
-      cat << EOF > /etc/docker/daemon.json
-          {
-          "default-runtime": "nvidia",
-          "runtimes": {
-              "nvidia": {
-                  "path": "nvidia-container-runtime",
-                  "runtimeArgs": []
-              }
-          }
-      }
-EOF
-    else
-      cat << EOF > /etc/docker/daemon.json
-          {
-          "runtimes": {
-              "nvidia": {
-                  "path": "nvidia-container-runtime",
-                  "runtimeArgs": []
-              }
-          }
-      }
-EOF
-    fi
-
-
-    systemctl daemon-reload
-    systemctl restart docker
-}
-
 load_docker_images_in_worker () {
     if [ ${COPY_DOCKER_IMAGE} = 1 ]; then
 	    printf "Copy docker images from source\n"
