@@ -1636,62 +1636,15 @@ load_config_from_file() {
 		echo " Please relaunch later while everything is ready. "
 		exit
 	fi
+	if [ ! -f "tools/install_DL_read_install_config.py" ]; then
+		echo " !!!!! Can't find critical python script(install_DL_read_install_config.py)!!!!! "
+		echo " Please relaunch later while everything is ready. "
+		exit
+	fi
 
-  cat << EOF > read_config.py
-import json
-
-with open('config/install_config.json') as f:
-    data = json.load(f)
-    with open('output.cfg','w') as fout:
-        for key, value in data.items():
-            if key != "worker_nodes" and key != "extra_master_nodes" and key != "storage" and "_comment" not in key:
-                fout.write(key)
-                fout.write("=")
-                value_str="{}\n".format(value)
-                fout.write(value_str)
-
-        fout.write("worker_nodes=(\n")
-        for worker_node_info in data["worker_nodes"]:
-            fout.write(worker_node_info["host"] + "\n")
-        fout.write(")\n")
-
-        fout.write("worker_nodes_gpuType=(\n")
-        for worker_node_info in data["worker_nodes"]:
-            fout.write(worker_node_info["gpuType"] + "\n")
-        fout.write(")\n")
-
-        fout.write("worker_nodes_vendor=(\n")
-        for worker_node_info in data["worker_nodes"]:
-            fout.write(worker_node_info["vendor"] + "\n")
-        fout.write(")\n")
-
-        fout.write("extra_master_nodes=(\n")
-        for extra_master_nodes_info in data["extra_master_nodes"]:
-            fout.write(extra_master_nodes_info["host"] + "\n")
-        fout.write(")\n")
-
-        fout.write("storage_type=")
-        fout.write(data["storage"]["type"] + "\n")
-        fout.write("DLTS_STORAGE_PATH=")
-        fout.write("\\"")
-        fout.write(data["storage"]["path"])
-        fout.write("\\"" + "\n")
-
-        if "mountcmd" in data["storage"]:
-            fout.write("storage_mount_cmd=")
-            fout.write("\\"")
-            fout.write(data["storage"]["mountcmd"] + "\n")
-            fout.write("\\"" + "\n")
-        else:
-            fout.write("storage_mount_cmd=")
-            fout.write("\\"")
-            fout.write("\\"" + "\n")
-EOF
-
-  python3 read_config.py
+  python3 tools/install_DL_read_install_config.py
   source output.cfg
   #rm output.cfg
-  #rm read_config.py
 
   # verify config
 	for argument in NECCESSARY_ARGUMENT
