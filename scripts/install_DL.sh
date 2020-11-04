@@ -394,7 +394,12 @@ install_harbor () {
     $HARBOR_INSTALL_DIR/harbor/install.sh
     sleep 10 # harbor need some time to be prepared, otherwise login might fail
     echo "Docker login harbor ..."
+    echo "user root login harbor......"
     docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
+    echo "user root login success!"
+    echo "now user dlwsadmin login harbor......"
+    runuser -l dlwsadmin -c "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}" || handle_docker_login_fail
+    echo "user dlwsadmin login success!"
 
     #### create basic harbor library
     curl -X POST "https://${HARBOR_REGISTRY}:8443/api/v2.0/projects" -H 'Content-Type: application/json' -k -u admin:${HARBOR_ADMIN_PASSWORD} --data-raw "
@@ -673,6 +678,7 @@ prepare_k8s_images() {
     $k8s_url/kube-proxy:$k8s_version
     $k8s_url/kube-apiserver:$k8s_version
     $k8s_url/kube-controller-manager:$k8s_version
+
     $k8s_url/kube-scheduler:$k8s_version
     $k8s_url/pause:3.2
     $k8s_url/etcd:3.4.3-0
@@ -1206,6 +1212,9 @@ init_environment() {
 		echo " Please relaunch later while everything is ready. "
 		exit
 	fi
+
+  # create install user
+	install_dlws_admin_ubuntu
 }
 
 
@@ -1410,7 +1419,8 @@ do
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
 
-	sshpass -p dlwsadmin ssh dlwsadmin@$masternode "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
+    ### login docker harbor for save image function
+    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
 
 
     if [ ${NO_NFS} = 0 ]; then
@@ -1480,6 +1490,8 @@ do
 
     #### enable nfs server ###########################################
     sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "sudo systemctl enable nfs-kernel-server"
+    ### login docker harbor for save image function
+    sshpass -p dlwsadmin ssh dlwsadmin@${worker_nodes[$i]} "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
 
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
@@ -1602,7 +1614,6 @@ run_func=(
 	install_harbor
 	load_docker_images
 	push_docker_images_to_harbor
-	install_dlws_admin_ubuntu
 	set_up_password_less
 	install_source_dir
 	prepare_k8s_images
@@ -1643,62 +1654,15 @@ load_config_from_file() {
 		echo " Please relaunch later while everything is ready. "
 		exit
 	fi
+	if [ ! -f "tools/install_DL_read_install_config.py" ]; then
+		echo " !!!!! Can't find critical python script(install_DL_read_install_config.py)!!!!! "
+		echo " Please relaunch later while everything is ready. "
+		exit
+	fi
 
-  cat << EOF > read_config.py
-import json
-
-with open('config/install_config.json') as f:
-    data = json.load(f)
-    with open('output.cfg','w') as fout:
-        for key, value in data.items():
-            if key != "worker_nodes" and key != "extra_master_nodes" and key != "storage" and "_comment" not in key:
-                fout.write(key)
-                fout.write("=")
-                value_str="{}\n".format(value)
-                fout.write(value_str)
-
-        fout.write("worker_nodes=(\n")
-        for worker_node_info in data["worker_nodes"]:
-            fout.write(worker_node_info["host"] + "\n")
-        fout.write(")\n")
-
-        fout.write("worker_nodes_gpuType=(\n")
-        for worker_node_info in data["worker_nodes"]:
-            fout.write(worker_node_info["gpuType"] + "\n")
-        fout.write(")\n")
-
-        fout.write("worker_nodes_vendor=(\n")
-        for worker_node_info in data["worker_nodes"]:
-            fout.write(worker_node_info["vendor"] + "\n")
-        fout.write(")\n")
-
-        fout.write("extra_master_nodes=(\n")
-        for extra_master_nodes_info in data["extra_master_nodes"]:
-            fout.write(extra_master_nodes_info["host"] + "\n")
-        fout.write(")\n")
-
-        fout.write("storage_type=")
-        fout.write(data["storage"]["type"] + "\n")
-        fout.write("DLTS_STORAGE_PATH=")
-        fout.write("\\"")
-        fout.write(data["storage"]["path"])
-        fout.write("\\"" + "\n")
-
-        if "mountcmd" in data["storage"]:
-            fout.write("storage_mount_cmd=")
-            fout.write("\\"")
-            fout.write(data["storage"]["mountcmd"] + "\n")
-            fout.write("\\"" + "\n")
-        else:
-            fout.write("storage_mount_cmd=")
-            fout.write("\\"")
-            fout.write("\\"" + "\n")
-EOF
-
-  python3 read_config.py
+  python3 tools/install_DL_read_install_config.py
   source output.cfg
   #rm output.cfg
-  #rm read_config.py
 
   # verify config
 	for argument in NECCESSARY_ARGUMENT
