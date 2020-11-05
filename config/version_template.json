@@ -1,6 +1,7 @@
 {
-  "os_release": "Ubuntu 18.04.3 LTS",
-  "os_arch": "amd64",
+  "Description": "this is version description",
+  "OS_release": "Ubuntu 18.04.3 LTS",
+  "OS_arch": "amd64",
   "harbor_registry_name": "default_registry",
   "InstallYTung_version": "master",
   "DLWorkspace_version": "no_network",
