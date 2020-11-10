@@ -180,6 +180,7 @@ install_dlws_admin_ubuntu () {
     echo "dlwsadmin ALL = (root) NOPASSWD:ALL" | tee /etc/sudoers.d/dlwsadmin
     chmod 0440 /etc/sudoers.d/dlwsadmin
     sed -i s'/Defaults requiretty/#Defaults requiretty'/g /etc/sudoers
+    usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 }
 
 usage() {
@@ -585,8 +586,6 @@ install_source_dir () {
     mkdir -p $TEMP_CONFIG_DIR
     cp -r ./config/* $TEMP_CONFIG_DIR
     sed -i "s|:\ .*:8443/\${library}/|:\ ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" ${TEMP_CONFIG_DIR}/weave-net.yaml
-
-    usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 }
 
 
