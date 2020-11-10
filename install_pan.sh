@@ -106,6 +106,12 @@ getNeededAptPackages () {
       ( cd ${INSTALLED_DIR}/apt/${ARCH}; apt-get download $(apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES} | grep "^\w" | sort -u)  )
   fi
 
+  # only valified in ubuntu 18.04.1 LTS
+  # TODO may remove if statement when other release version is valified
+  if [ ${SYSTEM_RELEASE_DESCRIPTION} =~ "18.04.1" ]; then
+    ( cd ${INSTALLED_DIR}/apt/${ARCH}; for file in `ls | grep i386`; do rm ${file}; done;)
+  fi
+
 }
 
 getAllNeededBinFile(){
@@ -484,6 +490,12 @@ ERR_INVALID_PARAM=10000
 ############ Check CPU Aritecchure ########################################
 ARCH=$(uname -m)
 printf "Hardware Architecture: ${ARCH}\n"
+
+
+############ Check Release Version ########################################
+SYSTEM_RELEASE_DESCRIPTION=$(lsb_release -ds)
+printf "Release version: ${SYSTEM_RELEASE_DESCRIPTION}"
+
 
 ###########  Check Operation System ######################################
 INSTALL_OS=$(grep '^ID=' /etc/os-release | awk -F'=' '{print $2}')
