@@ -402,10 +402,7 @@ install_harbor () {
             pip3 install ${pack}
     done
     echo "Installing docker-compose ..."
-    for pack in `ls ${THIS_DIR}/harbor/${ARCH}/docker-compose/* |grep -v setuptools | grep -v wheel`
-    do
-            pip3 install ${pack}
-    done
+    pip3 install --no-index --find-links ./ ./*
 
     #### prepare harbor
     echo "Preparing harbor ..."

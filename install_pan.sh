@@ -124,6 +124,7 @@ getAllNeededBinFile(){
 
 getHarborPackages () {
 	DOCKER_COMPOSE_DEPENDENCY=(
+		wheel==0.35.1
 		attrs==20.2.0
 		chardet==3.0.4
 		dockerpty==0.4.1
