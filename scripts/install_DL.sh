@@ -1582,6 +1582,7 @@ fi
 
 deploy_services(){
 cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap
+./deploy.py kubernetes start weave-net
 ./deploy.py kubernetes start nvidia-device-plugin
 ./deploy.py kubernetes start  a910-device-plugin
 ./deploy.py kubernetes start  volcanosh
