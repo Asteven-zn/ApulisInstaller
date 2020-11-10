@@ -571,14 +571,12 @@ install_source_dir () {
 
     tar -xvf ./YTung.tar.gz -C ${INSTALLED_DIR} && echo "Source files extracted successfully!"
 
-    (cd python2.7/${ARCH}; pip install setuptools* ;pip install wheel*; python setup.py bdist_wheel;pip install ./*;tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
-    (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
+    install_pip_package_for_python2
 
     (cd ${INSTALLED_DIR}; virtualenv --python=/usr/bin/python2.7 python2.7-venv)
     source ${INSTALLED_DIR}/python2.7-venv/bin/activate
 
-    (cd python2.7/${ARCH}; pip install setuptools* ;pip install wheel*; python setup.py bdist_wheel;pip install ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
-    (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
+    install_pip_package_for_python2
 
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 
@@ -586,6 +584,11 @@ install_source_dir () {
     mkdir -p $TEMP_CONFIG_DIR
     cp -r ./config/* $TEMP_CONFIG_DIR
     sed -i "s|:\ .*:8443/\${library}/|:\ ${HARBOR_REGISTRY}:8443/${DOCKER_HARBOR_LIBRARY}/|g" ${TEMP_CONFIG_DIR}/weave-net.yaml
+}
+
+install_pip_package_for_python2 () {
+    (cd python2.7/${ARCH}; pip install setuptools* ;pip install wheel*; python setup.py bdist_wheel;pip install --no-index --find-links ./ ./*; tar -xf PyYAML*.tar.gz -C ${INSTALLED_DIR})
+    (cd ${INSTALLED_DIR}/PyYAML*; python setup.py install )
 }
 
 
