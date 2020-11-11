@@ -18,7 +18,7 @@
 set_docker_config() {
     if [ "${ARCH}" == "x86_64" ];then
       cat << EOF > /etc/docker/daemon.json
-          {
+      {
           "default-runtime": "nvidia",
           "runtimes": {
               "nvidia": {
@@ -1126,6 +1126,9 @@ init_environment() {
   else
     ARCHTYPE="amd64"
   fi
+  printf "Hardware Architecture: ${ARCH}\n"
+  ############ Check Release Version ########################################
+  RELEASE_VERSION $(lsb_release -ds)
   printf "Hardware Architecture: ${ARCH}\n"
 
   ###########  Check Operation System ######################################

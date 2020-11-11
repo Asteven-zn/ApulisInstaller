@@ -53,12 +53,6 @@ install_source_dir_in_extra_master () {
     chown -R dlwsadmin:dlwsadmin ${INSTALLED_DIR}
 }
 
-set_docker_config() {
-    systemctl daemon-reload
-    systemctl restart docker
-    echo "set docker config done."
-}
-
 ############################################################################
 #
 #   MAIN CODE START FROM HERE
