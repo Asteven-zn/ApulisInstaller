@@ -1600,7 +1600,7 @@ if [ ! ${saml_idp_metadata_url} == "" ] && [ ! ${saml_root_url} == "" ]; then
   SAML_CERT_PATH=${SAML_CONFIG_DIR}/saml-sp.cert
   mkdir -p ${SAML_CONFIG_DIR}
   openssl req -x509 -newkey rsa:2048 -keyout ${SAML_KEY_PATH} -out ${SAML_CERT_PATH} -days 365 -nodes -subj "/CN=auth.apulis.com"
-  kubectrl create secrete tls saml-sp-secret --key=${SAML_KEY_PATH} --cert=${SAML_CERT_PATH}
+  kubectl create secret tls saml-sp-secret --key=${SAML_KEY_PATH} --cert=${SAML_CERT_PATH}
 fi
 }
 
