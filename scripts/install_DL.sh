@@ -402,7 +402,7 @@ install_harbor () {
             pip3 install ${pack}
     done
     echo "Installing docker-compose ..."
-    pip3 install --no-index --find-links ./ ./*
+    pip3 install --no-index --find-links ./harbor/${ARCH}/docker-compose ./harbor/${ARCH}/docker-compose/*
 
     #### prepare harbor
     echo "Preparing harbor ..."
