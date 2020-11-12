@@ -287,31 +287,7 @@ install_necessary_packages () {
     TEMP_DIR="/tmp/install_ytung_apt".${TIMESTAMP}
     mkdir -p ${TEMP_DIR}
 
-    cp ${THIS_DIR}/apt/${ARCH}/libseccomp2_2.4.3-1ubuntu3.18.04.3_${ARCHTYPE}.deb ${TEMP_DIR}/
-
-    for entry in ${THIS_DIR}/apt/${ARCH}/*.deb
-    do
-        echo "$entry"
-        filename=$(basename $entry)
-        IFS='_' read -ra package <<< "$filename"
-
-        INFO=$(dpkg -l ${package[0]} )
-        RETURN_CODE=$?
-
-        if [ ${RETURN_CODE} = 1 ]; then
-	       echo "Looks like ${package[0]} has not been installed. Let's Install ...";
-	       cp ${entry} $TEMP_DIR
-        else
-            INFO2=$(echo ${INFO##*$'\n'})
-        	IFS=' ' read -ra detail <<< "$INFO2"
-	        if [ ${detail[0]} = "ii" ] ; then
-	            echo "Looks like ${package[0]} has been installed. Skip ...";
-	        else
-	            echo "Looks like ${package[0]} has not been installed yet. Let's Install ...";
-	            cp $entry $TEMP_DIR
-	        fi
-        fi
-    done
+    cp ${THIS_DIR}/apt/${ARCH}/* ${TEMP_DIR}/
 
     dpkg -i ${TEMP_DIR}/libseccomp2_2.4.3-1ubuntu3.18.04.3_${ARCHTYPE}.deb # fix 18.04.1 docker deps
     dpkg -i ${TEMP_DIR}/*
