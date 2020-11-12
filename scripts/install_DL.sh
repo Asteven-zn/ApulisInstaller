@@ -742,7 +742,7 @@ set_up_k8s_cluster () {
 
     rm /root/.kube/config -rf
 
-    if [ USE_MASTER_NODE_AS_WORKER = "1" ];then
+    if [ ${USE_MASTER_NODE_AS_WORKER} = "1" ];then
       set_docker_config
     fi
 
