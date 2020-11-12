@@ -180,7 +180,6 @@ install_dlws_admin_ubuntu () {
     echo "dlwsadmin ALL = (root) NOPASSWD:ALL" | tee /etc/sudoers.d/dlwsadmin
     chmod 0440 /etc/sudoers.d/dlwsadmin
     sed -i s'/Defaults requiretty/#Defaults requiretty'/g /etc/sudoers
-    usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 }
 
 usage() {
@@ -403,6 +402,7 @@ install_harbor () {
     docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
     echo "user root login success!"
     echo "now user dlwsadmin login harbor......"
+    usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
     runuser -l dlwsadmin -c "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}" || handle_docker_login_fail
     echo "user dlwsadmin login success!"
 
