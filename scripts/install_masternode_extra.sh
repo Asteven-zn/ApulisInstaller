@@ -133,8 +133,6 @@ then
     #### load/copy docker images ###########################################
     usermod -a -G docker dlwsadmin     # Add dlwsadmin to docker group
 
-    set_docker_config
-
 fi
 
 ########### Then, join in kubernetes cluster and apply weave net ###############################

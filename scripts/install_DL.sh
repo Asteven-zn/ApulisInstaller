@@ -16,6 +16,7 @@
 
 #set -x
 set_docker_config() {
+	  mkdir -p /etc/docker
     if [ "${ARCH}" == "x86_64" ];then
       cat << EOF > /etc/docker/daemon.json
       {
@@ -293,6 +294,9 @@ install_necessary_packages () {
 
     #### enable nfs server ###########################################
     systemctl enable nfs-kernel-server
+    if [ "${USE_MASTER_NODE_AS_WORKER}" = "1" ];then
+      set_docker_config
+    fi
 }
 
 copy_bin_file (){
@@ -718,9 +722,6 @@ set_up_k8s_cluster () {
 
     rm /root/.kube/config -rf
 
-    if [ ${USE_MASTER_NODE_AS_WORKER} = "1" ];then
-      set_docker_config
-    fi
 
     echo "clean iptables and restart docker. It takes a while, please wait......"
     systemctl stop kubelet
@@ -1420,8 +1421,9 @@ do
     ########################### Install on remote node ######################################
     sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
 
-    if [ USE_MASTER_NODE_AS_WORKER = "1" ]; then
-      sshpass -p dlwsadmin scp /etc/docker/daemon.json dlwsadmin@${extra_master_nodes[${i}]}:/etc/docker
+    if [ "${USE_MASTER_NODE_AS_WORKER}" = "1" ];then
+			sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "mkdir -p /etc/docker"
+			sshpass -p dlwsadmin scp /etc/docker/daemon.json dlwsadmin@${extra_master_nodes[${i}]}:/etc/docker
       sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} " systemctl daemon-reload; systemctl restart docker"
     fi
 
@@ -1430,7 +1432,6 @@ do
 
     ### login docker harbor for save image function
     sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
-
 
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
