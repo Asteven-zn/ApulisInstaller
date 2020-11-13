@@ -955,28 +955,28 @@ machines:
     private-ip: ${master_ip}
 EOF
 # generate archtype
-if [ ${ARCH} = "x86_64" ]; then
+if [ "${ARCH}" = "x86_64" ]; then
   cat << EOF >> config.yaml
     archtype: amd64
 EOF
-elif [ ${ARCH} = "aarch64" ]; then
+elif [ "${ARCH}" = "aarch64" ]; then
   cat << EOF >> config.yaml
     archtype: arm64
 EOF
 fi
 # generate depends on master role and archtype
-if [ ${USE_MASTER_NODE_AS_WORKER} = 0 ]; then
+if [ "${USE_MASTER_NODE_AS_WORKER}" = 0 ]; then
     cat << EOF >> config.yaml
     type: cpu
 EOF
 else
-	if [ ${ARCH} = "x86_64" ]; then
+	if [ "${ARCH}" = "x86_64" ]; then
     cat << EOF >> config.yaml
     type: gpu
     vendor: nvidia
     os: ubuntu
 EOF
-	elif [ ${ARCH} = "aarch64" ]; then
+	elif [ "${ARCH}" = "aarch64" ]; then
     cat << EOF >> config.yaml
     type: npu
     vendor: huawei
