@@ -101,9 +101,12 @@ getNeededAptPackages () {
 	fi
 
   if [ ${COMPLETED_APT_DOWNLOAD} = "1" ]; then
-      ( cd ${INSTALLED_DIR}/apt/${ARCH}; apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES} | grep "^\w" | sort -u) )
+#TODO and some statements:
+# I put kubenetes related conponents directly in getNeededAptPackages() function. Because the dependencies of the package in this list(NEEDED_PACKAGES) contains kubelet, kubeadm and other relate packages, which will ruin my specific version statement. For example, "kubelet=1.18.6-00" will no work even if you put it in the list. It will still go to the latest kubelet version.
+# However, this work is not perfect, which kind of tearing the variable. Please improve it if possible.
+      ( cd ${INSTALLED_DIR}/apt/${ARCH}; apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES} | grep "^\w" | sort -u | grep -v kube) kubelet=1.18.6-00 kubeadm=1.18.6-00 kubectl=1.18.6-00 kubernetes-cni)
   else
-      ( cd ${INSTALLED_DIR}/apt/${ARCH}; apt-get download $(apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES} | grep "^\w" | sort -u)  )
+      ( cd ${INSTALLED_DIR}/apt/${ARCH}; apt-get download $(apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${NEEDED_PACKAGES} | grep "^\w" | sort -u | grep -v kube) kubelet=1.18.6-00 kubeadm=1.18.6-00 kubectl=1.18.6-00 kubernetes-cni)
   fi
 
   # only valified in ubuntu 18.04.1 LTS
@@ -510,7 +513,7 @@ CONFIG_DIR=./config
 RM="/bin/rm"
 
 ############################ add necessary packages for python and some other python packages used by "deploy.py"
-NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common portmap kubelet=1.18.6-00 kubeadm=1.18.6-00 kubectl=1.18.6-00 docker-ce pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget python-dev python-pip virtualenv=15.1.0+ds-1.1 nvidia-modprobe nvidia-docker2"
+NEEDED_PACKAGES="libcurl4-openssl-dev libssl-dev nfs-kernel-server nfs-common portmap docker-ce pass gnupg2 ssh sshpass build-essential gcc g++ python3 python3-dev python3-pip apt-transport-https curl wget python-dev python-pip virtualenv=15.1.0+ds-1.1 nvidia-modprobe nvidia-docker2 kubelet kubeadm kubectl"
 NEEDED_PACKAGES_SPECIFIC_FOR_ARM64="libffi-dev"
 NEEDED_PACKAGES_SPECIFIC_FOR_AMD64=""
 COMPLETED_APT_DOWNLOAD=0
