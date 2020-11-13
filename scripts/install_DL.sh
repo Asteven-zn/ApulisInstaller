@@ -1370,10 +1370,10 @@ echo '
  \___/_/\_\\__|_|  \__,_|___|_|  |_|\__,_|___/\__\___|_|
                        |_____|
 '
-for masternode in "${extra_master_nodes[@]}"
+for i in "${!extra_master_nodes[@]}"
 do
   ######### acquire node arch ################################
-  arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${masternode} "arch"`
+  arch_result=`sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "arch"`
   if [ "${arch_result}" == "x86_64" ]
   then
     node_arch="amd64"
@@ -1397,46 +1397,46 @@ do
 	REMOTE_IMAGE_DIR="${REMOTE_INSTALL_DIR}/docker-images/${node_arch}"
 	REMOTE_PYTHON_DIR="${REMOTE_INSTALL_DIR}/python2.7/${node_arch}"
     ######### set up passwordless access from Master to Node ################################
-    cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@$masternode 'cat >> .ssh/authorized_keys'
+    cat ~dlwsadmin/.ssh/id_rsa.pub | sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} 'cat >> .ssh/authorized_keys'
     ######### set up passwordless access from Node to Master ################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
+    sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} cat ~dlwsadmin/.ssh/id_rsa.pub | cat >> ~dlwsadmin/.ssh/authorized_keys
 
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
+    sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "mkdir -p ${REMOTE_INSTALL_DIR}; mkdir -p ${REMOTE_IMAGE_DIR}; mkdir -p ${REMOTE_APT_DIR}; mkdir -p ${REMOTE_CONFIG_DIR}; mkdir -p ${REMOTE_PYTHON_DIR}"
 
-    sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
+    sshpass -p dlwsadmin scp /etc/hosts dlwsadmin@${extra_master_nodes[${i}]}:${REMOTE_INSTALL_DIR}/hosts # for docker harbor init, we need to set up hosts at begining
 
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
+    sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "sudo cp ${REMOTE_INSTALL_DIR}/hosts /etc/hosts"
 
-    sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@$masternode:${REMOTE_APT_DIR}
+    sshpass -p dlwsadmin scp apt/${ARCH}/*.deb dlwsadmin@${extra_master_nodes[${i}]}:${REMOTE_APT_DIR}
 
-    sshpass -p dlwsadmin scp install_*.sh dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+    sshpass -p dlwsadmin scp install_*.sh dlwsadmin@${extra_master_nodes[${i}]}:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp -r config/* dlwsadmin@$masternode:${REMOTE_CONFIG_DIR}
+    sshpass -p dlwsadmin scp -r config/* dlwsadmin@${extra_master_nodes[${i}]}:${REMOTE_CONFIG_DIR}
 
-    # sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@$masternode:${REMOTE_INSTALL_DIR}
+    # sshpass -p dlwsadmin scp YTung.tar.gz dlwsadmin@${extra_master_nodes[${i}]}:${REMOTE_INSTALL_DIR}
 
-    sshpass -p dlwsadmin scp python2.7/${node_arch}/* dlwsadmin@$masternode:${REMOTE_PYTHON_DIR}
+    sshpass -p dlwsadmin scp python2.7/${node_arch}/* dlwsadmin@${extra_master_nodes[${i}]}:${REMOTE_PYTHON_DIR}
 /etc/docker/daemon.json
     ########################### Install on remote node ######################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
+    sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "cd ${REMOTE_INSTALL_DIR}; sudo bash ./install_masternode_extra.sh | tee /tmp/installation.log.$TIMESTAMP"
 
     if [ USE_MASTER_NODE_AS_WORKER = "1" ]; then
-      sshpass -p dlwsadmin scp /etc/docker/daemon.json dlwsadmin@$masternode:/etc/docker
-      sshpass -p dlwsadmin ssh dlwsadmin@$masternode " systemctl daemon-reload; systemctl restart docker"
+      sshpass -p dlwsadmin scp /etc/docker/daemon.json dlwsadmin@${extra_master_nodes[${i}]}:/etc/docker
+      sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} " systemctl daemon-reload; systemctl restart docker"
     fi
 
     #### enable nfs server ###########################################
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "sudo systemctl enable nfs-kernel-server"
+    sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "sudo systemctl enable nfs-kernel-server"
 
     ### login docker harbor for save image function
-    sshpass -p dlwsadmin ssh dlwsadmin@$masternode "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
+    sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD}"
 
 
     if [ ${NO_NFS} = 0 ]; then
        if [ $EXTERNAL_NFS_MOUNT = 0 ]; then
            EXTERNAL_MOUNT_POINT="$(hostname -I | awk '{print $1}'):${NFS_MOUNT_POINT}"
        fi
-       sshpass -p dlwsadmin ssh dlwsadmin@$masternode "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
+       sshpass -p dlwsadmin ssh dlwsadmin@${extra_master_nodes[${i}]} "echo \"${EXTERNAL_MOUNT_POINT}          ${NFS_MOUNT_POINT}    nfs   auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0 \" | sudo tee -a /etc/fstab ; sudo mount ${EXTERNAL_MOUNT_POINT}  ${NFS_MOUNT_POINT}"
     fi
 
 done
