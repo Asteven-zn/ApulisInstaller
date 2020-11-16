@@ -1105,7 +1105,7 @@ init_environment() {
   fi
   printf "Hardware Architecture: ${ARCH}\n"
   ############ Check Release Version ########################################
-  RELEASE_VERSION $(lsb_release -ds)
+  RELEASE_VERSION=$(lsb_release -ds)
   printf "Hardware Architecture: ${ARCH}\n"
 
   ###########  Check Operation System ######################################
