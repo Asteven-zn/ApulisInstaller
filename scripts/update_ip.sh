@@ -29,38 +29,19 @@ then
     printf " Please make sure everything is ready and relaunch again. \n"
     exit
 fi
-cat << EOF > read_config.py
-import json
-
-with open('${CONFIG_JSON_PATH}') as f:
-    data = json.load(f)
-    with open('output.cfg','w') as fout:
-        for key, value in data.items():
-            if key != "worker_nodes" and key != "extra_master_nodes" and "_comment" not in key:
-                fout.write(key)
-                fout.write("=")
-                fout.write(value + "\n")
-        fout.write("worker_nodes=(\n")
-        for worker_node_info in data["worker_nodes"]:
-            fout.write(worker_node_info["host"] + "\n")
-        fout.write(")\n")
-        fout.write("worker_nodes_gpuType=(\n")
-        for worker_node_info in data["worker_nodes"]:
-            fout.write(worker_node_info["gpuType"] + "\n")
-        fout.write(")\n")
-        fout.write("worker_nodes_vendor=(\n")
-        for worker_node_info in data["worker_nodes"]:
-            fout.write(worker_node_info["vendor"] + "\n")
-        fout.write(")\n")
-        fout.write("extra_master_nodes=(\n")
-        for extra_master_nodes_info in data["extra_master_nodes"]:
-            fout.write(extra_master_nodes_info["host"] + "\n")
-        fout.write(")\n")
-EOF
-python3 read_config.py
+if [ ! -f "config/install_config.json" ]; then
+    echo " !!!!! Can't find config file (platform.cfg), please check there is a platform.cfg under ./config directory !!!!! "
+    echo " Please relaunch later while everything is ready. "
+    exit
+fi
+if [ ! -f "tools/install_DL_read_install_config.py" ]; then
+    echo " !!!!! Can't find critical python script(install_DL_read_install_config.py)!!!!! "
+    echo " Please relaunch later while everything is ready. "
+    exit
+fi
+python3 tools/install_DL_read_install_config.py
 source output.cfg
 rm output.cfg
-rm read_config.py
 ####### reset kubernetes and nfs
 yes | kubeadm reset
 /etc/init.d/rpcbind restart
