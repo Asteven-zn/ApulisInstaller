@@ -400,7 +400,15 @@ install_harbor () {
     #### install harbor
     echo "Installing harbor ..."
     $HARBOR_INSTALL_DIR/harbor/install.sh
-    sleep 10 # harbor need some time to be prepared, otherwise login might fail
+
+    harbor_health_check
+    while [ ! $? -eq 0 ]
+    do
+        echo "harbor is not ready yet, please wait ..."
+        sleep 3
+        harbor_health_check
+    done
+    echo "harbor installed successfully"
     echo "Docker login harbor ..."
     echo "user root login harbor......"
     docker login ${HARBOR_REGISTRY}:8443 -u admin -p ${HARBOR_ADMIN_PASSWORD} || handle_docker_login_fail
@@ -440,6 +448,9 @@ EOF
     systemctl enable harbor
 }
 
+harbor_health_check() {
+  if [ ! "$(curl -k -u "admin:${HARBOR_ADMIN_PASSWORD}" -X GET -H "Content-Type: application/json" "https://${HARBOR_REGISTRY}:8443/api/v2.0/health" | python3 -c "import sys, json; print(json.load(sys.stdin)['status'])")" == "healthy" ];then return 1; fi
+}
 restore_harbor () {
 
     # reutrn when harbor was install
