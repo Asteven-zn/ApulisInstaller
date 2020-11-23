@@ -6,7 +6,7 @@
 DLWS_HOME="/home/dlwsadmin"
 INSTALLED_DIR="/home/dlwsadmin/DLWorkspace"
 DLWS_CONFIG_DIR="${INSTALLED_DIR}/YTung/src/ClusterBootstrap"
-CONFIG_JSON_PATH="config/install_config.json"
+CONFIG_JSON_PATH="config/install_config."
 ############################################################################
 #
 #   MAIN CODE START FROM HERE
