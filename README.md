@@ -163,6 +163,7 @@
 
     7. db_archtype 可以填入"arm64"或者"amd64"
 
+    8. 关于SAML的相关配置详情见aiarts项目doc文档
 
 - 注意事项
    nfs存储路径请勿指定"/mnt/local", harbor存储地址请勿指定为"/data/harbor"
