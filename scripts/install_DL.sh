@@ -1586,6 +1586,8 @@ cd ${INSTALLED_DIR}/YTung/src/ClusterBootstrap
 ./deploy.py kubernetes start nvidia-device-plugin
 ./deploy.py kubernetes start  a910-device-plugin
 ./deploy.py kubernetes start  volcanosh
+# start npu log cleaner
+./deploy.py kubernetes start node-cleaner
 
 ./deploy.py renderservice
 ./deploy.py renderimage
