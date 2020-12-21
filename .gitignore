@@ -1,1 +1,8 @@
+/bin
+/download
+/.idea
+/.cluster
+/credentials
+/images/
 /target/
+/.vscode/

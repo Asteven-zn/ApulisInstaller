@@ -1,0 +1,53 @@
+MASTER_AS_WORKER: true
+
+# --------- Main Variables ---------------
+CONTAINER_RUNTIME: "docker"
+
+# Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
+CLUSTER_NETWORK: "weavenet"
+
+# Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
+PROXY_MODE: "iptables"
+
+# K8S Service CIDR, not overlap with node(host) networking
+SERVICE_CIDR: "10.68.0.0/16"
+
+# Cluster CIDR (Pod CIDR), not overlap with node(host) networking
+CLUSTER_CIDR: "172.20.0.0/16"
+
+# NodePort Range
+NODE_PORT_RANGE: "20000-40000"
+
+# Cluster DNS Domain
+CLUSTER_DNS_DOMAIN: "cluster.local."
+
+storage_mount_path: /dlwsdata
+physical_mount_path: /mntdlws
+nfs_remote_path: "/mnt/local"
+
+nfs_exports:
+  - path: "{{nfs_remote_path}}"
+    exportOpts: "(rw,sync,fsid=0,crossmnt,no_root_squash,no_subtree_check)"
+    clients: "{{ groups['cluster'] }}"
+
+nfs_client_imports:
+  - local: "{{physical_mount_path}}"
+    remote: "{{nfs_remote_path}}"
+    opts: "rw,auto,nofail,noatime,nolock,intr,tcp,rsize=8192,timeo=14"
+    server_host: "{{ hostvars[groups['nfs-server'][0]]['ansible_default_ipv4'].address }}"
+
+manifest_dest: "/root/build"
+
+
+# the name of cluster
+cluster_name: "DLWS"
+
+# kube vip address
+kube_vip_address: "192.168.1.154"
+
+# cluster api address
+cluster_api_address: "{{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0]}}"
+
+# the unified image tag
+image_tag: "v1.2.0"
+

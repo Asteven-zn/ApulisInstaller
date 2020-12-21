@@ -1,0 +1,33 @@
+service:
+  # abount storage
+  dltsdata-storage-mount-path: /dltsdata
+  mountpoints:
+    nfsshare1:
+      curphysicalmountpoint: "{{physical_mount_path}}"
+      filesharename: /mnt/local
+      mountcmd: ' '
+      mountpoints:
+      options: rsize=8192,timeo=14,intr,tcp
+      server: "{{ hostvars[groups['nfs-server'][0]]['ansible_default_ipv4'].address }}"
+      type: nfs
+  storage-mount-path: "{{storage_mount_path}}"
+  physical-mount-path: "{{physical_mount_path}}"
+  default-storage-folders:
+    - "jobfiles"
+    - "storage"
+    - "work"
+    - "service"
+  folder_auto_share: ""
+  local-mount-path: /mnt
+  data_platform_path: "{{physical_mount_path}}/nfs/label/"
+  physical-mount-path-vc: /mntdlts/nfs
+  local_fast_storage: ""
+  mounthomefolder: true
+  deploymounts:
+
+  private_docker_registry: "{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}"
+  endpoint_use_short_domian:
+  infiniband_mounts:
+  vc_without_shared_storage:
+  custom_mounts:
+

@@ -1,0 +1,9 @@
+# server or client
+nfs_mode: server
+
+# NFS version, default 4
+nfs_version: 4
+nfs_only_v4: false
+
+# Default NFS4 mount options
+nfs_mount_opts: rsize=8192,wsize=8192,timeo=14,intr

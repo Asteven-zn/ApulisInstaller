@@ -1,0 +1,5 @@
+# to install network plugin, only one can be choosen
+- hosts:
+    - cluster
+  roles:
+    - kube-init

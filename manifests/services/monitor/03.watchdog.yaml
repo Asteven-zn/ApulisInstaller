@@ -1,0 +1,86 @@
+{% import 'macros/common.j2' as util with context %}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watchdog-{{ arch_map[ansible_architecture] }}
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watchdog
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: '{{service["watchdog"]["port"]}}'
+        prometheus.io/scrape: 'true'
+      labels:
+        app: watchdog
+        task: monitoring
+      name: watchdog-{{ arch_map[ansible_architecture] }}
+    spec:
+      nodeSelector:
+        watchdog: active
+        archType: {{ arch_map[ansible_architecture] }}
+      containers:
+      - command:
+        - python
+        - /watchdog.py
+        - --interval
+        - '30'
+        - --port
+        - '{{service["watchdog"]["port"]}}'
+        - --ca
+        - /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        - --bearer
+        - /var/run/secrets/kubernetes.io/serviceaccount/token
+        - https://{{ service["api-server-ip"] }}:443
+        {% if "vc_url" in service["watchdog"] %}
+        - --vc_url
+        - {{service["watchdog"]["vc_url"]}}
+        {% endif %}
+        env:
+        - name: LOGGING_LEVEL
+          value: INFO
+        volumeMounts:
+        - mountPath: /usr/bin/kubectl
+          name: kubectl-binary
+          readOnly: true
+        - mountPath: /root/.kube/config 
+          name: kubeconfig
+          readOnly: true    
+        image: {{ util.image_name('watchdog') }}
+        imagePullPolicy: Always
+        name: watchdog
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: {{service["watchdog"]["port"]}}
+          initialDelaySeconds: 3
+          periodSeconds: 30
+          timeoutSeconds: 10
+        resources:
+          limits:
+            memory: 256Mi
+      hostNetwork: true
+      imagePullSecrets:
+      - name: pai-secret
+      volumes:
+      - name: kubectl-binary
+        hostPath:
+          path: /usr/bin/kubectl         
+      - name: kubeconfig
+        hostPath:
+          path: /etc/kubernetes/admin.conf
+
+      {% if service["private_docker_registry_username"] is defined %}
+      - name: svccred
+      {% endif %}
+      tolerations:
+      - key: node.kubernetes.io/memory-pressure
+        operator: Exists
+      - key: node.kubernetes.io/disk-pressure
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule

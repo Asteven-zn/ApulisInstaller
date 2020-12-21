@@ -1,0 +1,42 @@
+- name: Set role node label to empty list
+  set_fact:
+    role_node_labels: []
+
+- name: Master label for nvidia GPU nodes
+  set_fact:
+    role_node_labels: "{{ role_node_labels + [ 'gpuType=nvidia_gpu_amd64', 'archType=amd64' ] }}"
+  when:
+    - MASTER_AS_WORKER == 'true'
+    - arch_map[ansible_architecture] == 'amd64'
+    - inventory_hostname in groups['kube-master']
+
+- name: Master label for Huawei NPU GPU nodes
+  set_fact:
+    role_node_labels: "{{ role_node_labels + [ 'gpuType=huawei_npu_arm64', 'archType=arm64' ] }}"
+  when:
+    - MASTER_AS_WORKER == 'true'
+    - arch_map[ansible_architecture] == 'arm64'
+    - inventory_hostname in groups['kube-master']
+
+- name: Worker label for nvidia GPU nodes
+  set_fact:
+    role_node_labels: "{{ role_node_labels + [ 'gpuType=nvidia_gpu_amd64', 'archType=amd64' ] }}"
+  when:
+    - arch_map[ansible_architecture] == 'amd64'
+    - inventory_hostname in groups['kube-worker']
+
+- name: Worker label for huawei NPU nodes
+  set_fact:
+    role_node_labels: "{{ role_node_labels + [ 'gpuType=huawei_npu_arm64', 'archType=arm64' ] }}"
+  when:
+    - arch_map[ansible_architecture] == 'arm64'
+    - inventory_hostname in groups['kube-worker']
+
+- debug: var=role_node_labels
+
+- name: Set label to node
+  command: >-
+      {{ bin_dir }}/kubectl label node {{ inventory_hostname }} {{ item }} --overwrite=true
+  loop: "{{ role_node_labels }}"
+  delegate_to: "{{ groups['kube-master'][0] }}"
+  changed_when: false

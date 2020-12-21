@@ -1,0 +1,59 @@
+service:
+  private_docker_registry: ""
+  webuiport: "9090"
+
+  repair-manager:
+    prometheus-ip: ""
+    prometheus-port: ""
+
+  db_archtype: "amd64"
+
+  datasource: MySQL
+  mysql:
+    host: ""
+    port: 3306
+    data_path: "{{storage_mount_path}}/service/mysql/data"
+    username: ""
+    password: ""
+  prometheus:
+    host: "{{kube_vip_address}}"
+    reporter:
+      port: 9092
+    data_path: "{{storage_mount_path}}/service/prometheus/data"
+  grafana:
+    port: 3000
+    prometheus-ip: localhost
+    data_path: "{{storage_mount_path}}/service/grafana/data"
+  grafana-zh:
+    port: 3001
+    prometheus-ip: "localhost"
+    data_path: "{{storage_mount_path}}/service/grafana/data"
+
+  enable_jobmanager_debug_mode: false
+  job-exporter:
+    port: 9102
+  node-exporter:
+    port: 9100
+  watchdog:
+    port: 9101
+
+  grafana_alert:
+    enabled: false
+    smtp:
+      host: ""
+      user: ""
+      password: ""
+      from_address: ""
+    receiver: ""
+
+  alert-manager:
+    port: 9093
+    configured: False
+    alert_users: False
+          # If want to deploy with alert-manager, should config
+          # configured with True, and fill appropriate value to:
+          # smtp_url, smtp_from, smtp_auth_username, smtp_auth_password and receiver
+    reaper:
+      dry-run: True
+      port: "9500"
+      restful-url: "http://localhost:5000"

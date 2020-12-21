@@ -1,0 +1,62 @@
+{% import 'macros/common.j2' as util with context %}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-{{ arch_map[ansible_architecture] }}
+  namespace: kube-system
+spec:
+  ports:
+  - port: {{service["mysql"]["port"]}}
+  selector:
+    app: mysql-{{ arch_map[ansible_architecture] }}
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: mysql-{{ arch_map[ansible_architecture] }}
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: mysql-{{ arch_map[ansible_architecture] }}
+  template:
+    metadata:
+      labels:
+        app: mysql-{{ arch_map[ansible_architecture] }}
+    spec:
+      nodeSelector:
+        archType: {{ arch_map[ansible_architecture] }}
+      hostNetwork: true    
+      containers:
+      - name: mysql
+        image: {{ util.image_name('mysql-server', 'third') }}
+        env:
+          # Use secret in real usage
+        - name: MYSQL_ROOT_HOST
+          value: "%"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "{{ lookup('file', '{{ base_dir }}/credentials/mysql.pwd') }}"
+        ports:
+        - containerPort: {{service["mysql"]["port"]}}
+          name: mysql
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        - name: mysql-log
+          mountPath: /var/log/mysql          
+      {% if service["private_docker_registry_username"] is defined %}
+      imagePullSecrets:
+      - name: svccred
+      {% endif %}
+      volumes:
+      - name: mysql-storage
+        hostPath:
+          path: {{service["mysql"]["data_path"]}}
+      - name: mysql-log
+        hostPath:
+          path: /var/log/mysql
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule            

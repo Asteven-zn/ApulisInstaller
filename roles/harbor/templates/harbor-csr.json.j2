@@ -1,0 +1,21 @@
+{
+  "CN": "harbor",
+  "hosts": [
+    "127.0.0.1",
+    "{{ HARBOR_HOSTNAME }}",
+    "{{ hostvars[groups['harbor'][0]]['ansible_default_ipv4'].address }}"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",
+      "ST": "Shenzhen",
+      "L": "XS",
+      "O": "k8s",
+      "OU": "System"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# tasks file for roles/nfs-mount
+- name: Install NFS mount utility
+  become: true
+  apt:
+    name:
+      - nfs-common
+      - nfs-kernel-server
+    state: present
+  when: ansible_os_family == "Debian"
+
+- include: "nfs-{{nfs_mode}}.yaml"

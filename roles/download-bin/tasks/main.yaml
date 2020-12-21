@@ -1,0 +1,30 @@
+- name: prepare directory for download binaries
+  file: dest={{ base_dir }}/bin state=directory mode=0755
+
+- name: Download etcd
+  get_url:
+    url: https://github.com/etcd-io/etcd/releases/download/{{ ETCD_VER }}/etcd-{{ ETCD_VER }}-linux-amd64.tar.gz
+    dest: /tmp/etcd-{{ ETCD_VER }}-linux-amd64.tar.gz
+  register: download_etcd
+
+- name: Extract etcd
+  unarchive:
+    src: /tmp/etcd-{{ ETCD_VER }}-linux-amd64.tar.gz
+    dest: {{ base_dir }}/bin
+    remote_src: True
+  when: download_etcd.changed
+
+- name: Download cfssl
+  get_url:
+    url: https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+    dest: {{ base_dir }}/bin/cfssl
+
+- name: Download cfssl
+  get_url:
+    url: https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+    dest: {{ base_dir }}/bin/cfssljson
+
+- name: Download cfssl
+  get_url:
+    url: https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64
+    dest: {{ base_dir }}/bin/cfssl-certinfo

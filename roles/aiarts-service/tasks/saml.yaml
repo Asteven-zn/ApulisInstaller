@@ -1,0 +1,17 @@
+- name: 删除以前的密钥文件
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/tmp/saml-sp.key"
+    - "/tmp/saml-sp.cert"
+
+- name: 删除以前的集群密钥
+  shell: "{{bin_dir}}/kubectl delete secret saml-sp-secret"
+  ignore_errors: true
+
+- name: 生成SAML的密钥
+  shell:
+    cmd: "openssl req -x509 -newkey rsa:2048 -keyout /tmp/saml-sp.key -out /tmp/saml-sp.cert -days 365 -nodes -subj '/CN=auth.apulis.com' && \
+      {{bin_dir}}/kubectl create secret tls saml-sp-secret --key=/tmp/saml-sp.key --cert=/tmp/saml-sp.cert && \
+      rm /tmp/saml-sp.key /tmp/saml-sp.cert"

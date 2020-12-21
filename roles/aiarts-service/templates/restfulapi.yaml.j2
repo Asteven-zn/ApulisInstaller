@@ -1,0 +1,121 @@
+{% import 'macros/common.j2' as util with context %}
+mysql :
+  hostname : {{service["mysql"]["host"]}}
+  port : {{service["mysql"]["port"]}}
+  username : {{service["mysql"]["username"]}}
+  password : "{{service["mysql"]["password"]}}"
+kubelet-path : {{bin_dir}}/kubectl
+storage-mount-path : {{service["storage-mount-path"]}}
+dltsdata-storage-mount-path : {{service["dltsdata-storage-mount-path"]}}
+folder_auto_share: {{service["folder_auto_share"]}}
+root-path : /DLWorkspace/src/
+nvidiaDriverPath : {{service["nvidia-driver-path"]}}
+clusterId : {{service["clusterId"]}}
+domain : {{service["network"]["domain"]}}
+apiserver: {{ util.api_servers() }}
+certificate-authority: /etc/kubernetes/ssl/ca.pem
+client-certificate: /etc/kubernetes/ssl/apiserver.pem
+client-key: /etc/kubernetes/ssl/apiserver-key.pem
+pod_ip_range: {{ SERVICE_CIDR }}
+per_user_gpu_limit: {{service["per_user_gpu_limit"]}}
+mountpoints : {{service["mountpoints"]}}
+mounthomefolder : {{service["mounthomefolder"]}}
+deploymounts : {{service["deploymounts"]}}
+default-storage-folders : {{service["default-storage-folders"]}}
+webportal_node: {{service["webportal_node"]}}
+datasource : {{service["datasource"]}}
+kube_custom_scheduler: {{service["kube_custom_scheduler"]}}
+gpu_count_per_node: {{service["gpu_count_per_node"]}}
+worker_node_num: {{service["worker_node_num"]}}
+gpu_type: {{service["gpu_type"]}}
+defalt_virtual_cluster_name: {{service["defalt_virtual_cluster_name"]}}
+{% if service["job-manager"] is defined %}
+job-manager:
+  {% if service["job-manager"]["notifier"] %}
+  notifier:
+    {% if service["job-manager"]["notifier"]["cluster"] %}
+    cluster: {{ service["job-manager"]["notifier"]["cluster"] }}
+    {% endif %}
+    {% if service["job-manager"]["notifier"]["alert-manager-url"] %}
+    alert-manager-url: {{ service["job-manager"]["notifier"]["alert-manager-url"] }}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+infiniband_mounts: {{service["infiniband_mounts"]}}
+custom_mounts: {{service["custom_mounts"]}}
+
+enable_cpuworker: {{service["enable_cpuworker"]}}
+default_cpurequest: {{service["default_cpurequest"]}}
+default_cpulimit: {{service["default_cpulimit"]}}
+default_memoryrequest: {{service["default_memoryrequest"]}}
+default_memorylimit: {{service["default_memorylimit"]}}
+default_cpu_sku: {{service["default_cpu_sku"]}}
+sku_meta: {{service["sku_meta"]}}
+
+enable_blobfuse: {{service["enable_blobfuse"]}}
+
+local_fast_storage: {{service["local_fast_storage"]}}
+enable_custom_registry_secrets: {{service["enable_custom_registry_secrets"]}}
+master_token: {{service["master_token"]}}
+nccl_ib_disable: {{service["nccl_ib_disable"]}}
+vc_node_hard_assignment: {{service["vc_node_hard_assignment"]}}
+
+gpu_reporter: 'http://{{service["prometheus"]["host"]}}:{{service["prometheus"]["reporter"]["port"]}}'
+
+vc_without_shared_storage: {{service["vc_without_shared_storage"]}}
+
+Authentication:
+  WeChat:
+    AppId: "{{service["Authentications"]["Wechat"]["AppId"]}}"
+    AppSecret: "{{service["Authentications"]["Wechat"]["AppSecret"]}}"
+  Microsoft:
+    ClientId: "{{service["Authentications"]["Microsoft"]["ClientId"]}}"
+    ClientSecret: "{{service["Authentications"]["Microsoft"]["ClientSecret"]}}"
+
+administrators:
+{% for admin in service["UserGroups"]["DLWSAdmins"]["Allowed"] %}
+  - {{admin}}
+{% endfor %}
+
+inference:
+  {% for framework,items in service["inference"].items() %}
+  {{framework}}:
+    allowedImageVersions:
+      {% for one in items["allowedImageVersions"] %}
+      - {{one}}
+      {% endfor %}
+  {% endfor %}
+
+usermanagerapi: http://{{service["webportal_node"]}}/custom-user-dashboard-backend
+usermanagerapitoken: {{service["usermanagerapitoken"]}}
+
+enable_jobmanager_debug_mode: {{service["enable_jobmanager_debug_mode"]}}
+
+{% if service["kube_vip_address"] is defined %}
+extranet_port: 80
+{% else %}
+extranet_port: {{service["extranet_port"]}}
+{% endif %}
+extranet_protocol: {{service["extranet_protocol"]}}
+
+default_virtual_cluster_device_type_list:
+{% for one in service["defalt_virtual_cluster_device_type_list"] %}
+  - {{ one }}
+{% endfor %}
+
+{% if service["kube_vip_address"] is defined %}
+master_private_ip: {{service["kube_vip_address"]}}
+{% elif service["endpoint_use_private_ip"] is defined %}
+master_private_ip:  {{service["etcd_private_ip"]}}
+{% elif service["master_private_ip"] is defined %}
+master_private_ip:  {{ service["master_private_ip"] }}
+{% endif %}
+
+data_platform_path: {{service["data_platform_path"]}}
+private_docker_registry: {{service["private_docker_registry"]}}
+endpoint_use_short_domain: {{service["endpoint_use_short_domian"]}}
+
+{% if "fake_device" in service and service["fake_device"] %}
+fake_device: {{service["fake_device"]}}
+{% endif %}

@@ -1,0 +1,13 @@
+- name: 初始化子目录
+  file:
+    path: "{{ service['physical-mount-path'] }}/{{ item }}"
+    state: directory
+    mode: 0777
+  with_items: "{{service['default-storage-folders']}}"
+
+- name: link share
+  file:
+    src: "{{ service['physical-mount-path'] }}/{{ item }}"
+    dest: "{{ service['storage-mount-path'] }}/{{ item }}"
+    state: link
+  with_items: "{{service['default-storage-folders']}}"

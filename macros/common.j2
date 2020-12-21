@@ -1,0 +1,17 @@
+{% macro dns_policy() %}
+{% if service['dnsPolicy'] is defined %}
+dnsPolicy: {{service['dnsPolicy']}}
+{% endif %}
+{%- endmacro -%}
+
+{% macro image_name(image, type='apulis') %}
+{% if type == 'apulis' %}
+{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images[image]['name']}}:{{apulis_images[image]['tag'] if apulis_images[image]['tag'] is defined else image_tag}}
+{% else %}
+{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{thirdparty_images[image]['name']}}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
+{% endif %}
+{% endmacro %}
+
+{% macro api_servers() %}
+{{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0] }}
+{% endmacro %}

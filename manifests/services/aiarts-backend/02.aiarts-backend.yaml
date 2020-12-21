@@ -1,0 +1,85 @@
+{% import 'macros/common.j2' as util with context %}
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: aiarts-backend-{{ arch_map[ansible_architecture] }}
+  namespace: default
+  labels:
+     run: dlwsaiarts-backend
+spec:
+  selector:
+    matchLabels:
+      aiarts-backend-node: pod
+  template:
+    metadata:
+      name: aiarts-backend
+      labels:
+        aiarts-backend-node: pod
+        app: aiarts-backend
+    spec:
+      {{ util.dns_policy() }}
+      hostNetwork: true
+      nodeSelector:
+        aiarts-backend: active
+        archType: {{ arch_map[ansible_architecture] }}
+      containers:
+      - name: aiarts-backend
+        image: {{util.image_name('aiarts-backend')}}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+          hostPort: 9000
+          name: main
+        volumeMounts:
+        - mountPath: /root/config.yaml
+          name: appconfig
+          subPath: config.yaml
+        - mountPath: /home
+          name: dlwsdatawork
+        - mountPath: /data
+          name: dlwsdatadata
+        - mountPath: /etc/kubernetes
+          name: cluster-conf
+        - mountPath: /root/logs
+          name: applog
+        - mountPath: /root/.kube/config
+          name: kubeconf
+        - mountPath: /root/.ssh
+          name: sshkey
+        {% if service['saml_idp_metadata_url'] is defined %}
+        - mountPath: /root/saml-certs
+          name: saml-secret
+        {% endif %}
+      volumes:
+      {% if service['saml_idp_metadata_url'] is defined %}
+      - name: saml-secret
+        secret:
+          secretName: saml-sp-secret
+      {% endif %}    
+      - name: appconfig
+        configMap:
+          name: aiarts-cm
+      - name: dlwsdatawork
+        hostPath:
+          path: {{ service['storage-mount-path']}}/work
+      - name: dlwsdatadata
+        hostPath:
+          path: {{service['storage-mount-path']}}/storage
+      - name: cluster-conf
+        hostPath:
+          path: /etc/kubernetes
+          type: DirectoryOrCreate
+      - name: applog
+        hostPath:
+          path: /var/log/aiarts-backend
+      - name: kubeconf
+        hostPath:
+          path: /etc/kubernetes/admin.conf
+      - name: sshkey
+        hostPath:
+          path: /home/dlwsadmin/.ssh
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule

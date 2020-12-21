@@ -1,0 +1,20 @@
+service:
+  webportal_node: "{{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0]}}"
+  usermanagerapitoken: ""
+
+  Authentications:
+    Wechat:
+      AppId: ""
+      AppSecret: ""
+    Microsoft:
+      ClientId: ""
+      ClientSecret: ""
+
+  enable_custom_registry_secrets: false
+  extranet_port: 80
+  extranet_protocol: http
+  apt_mirror_url: "http:\/\/mirrors.aliyun.com"
+  ssh_port: 22
+  rest-api: ""
+  network:
+    domain: ""

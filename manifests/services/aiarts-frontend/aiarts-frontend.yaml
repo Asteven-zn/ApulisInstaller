@@ -1,0 +1,36 @@
+{% import 'macros/common.j2' as util with context %}
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: aiarts-frontend-{{ arch_map[ansible_architecture] }}
+  namespace: default
+  labels:
+     run: dlwsaiarts-frontend
+spec:
+  selector:
+    matchLabels:
+      aiarts-frontend-node: pod
+  template:
+    metadata:
+      name: aiarts-frontend-{{ arch_map[ansible_architecture] }}
+      labels:
+        aiarts-frontend-node: pod
+        app: aiarts-frontend-{{ arch_map[ansible_architecture] }}
+    spec:
+      {{util.dns_policy()}}
+      nodeSelector:
+        aiarts-frontend: active
+        archType: {{ arch_map[ansible_architecture] }}
+      containers:
+      - name: aiarts-frontend-{{ arch_map[ansible_architecture] }}
+        image: {{ util.image_name('aiarts-frontend')}}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3084
+          hostPort: 3084 
+          name: main
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule

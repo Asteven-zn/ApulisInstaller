@@ -1,0 +1,24 @@
+# 平台类型，决定了可以启动多少服务
+PLATFORM_MODE: "express"
+
+modes:
+  preview:
+    - mysql
+  express:
+    - mysql
+  professional:
+    - mysql
+
+step: "render"
+
+service:
+  clusterId: ""
+  k8sAPIport: 6443
+  defalt_virtual_cluster_name: platform
+  master_token:
+  nccl_ib_disable:
+  vc_node_hard_assignment:
+  UserGroups:
+    DLWSAdmins:
+      Allowed:
+        - admin

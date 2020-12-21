@@ -1,0 +1,8 @@
+- include_tasks: node-labels.yaml
+
+- name: 设置Master可以被调度
+  command: >-
+        {{ bin_dir }}/kubectl uncordon {{ inventory_hostname }}
+  when:
+    - MASTER_AS_WORKER == 'true'
+    - inventory_hostname in groups['kube-master']

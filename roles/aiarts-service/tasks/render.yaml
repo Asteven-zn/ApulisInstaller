@@ -1,0 +1,61 @@
+- name: 渲染config.yaml文件
+  template:
+    lstrip_blocks: yes
+    trim_blocks: yes
+    src: restfulapi.yaml.j2
+    dest: '{{ manifest_dest }}/restfulapi.yaml'
+  tags: upgrade_service
+
+- name: Ensure directory structure exists
+  file:
+    path: '{{ manifest_dest }}{{sub_service}}/{{ item.path }}'
+    state: directory
+  with_filetree: '{{ base_dir}}/manifests/services{{sub_service}}'
+  when: item.state == 'directory'
+  tags: upgrade_service
+
+- name: Copy init scripts
+  copy:
+    src: '{{ base_dir}}/manifests/init-scripts'
+    dest: '{{ manifest_dest }}/'
+  tags: upgrade_service
+
+- name: Copy un-template files
+  copy:
+    src: '{{ item.src }}'
+    dest: '{{ manifest_dest }}{{sub_service}}/{{ item.path }}'
+  with_filetree: '{{ base_dir}}/manifests/services{{sub_service}}'
+  when:
+    - item.state == 'file'
+    - not item.src.endswith('.yaml') and not item.src.endswith('.sh') and not item.src.endswith('.json')
+  tags: upgrade_service
+
+- name: Ensure files are populated from templates
+  template:
+    lstrip_blocks: yes
+    trim_blocks: yes
+    src: '{{ item.src }}'
+    dest: '{{ manifest_dest }}{{sub_service}}/{{ item.path }}'
+  with_filetree: '{{ base_dir}}/manifests/services{{sub_service}}'
+  when:
+    - item.state == 'file'
+    - item.src.endswith('.yaml') or item.src.endswith('.sh') or item.src.endswith('.json')
+  tags: upgrade_service
+
+- name: 保证shell和python脚本的权限
+  file:
+    path: '{{ manifest_dest }}{{sub_service}}/{{ item.path }}'
+    mode: 777
+    state: file
+  with_filetree: '{{ base_dir}}/manifests/services{{sub_service}}'
+  when:
+    - item.state == 'file'
+    - item.src.endswith('.sh') or item.src.endswith('.json')
+  tags: upgrade_service
+
+- name: 执行pre-render.sh脚本
+  shell: "{{ manifest_dest }}{{sub_service}}/{{ item.path }}"
+  with_filetree: '{{ base_dir}}/manifests/services{{sub_service}}'
+  when:
+    - "{{item.path|basename == 'pre-render.sh'}}"
+  tags: upgrade_service

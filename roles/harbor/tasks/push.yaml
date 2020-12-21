@@ -1,0 +1,28 @@
+- name: 下载镜像tar文件
+  copy: src={{ item }} dest={{HARBOR_LOCATION}}/images/
+  with_fileglob:
+    - "{{ base_dir }}/images/*.tar"
+
+- name: Docker 登录 harbor
+  docker_login:
+    registry_url: https://{{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}
+    username: "admin"
+    password: "{{ lookup('file', '{{ base_dir }}/credentials/harbor.pwd') }}"
+    ca_cert: "{{ ca_dir }}/ca.pem"
+    client_cert: "{{ ca_dir }}/harbor.pem"
+    client_key: "{{ ca_dir }}/harbor-key.pem"
+
+- include_vars:
+    file: "{{ base_dir }}/images/list.json"
+    name: loaded_images
+
+- name: Load Docker镜像并且Push到harbor
+  docker_image:
+    name: "{{item.name}}"
+    source: load
+    force: yes
+    repository: "{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{item.name}}:{{ item.tag if item.tag is defined else loaded_images.tag }}"
+    tag: "{{ item.tag if item.tag is defined else loaded_images.tag }}"
+    push: yes
+    load_path: "{{HARBOR_LOCATION}}/images/{{item.file}}"
+  with_items: "{{ loaded_images.images}}"

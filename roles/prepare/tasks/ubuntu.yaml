@@ -1,0 +1,11 @@
+- name: 获得系统完整的版本号，例如 18.04.1
+  set_fact: UBUNTU_VERSION={{ansible_lsb['description'].split(' ')[1]}}
+
+- name: 下发Ubuntu-{{UBUNTU_VERSION}}系统的依赖包
+  copy:
+    src: "{{resource_dir}}/apt/{{UBUNTU_VERSION}}/{{ arch_map[ansible_architecture] }}/"
+    dest: "/tmp/apt/"
+  when: 'INSTALL_SOURCE == "offline"'
+
+- name: 安装系统依赖包
+  command: "dpkg -i -R /tmp/apt"
