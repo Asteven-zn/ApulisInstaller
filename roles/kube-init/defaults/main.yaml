@@ -1,3 +1,5 @@
+user_name: dlwsadmin
+
 group_labels:
   - group: kube-master
     labels:

@@ -20,9 +20,6 @@ KUBE_RESERVED_ENABLED: "yes"
 # 另外，集群安装时候apiserver等资源占用会短时较大，建议至少预留1g内存
 SYS_RESERVED_ENABLED: "no"
 
-# haproxy balance mode 
-BALANCE_ALG: "roundrobin"
-
 # 设置 APISERVER 地址
 KUBE_APISERVER: "{%- if inventory_hostname in groups['kube-master'] -%} \
                      https://{{ inventory_hostname }}:6443 \
