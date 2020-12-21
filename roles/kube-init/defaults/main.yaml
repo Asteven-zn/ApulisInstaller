@@ -1,0 +1,9 @@
+group_labels:
+  - group: kube-master
+    labels:
+      - aiarts-backend
+      - aiarts-frontend
+      - image-label
+      - jobmanager
+      - restfulapi
+      - webui

@@ -1,4 +1,4 @@
-- include_tasks: node-labels.yaml
+- include_tasks: arch-labels.yaml
 
 - name: 设置Master可以被调度
   command: >-
@@ -6,3 +6,11 @@
   when:
     - MASTER_AS_WORKER == 'true'
     - inventory_hostname in groups['kube-master']
+
+- name: 设置组内节点的标签
+  command: >-
+        {{ bin_dir }}/kubectl label node {{ inventory_hostname }} {{ item.1 }}=active --overwrite=true
+  when: "{{ inventory_hostname in groups[item.0.group] }}"
+  with_subelements:
+    - "{{ group_labels }}"
+    - labels
