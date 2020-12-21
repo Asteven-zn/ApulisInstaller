@@ -41,18 +41,18 @@ spec:
           readOnly: true
         - mountPath: /RestfulAPI
           name: restfulapiconfig
-        - mountPath: {{service["storage-mount-path"]}}/work
-          name: dlwsdatawork
-        - mountPath: {{service["storage-mount-path"]}}/storage
-          name: dlwsdatadata
-        - mountPath: {{service["storage-mount-path"]}}/jobfiles
-          name: dlwsdatajobfiles
-        - mountPath: {{service["dltsdata-storage-mount-path"]}}
-          name: dltsdata
-        - mountPath: {{service["folder_auto_share"]}}
-          name: folderautoshare
         - mountPath: /var/log/dlworkspace
           name: log
+        - mountPath: /dlwsdata/work
+          name: aiplatform-app-data-pvc
+          subPath: work/
+        - mountPath: /dlwsdata/storage
+          name: aiplatform-model-data-pvc
+        - mountPath:  /dlwsdata/jobfiles
+          name: aiplatform-app-data-pvc
+          subPath: jobfiles/
+        - mountPath:  /mntdlws/nfs/label/
+          name: aiplatform-label-data-pvc
         ports:
         - containerPort: 9200
           hostPort: 9200
@@ -116,27 +116,22 @@ spec:
       - name: restfulapiconfig
         hostPath:
           path: /etc/RestfulAPI
-      - name: dlwsdatawork
-        hostPath:
-          path: {{service["storage-mount-path"]}}/work
-      - name: dlwsdatadata
-        hostPath:
-          path: {{service["storage-mount-path"]}}/storage
-      - name: dlwsdatajobfiles
-        hostPath:
-          path: {{service["storage-mount-path"]}}/jobfiles
-      - name: dltsdata
-        hostPath:
-          path: {{service["dltsdata-storage-mount-path"]}}
-      - name: folderautoshare
-        hostPath:
-          path: {{service["folder_auto_share"]}}
       - name: log
         hostPath:
           path: /var/log/clustermanager
       - name: resolv
         hostPath:
           path: /etc/resolv.conf
+
+      - name: aiplatform-app-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-app-data-pvc
+      - name: aiplatform-model-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-model-data-pvc
+      - name: aiplatform-label-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-label-data-pvc
 
       tolerations:
       - key: CriticalAddonsOnly

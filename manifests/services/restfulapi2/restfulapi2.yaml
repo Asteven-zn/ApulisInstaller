@@ -41,31 +41,20 @@ spec:
           name: resolv
         - mountPath: /RestfulAPI
           name: apiconfig
-        - mountPath: {{service["storage-mount-path"]}}/work
-          name: dlwsdatawork
         - mountPath: /var/log/apache2
           name: log
+        - mountPath: /dlwsdata/work
+          name: aiplatform-app-data-pvc
+          subPath: work/
         - mountPath: /home
-          name: home
-        - mountPath: /data
-          name: data
+          name: aiplatform-app-data-pvc
+          subPath: work/
+        - mountPath: /dlwsdata/storage
+          name: aiplatform-model-data-pvc
         ports:
         - containerPort: 5000
           hostPort: 5000
           name: main
-        {% if False %}
-        {% for volume in service["mountpoints"] %}
-        {% if service["mountpoints"][volume]["mountpoints"] is string and service["mountpoints"][volume]["mountpoints"]!="" %}
-        - mountPath: {{service["storage-mount-path"]}}/{{service["mountpoints"][volume]["mountpoints"]}}
-          name: {{service["mountpoints"][volume]["mountpoints"]}}
-        {% else %}
-        {% for mp in service["mountpoints"][volume]["mountpoints"] %}
-        - mountPath: {{service["storage-mount-path"]}}/{{mp}}
-          name: {{mp}}
-        {% endfor %}
-        {% endif %}
-        {% endfor %}
-        {% endif %}
       volumes:
       - name: kubectl-binary
         hostPath:
@@ -76,36 +65,18 @@ spec:
       - name: resolv
         hostPath:
           path: /etc/resolv.conf
-      - name: dlwsdatawork
-        hostPath:
-          path: {{service["storage-mount-path"]}}/work
       - name: apiconfig
         hostPath:
           path: /etc/RestfulAPI
       - name: log
         hostPath:
           path: /var/log/restfulapi
-      - name: home
-        hostPath:
-          path: /dlwsdata/work
-      - name: data
-        hostPath:
-          path: /dlwsdata/storage
-      {% if False %}
-      {% for volume in service["mountpoints"] %}
-      {% if service["mountpoints"][volume]["mountpoints"] is string and service["mountpoints"][volume]["mountpoints"]!="" %}
-      - name: {{service["mountpoints"][volume]["mountpoints"]}}
-        hostPath:
-          path: {{service["storage-mount-path"]}}/{{service["mountpoints"][volume]["mountpoints"]}}
-      {% else %}
-      {% for mp in service["mountpoints"][volume]["mountpoints"] %}
-      - name: {{mp}}
-        hostPath:
-          path: {{service["storage-mount-path"]}}/{{mp}}
-      {% endfor %}
-      {% endif %}
-      {% endfor %}
-      {% endif %}
+      - name: aiplatform-app-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-app-data-pvc
+      - name: aiplatform-model-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-model-data-pvc
       tolerations:
       - key: CriticalAddonsOnly
         operator: Exists

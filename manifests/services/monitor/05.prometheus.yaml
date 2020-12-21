@@ -97,8 +97,9 @@ spec:
       - name: init
         image: {{ util.image_name('bash', 'third') }}
         volumeMounts:
-        - name: prometheus-data
-          mountPath: /prometheus-data
+        - name: aiplatform-component-data-pvc
+          mountPath:  /prometheus-data
+          subPath: prometheus/ 
         command: ["chmod", "777", "/prometheus-data"] # newly create dir have permission 755, which makes prometheus container unable to write
       serviceAccountName: prometheus
       {% if service["private_docker_registry_username"] is defined %}
@@ -149,9 +150,9 @@ spec:
       - name: rules-volume
         configMap:
           name: prometheus-alert
-      - name: prometheus-data
-        hostPath:
-          path: /data/prometheus/data
+      - name: aiplatform-component-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-component-data-pvc
       tolerations:
       - key: node.kubernetes.io/memory-pressure
         operator: "Exists"
