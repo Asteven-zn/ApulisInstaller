@@ -3,11 +3,11 @@ PLATFORM_MODE: "express"
 
 modes:
   preview:
-    - mysql
+    - storage mysql
   express:
-    - mysql
+    - storage mysql
   professional:
-    - mysql
+    - storage mysql
 
 step: "render"
 
