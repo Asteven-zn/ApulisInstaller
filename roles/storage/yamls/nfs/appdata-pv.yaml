@@ -8,6 +8,12 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: manual
+  mountOptions:
+    - rsize=8192
+    - timeo=14
+    - intr
+    - tcp
+    - nfsvers=4.1
   nfs:
     server: master01
     path: /mnt/local/aiplatform-app-data/
