@@ -15,6 +15,7 @@
       flat: yes
     when: hostvars[groups.harbor[0]]['SELF_SIGNED_CERT'] == 'yes'
 
+# change /etc/hosts
 - hosts: 
   - kube-master
   - kube-worker
