@@ -37,6 +37,7 @@
     src: nfs-pvc-pv.yaml.j2
   vars:
     - name: "{{ item.key }}"
+    - namespace: "{{ item.value['namespace'] | default('default') }}"
     - storage: "{{ item.value['storage'] }}"
     - accessModes: "{{ item.value['accessModes'] }}"
     - nfs_server: "{{ item.value['nfs_server'] }}"

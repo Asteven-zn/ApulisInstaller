@@ -9,25 +9,26 @@ nfs_only_v4: false
 nfs_export_opts: (rw,sync,fsid=0,crossmnt,no_root_squash,no_subtree_check)
 
 nfs_pv_pvc_mounts:
-  aiplatform-app-data-pv:
+  aiplatform-app-data:
     storage: 300Mi
     accessModes:
       - ReadWriteMany
     nfs_server: "{{ groups['nfs-server'][0]}}"
     nfs_path: /mnt/local/aiplatform-app-data
-  aiplatform-component-data-pv:
+  aiplatform-component-data:
     storage: 300Mi
+    namespace: kube-system
     accessModes:
       - ReadWriteMany
     nfs_server: "{{ groups['nfs-server'][0]}}"
     nfs_path: /mnt/local/aiplatform-app-data/
-  aiplatform-label-data-pv:
+  aiplatform-label-data:
     storage: 300Mi
     accessModes:
       - ReadWriteMany
     nfs_server: "{{ groups['nfs-server'][0]}}"
     nfs_path: /mnt/local/aiplatform-label-data/
-  aiplatform-model-data-pv:
+  aiplatform-model-data:
     storage: 300Mi
     accessModes:
       - ReadWriteMany
