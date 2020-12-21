@@ -61,10 +61,10 @@ spec:
           name: aiarts-cm
       - name: dlwsdatawork
         hostPath:
-          path: {{ service['storage-mount-path']}}/work
+          path: {{ service['container-mount-path']}}/work
       - name: dlwsdatadata
         hostPath:
-          path: {{service['storage-mount-path']}}/storage
+          path: {{ service['container-mount-path'] }}/storage
       - name: cluster-conf
         hostPath:
           path: /etc/kubernetes

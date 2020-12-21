@@ -1,8 +1,3 @@
 - hosts: nfs-server
   roles:
     - { role: 'storage', nfs_mode: 'server' }
-
-- hosts:
-    cluster
-  roles:
-    - { role: 'storage', nfs_mode: 'client' }

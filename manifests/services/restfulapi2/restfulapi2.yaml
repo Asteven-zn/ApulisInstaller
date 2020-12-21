@@ -43,13 +43,13 @@ spec:
           name: apiconfig
         - mountPath: /var/log/apache2
           name: log
-        - mountPath: /dlwsdata/work
+        - mountPath: {{service['container-mount-path']}}/work
           name: aiplatform-app-data-pvc
           subPath: work/
         - mountPath: /home
           name: aiplatform-app-data-pvc
           subPath: work/
-        - mountPath: /dlwsdata/storage
+        - mountPath: service['container-mount-path']/storage
           name: aiplatform-model-data-pvc
         ports:
         - containerPort: 5000

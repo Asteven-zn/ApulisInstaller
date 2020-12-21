@@ -11,8 +11,8 @@ bin_dir: "/opt/kube/bin"
 # CA and other components cert/key Directory
 ca_dir: "/etc/kubernetes/ssl"
 
-# Deploy Directory (kubeasz workspace)
-base_dir: "/home/liaodingbai/Documents/workspace/aiarts-tools"
+# Deploy Directory (aiarts workspace)
+base_dir: "/home/liaodingbai/Documents/workspace/InstallationYTung"
 
 # resource directory (include apt, images, dlws code and other package)
 resource_dir: "{{base_dir}}/resources"

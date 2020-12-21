@@ -1,14 +1,17 @@
 - name: Ensure directories to export exist
   file:  # noqa 208
-    path: "{{ item.path }}"
+    path: "{{ item.value['nfs_path'] }}"
     state: directory
-  with_items: "{{ nfs_exports }}"
+  with_dict: "{{ nfs_pv_pvc_mounts }}"
 
 - name: export the directories editing the file /etc/exports
-  lineinfile: dest=/etc/exports regexp="^{{ item.0.path }} " line="{{ item.0.path }} {{hostvars[item.1]['ansible_default_ipv4'].address}}{{ item.0.exportOpts }}" create=yes
-  with_subelements:
-    - "{{ nfs_exports }}"
-    - clients
+  lineinfile:
+    dest: /etc/exports
+    regexp: "^{{ item.value['nfs_path'] }} "
+    line: "{{ item.value['nfs_path'] }} {{hostvars[item.value['nfs_server']]['ansible_default_ipv4'].address}}{{ nfs_export_opts }}"
+    create: yes
+  with_dict:
+    - "{{ nfs_pv_pvc_mounts }}"
   register: nfs_exports_result
 
 - include: "nfs-server-{{ansible_os_family}}.yaml"

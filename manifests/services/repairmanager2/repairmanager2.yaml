@@ -38,16 +38,12 @@ spec:
         - mountPath: /root/.kube/config
           name: kubeconfig
           readOnly: true
-        - mountPath: {{service["storage-mount-path"]}}/work
+        - mountPath: {{service["container-mount-path"]}}/work
           name: dlwsdatawork
-        - mountPath: {{service["storage-mount-path"]}}/storage
+        - mountPath: {{service["container-mount-path"]}}/storage
           name: dlwsdatadata 
-        - mountPath: {{service["storage-mount-path"]}}/jobfiles
+        - mountPath: {{service["container-mount-path"]}}/jobfiles
           name: dlwsdatajobfiles
-        - mountPath: {{service["dltsdata-storage-mount-path"]}}
-          name: dltsdata
-        - mountPath: {{service["folder_auto_share"]}}
-          name: folderautoshare
         - mountPath: /var/log/dlworkspace
           name: log
         readinessProbe:
@@ -74,12 +70,6 @@ spec:
       - name: dlwsdatajobfiles
         hostPath:
           path: {{service["storage-mount-path"]}}/jobfiles
-      - name: dltsdata
-        hostPath:
-          path: {{service["dltsdata-storage-mount-path"]}}
-      - name: folderautoshare
-        hostPath:
-          path: {{service["folder_auto_share"]}}
       - name: log
         hostPath:
           path: /var/log/clustermanager   

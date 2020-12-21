@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ name }}
+spec:
+  capacity:
+    storage: {{ storage }}
+  accessModes:
+    {% for mode in accessModes %}
+    - {{ mode }}
+    {% endfor %}
+  storageClassName: manual
+  nfs:
+    server: {{ nfs_server }}
+    path: {{ nfs_path }}
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ name }}
+spec:
+  storageClassName: manual
+  accessModes:
+    {% for mode in accessModes %}
+    - {{ mode }}
+    {% endfor %}
+  resources:
+    requests:
+      storage: {{ storage }}

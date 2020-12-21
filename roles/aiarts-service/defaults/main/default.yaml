@@ -13,6 +13,7 @@ step: "render"
 
 service:
   clusterId: ""
+  kube_vip_address: "{{kube_vip_address}}"
   k8sAPIport: 6443
   defalt_virtual_cluster_name: platform
   master_token:

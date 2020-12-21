@@ -2,7 +2,7 @@
 
 # 本脚本提供如下功能，作者：Joey Yang, https://github.com/Code2Life
 # 1. 在Ubuntu/CentOS/Fedora/ArchLinux中自动化的安装python+ansible;
-# 2. clone kubeasz项目代码, 并将需要的二进制文件下载解压到/etc/ansible/bin中;
+# 2. clone aiarts项目代码, 并将需要的二进制文件下载解压到/etc/ansible/bin中;
 # 另外, 相关的k8s二进制文件, 我同步到了个人在七牛上的CDN存储中（速度更快）, 方便大家下载: filecdn.code2life.top;
 # 
 # 使用方法：

@@ -35,10 +35,10 @@
         "HostConfig": {
             "Binds": [
                 "/etc/resolv.conf:/etc/resolv.conf",
-                "/dlwsdata/work/dixu:/home/dixu",
-                "/dlwsdata/work/dixu/jobs/190418/0c435eee-d31f-43d5-a1b3-442845fa1d0c:/job",
-                "/dlwsdata/storage/imagenet:/data",
-                "/dlwsdata/work/dixu/.ssh:/home/dixu/.ssh:ro",
+                "{{container_mount_path}}/work/dixu:/home/dixu",
+                "{{container_mount_path}}/work/dixu/jobs/190418/0c435eee-d31f-43d5-a1b3-442845fa1d0c:/job",
+                "{{container_mount_path}}/storage/imagenet:/data",
+                "{{container_mount_path}}/work/dixu/.ssh:/home/dixu/.ssh:ro",
                 "/var/lib/kubelet/pods/611006c3-61a3-11e9-9957-000d3a1707fc/volumes/kubernetes.io~empty-dir/dshm:/dev/shm",
                 "/var/lib/kubelet/pods/611006c3-61a3-11e9-9957-000d3a1707fc/volumes/kubernetes.io~secret/default-token-xqzf9:/var/run/secrets/kubernetes.io/serviceaccount:ro",
                 "/var/lib/kubelet/pods/611006c3-61a3-11e9-9957-000d3a1707fc/etc-hosts:/etc/hosts",
@@ -155,7 +155,7 @@
             },
             {
                 "Type": "bind",
-                "Source": "/dlwsdata/work/dixu/.ssh",
+                "Source": "{{container_mount_path}}/work/dixu/.ssh",
                 "Destination": "/home/dixu/.ssh",
                 "Mode": "ro",
                 "RW": false,
@@ -179,7 +179,7 @@
             },
             {
                 "Type": "bind",
-                "Source": "/dlwsdata/work/dixu",
+                "Source": "{{container_mount_path}}/work/dixu",
                 "Destination": "/home/dixu",
                 "Mode": "",
                 "RW": true,
@@ -187,7 +187,7 @@
             },
             {
                 "Type": "bind",
-                "Source": "/dlwsdata/work/dixu/jobs/190418/0c435eee-d31f-43d5-a1b3-442845fa1d0c",
+                "Source": "{{container_mount_path}}/work/dixu/jobs/190418/0c435eee-d31f-43d5-a1b3-442845fa1d0c",
                 "Destination": "/job",
                 "Mode": "",
                 "RW": true,
@@ -195,7 +195,7 @@
             },
             {
                 "Type": "bind",
-                "Source": "/dlwsdata/storage/imagenet",
+                "Source": "{{container_mount_path}}/storage/imagenet",
                 "Destination": "/data",
                 "Mode": "",
                 "RW": true,

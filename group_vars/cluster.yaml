@@ -21,23 +21,10 @@ NODE_PORT_RANGE: "20000-40000"
 # Cluster DNS Domain
 CLUSTER_DNS_DOMAIN: "cluster.local."
 
-storage_mount_path: /dlwsdata
+container_mount_path: /dlwsdata
 physical_mount_path: /mntdlws
-nfs_remote_path: "/mnt/local"
-
-nfs_exports:
-  - path: "{{nfs_remote_path}}"
-    exportOpts: "(rw,sync,fsid=0,crossmnt,no_root_squash,no_subtree_check)"
-    clients: "{{ groups['cluster'] }}"
-
-nfs_client_imports:
-  - local: "{{physical_mount_path}}"
-    remote: "{{nfs_remote_path}}"
-    opts: "rw,auto,nofail,noatime,nolock,intr,tcp,rsize=8192,timeo=14"
-    server_host: "{{ hostvars[groups['nfs-server'][0]]['ansible_default_ipv4'].address }}"
 
 manifest_dest: "/root/build"
-
 
 # the name of cluster
 cluster_name: "DLWS"

@@ -43,16 +43,18 @@ spec:
           name: restfulapiconfig
         - mountPath: /var/log/dlworkspace
           name: log
-        - mountPath: /dlwsdata/work
+        - mountPath: {{service['container-mount-path']}}/work
           name: aiplatform-app-data-pvc
           subPath: work/
-        - mountPath: /dlwsdata/storage
+        - mountPath: {{service['container-mount-path']}}/storage
           name: aiplatform-model-data-pvc
-        - mountPath:  /dlwsdata/jobfiles
+          subPath: storage/
+        - mountPath:  {{service['container-mount-path']}}/jobfiles
           name: aiplatform-app-data-pvc
           subPath: jobfiles/
-        - mountPath:  /mntdlws/nfs/label/
+        - mountPath:  {{service['container-mount-path']}}/label
           name: aiplatform-label-data-pvc
+          subPath: label/
         ports:
         - containerPort: 9200
           hostPort: 9200

@@ -6,8 +6,8 @@
   service: name=rpcbind state=started enabled=yes
 
 - name: Wait NFS server to be up
-  wait_for: timeout=300 port=2049 host="{{ item.server_host }}"
-  with_items: "{{ nfs_client_imports }}"
+  wait_for: timeout=300 port=2049 host="{{ item.value['nfs_server'] }}"
+  with_dict: "{{ nfs_pv_pvc_mounts }}"
 
 - set_fact: FSTYPE="nfs"
 

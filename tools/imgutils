@@ -5,7 +5,6 @@
 #
 # @author:  gjmzj
 # @usage:   ./imgutils
-# @ref:     https://github.com/easzlab/kubeasz/tree/master/tools/imgutils
 
 set -o nounset
 set -o errexit

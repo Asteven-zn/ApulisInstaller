@@ -40,7 +40,7 @@
 
 # ansible 控制端一些易用性配置
 - name: 本地创建 aiarts 工具的软连接
-  file: src={{ base_dir }}/tools/aiarts dest=/usr/bin/aiarts state=link
+  file: src={{ base_dir }}/tools/aiarts-ctl dest=/usr/bin/aiarts-ctl state=link
 
 - name: ansible 控制端创建 kubectl 软链接
   file: src={{ base_dir }}/bin/kubectl dest=/usr/bin/kubectl state=link

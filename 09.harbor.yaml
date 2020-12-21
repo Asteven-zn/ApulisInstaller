@@ -1,11 +1,8 @@
 # [optional] to set up a HARBOR, and to integrate the HARBOR with k8s cluster
-# read the guide: 'guide/harbor.md'
+# read the doc: 'doc/harbor.md'
 
 - hosts: harbor
   roles:
-  - { role: chrony, when: "NEW_INSTALL == 'yes' and groups['chrony']|length > 0" }
-  - { role: prepare, when: "NEW_INSTALL == 'yes'" }
-  - { role: docker, when: "NEW_INSTALL == 'yes'" }
   - { role: harbor, harbor_step: 'init', when: "NEW_INSTALL == 'yes'" }
   tasks:
   - name: Fetching the HARBOR SERVER's CA cert

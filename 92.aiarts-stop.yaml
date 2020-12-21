@@ -1,0 +1,11 @@
+- hosts: localhost
+  any_errors_fatal: yes
+  vars_prompt:
+    name: "confirmation"
+    prompt: "Do you want to stop all aiarts service?(yes/no)"
+    default: "no"
+    private: no
+  tasks:
+    - name: First Check Confirmation
+      fail: msg="Playbook stop aiarts service action failed"
+      when: confirmation | bool

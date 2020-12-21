@@ -35,7 +35,7 @@ spec:
         - /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         - --bearer
         - /var/run/secrets/kubernetes.io/serviceaccount/token
-        - https://{{ service["api-server-ip"] }}:443
+        - https://{{ util.api_servers() }}:443
         {% if "vc_url" in service["watchdog"] %}
         - --vc_url
         - {{service["watchdog"]["vc_url"]}}

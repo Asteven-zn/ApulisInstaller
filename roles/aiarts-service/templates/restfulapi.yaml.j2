@@ -4,14 +4,12 @@ mysql :
   port : {{service["mysql"]["port"]}}
   username : {{service["mysql"]["username"]}}
   password : "{{service["mysql"]["password"]}}"
-kubelet-path : {{bin_dir}}/kubectl
-storage-mount-path : {{service["storage-mount-path"]}}
-dltsdata-storage-mount-path : {{service["dltsdata-storage-mount-path"]}}
-folder_auto_share: {{service["folder_auto_share"]}}
-root-path : /DLWorkspace/src/
+kubelet-path: {{bin_dir}}/kubectl
+storage-mount-path: {{service["container-mount-path"]}}
+root-path: /DLWorkspace/src/
 nvidiaDriverPath : {{service["nvidia-driver-path"]}}
 clusterId : {{service["clusterId"]}}
-domain : {{service["network"]["domain"]}}
+domain: {{service["network"]["domain"]}}
 apiserver: {{ util.api_servers() }}
 certificate-authority: /etc/kubernetes/ssl/ca.pem
 client-certificate: /etc/kubernetes/ssl/apiserver.pem
@@ -21,7 +19,6 @@ per_user_gpu_limit: {{service["per_user_gpu_limit"]}}
 mountpoints : {{service["mountpoints"]}}
 mounthomefolder : {{service["mounthomefolder"]}}
 deploymounts : {{service["deploymounts"]}}
-default-storage-folders : {{service["default-storage-folders"]}}
 webportal_node: {{service["webportal_node"]}}
 datasource : {{service["datasource"]}}
 kube_custom_scheduler: {{service["kube_custom_scheduler"]}}

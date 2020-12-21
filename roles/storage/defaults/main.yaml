@@ -6,4 +6,30 @@ nfs_version: 4
 nfs_only_v4: false
 
 # Default NFS4 mount options
-nfs_mount_opts: rsize=8192,wsize=8192,timeo=14,intr
+nfs_export_opts: (rw,sync,fsid=0,crossmnt,no_root_squash,no_subtree_check)
+
+nfs_pv_pvc_mounts:
+  aiplatform-app-data-pv:
+    storage: 300Mi
+    accessModes:
+      - ReadWriteMany
+    nfs_server: "{{ groups['nfs-server'][0]}}"
+    nfs_path: /mnt/local/aiplatform-app-data
+  aiplatform-component-data-pv:
+    storage: 300Mi
+    accessModes:
+      - ReadWriteMany
+    nfs_server: "{{ groups['nfs-server'][0]}}"
+    nfs_path: /mnt/local/aiplatform-app-data/
+  aiplatform-label-data-pv:
+    storage: 300Mi
+    accessModes:
+      - ReadWriteMany
+    nfs_server: "{{ groups['nfs-server'][0]}}"
+    nfs_path: /mnt/local/aiplatform-label-data/
+  aiplatform-model-data-pv:
+    storage: 300Mi
+    accessModes:
+      - ReadWriteMany
+    nfs_server: "{{ groups['nfs-server'][0]}}"
+    nfs_path: /mnt/local/aiplatform-model-data/

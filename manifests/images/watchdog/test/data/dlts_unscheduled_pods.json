@@ -30,35 +30,35 @@
             {
                 "name": "6aba981baa894bceaed0f041a123145e",
                 "hostPath": {
-                    "path": "/dlwsdata/work/dixu",
+                    "path": "{{container_mount_path}}/work/dixu",
                     "type": ""
                 }
             },
             {
                 "name": "job",
                 "hostPath": {
-                    "path": "/dlwsdata/work/dixu/jobs/190418/27cd4600-692e-4410-b514-a2547d88ad71/worker1",
+                    "path": "{{container_mount_path}}/work/dixu/jobs/190418/27cd4600-692e-4410-b514-a2547d88ad71/worker1",
                     "type": ""
                 }
             },
             {
                 "name": "work",
                 "hostPath": {
-                    "path": "/dlwsdata/work/dixu",
+                    "path": "{{container_mount_path}}/work/dixu",
                     "type": ""
                 }
             },
             {
                 "name": "data",
                 "hostPath": {
-                    "path": "/dlwsdata/storage/imagenet",
+                    "path": "{{container_mount_path}}/storage/imagenet",
                     "type": ""
                 }
             },
             {
                 "name": "rootsshkey",
                 "hostPath": {
-                    "path": "/dlwsdata/work/dixu/.ssh",
+                    "path": "{{container_mount_path}}/work/dixu/.ssh",
                     "type": ""
                 }
             },
@@ -252,35 +252,35 @@
             {
                 "name": "6aba981baa894bceaed0f041a123145e",
                 "hostPath": {
-                    "path": "/dlwsdata/work/dixu",
+                    "path": "{{container_mount_path}}/work/dixu",
                     "type": ""
                 }
             },
             {
                 "name": "job",
                 "hostPath": {
-                    "path": "/dlwsdata/work/dixu/jobs/190418/27cd4600-692e-4410-b514-a2547d88ad71/worker1",
+                    "path": "{{container_mount_path}}/work/dixu/jobs/190418/27cd4600-692e-4410-b514-a2547d88ad71/worker1",
                     "type": ""
                 }
             },
             {
                 "name": "work",
                 "hostPath": {
-                    "path": "/dlwsdata/work/dixu",
+                    "path": "{{container_mount_path}}/work/dixu",
                     "type": ""
                 }
             },
             {
                 "name": "data",
                 "hostPath": {
-                    "path": "/dlwsdata/storage/imagenet",
+                    "path": "{{container_mount_path}}/storage/imagenet",
                     "type": ""
                 }
             },
             {
                 "name": "rootsshkey",
                 "hostPath": {
-                    "path": "/dlwsdata/work/dixu/.ssh",
+                    "path": "{{container_mount_path}}/work/dixu/.ssh",
                     "type": ""
                 }
             },
