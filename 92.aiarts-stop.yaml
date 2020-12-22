@@ -7,5 +7,9 @@
     private: no
   tasks:
     - name: First Check Confirmation
-      fail: msg="Playbook stop aiarts service action failed"
+      fail: msg="Playbook stop aiarts service action canceled"
       when: confirmation | bool
+
+- hosts: cluster
+  roles:
+    - { role: aiarts-service, tags: ['aiarts_stop']}

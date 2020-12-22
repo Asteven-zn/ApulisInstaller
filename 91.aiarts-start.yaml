@@ -1,1 +1,15 @@
-#
+- hosts: localhost
+  any_errors_fatal: yes
+  vars_prompt:
+    name: "confirmation"
+    prompt: "Do you want to start all aiarts service?(yes/no)"
+    default: "no"
+    private: no
+  tasks:
+    - name: First Check Confirmation
+      fail: msg="Playbook start aiarts service action canceled"
+      when: confirmation | bool
+
+- hosts: cluster
+  roles:
+    - { role: aiarts-service, tags: ['aiarts_start']}
