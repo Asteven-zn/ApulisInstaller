@@ -10,6 +10,28 @@
     size: 2048
   delegate_to: localhost
 
+- name: For each host, scan for its ssh public key
+  shell: "ssh-keyscan {{ item }},`dig +short {{ item }}`"
+  with_items: "{{ groups['cluster'] }}"
+  register: ssh_known_host_results
+  ignore_errors: yes
+
+- name: Add/update the public key in the known_hosts
+  known_hosts:
+    name: "{{ item.item }}"
+    key: "{{ item.stdout }}"
+    state: "present"
+    path: "/home/{{user_name}}/.ssh/known_hosts"
+  with_items: "{{ ssh_known_host_results.results }}"
+
+- name: Change known_hosts owner and group
+  file:
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: '0644'
+    path: "/home/{{user_name}}/.ssh/known_hosts"
+  with_items: "{{ ssh_known_host_results.results }}"
+
 - name: Add {{ user_name }} group to system
   user:
     name: "{{ user_name }}"
@@ -35,5 +57,5 @@
     group: "{{ user_name }}"
     mode: "{{ item.perm }}"
   with_items:
-    - { file: id_rsa, perm: '0644' }
+    - { file: id_rsa, perm: '0600' }
     - { file: id_rsa.pub, perm: '0644' }
