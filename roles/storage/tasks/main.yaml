@@ -40,6 +40,7 @@
     - namespace: "{{ item.value['namespace'] | default('default') }}"
     - storage: "{{ item.value['storage'] }}"
     - accessModes: "{{ item.value['accessModes'] }}"
+    - mountOpts: "{{ item.value['mountOpts'] | default(default_mount_opts) }}"
     - nfs_server: "{{ item.value['nfs_server'] }}"
     - nfs_path: "{{ item.value['nfs_path'] }}"
   with_dict:

@@ -10,6 +10,10 @@ spec:
     - {{ mode }}
     {% endfor %}
   storageClassName: manual
+  mountOptions:
+    {% for mode in mountOpts %}
+    - {{ mode }}
+    {% endfor %}
   nfs:
     server: {{ nfs_server }}
     path: {{ nfs_path }}
