@@ -3,7 +3,7 @@
     lstrip_blocks: yes
     trim_blocks: yes
     src: restfulapi.yaml.j2
-    dest: '{{ manifest_dest }}/restfulapi.yaml'
+    dest: '{{ manifest_dest }}/restfulapi2/restful.conf'
   tags: upgrade_service
 
 - name: Ensure directory structure exists

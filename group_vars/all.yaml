@@ -1,7 +1,6 @@
 # Project Name
 PROJECT_NAME: "sz_gongdianju"
 
-
 # -------- Additional Variables (don't change the default value right now)---
 # Binaries Directory
 i18n: "zh-CN"
@@ -16,6 +15,27 @@ base_dir: "/home/liaodingbai/Documents/workspace/InstallationYTung"
 
 # resource directory (include apt, images, dlws code and other package)
 resource_dir: "{{base_dir}}/resources"
+
+# --------- Main Variables ---------------
+CONTAINER_RUNTIME: "docker"
+
+# Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
+CLUSTER_NETWORK: "weavenet"
+
+# Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
+PROXY_MODE: "iptables"
+
+# K8S Service CIDR, not overlap with node(host) networking
+SERVICE_CIDR: "10.68.0.0/16"
+
+# Cluster CIDR (Pod CIDR), not overlap with node(host) networking
+CLUSTER_CIDR: "172.20.0.0/16"
+
+# NodePort Range
+NODE_PORT_RANGE: "20000-40000"
+
+# Cluster DNS Domain
+CLUSTER_DNS_DOMAIN: "cluster.local."
 
 # harbor domain value
 HARBOR_DOMAIN: "harbor.sigsus.cn"
@@ -70,9 +90,6 @@ thirdparty_images:
   tensorflow-serving:
     name: "apulistech/tensorflow-serving"
     tag: "1.15.0"
-  tensorflow-serving:
-    name: "apulistech/tensorflow-serving"
-    tag: "1.15.0-gpu"
   tensorrtserver:
     name: ""
   kfserving-pytorchserver:

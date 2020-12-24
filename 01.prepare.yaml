@@ -3,7 +3,6 @@
   - kube-master
   - kube-worker
   - etcd
-  - ex-lb
   - chrony
   roles:
   - { role: chrony, when: "groups['chrony']|length > 0" }

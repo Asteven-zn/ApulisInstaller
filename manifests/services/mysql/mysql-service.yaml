@@ -7,7 +7,7 @@ spec:
   ports:
     - protocol: TCP
       port: 3306
-      targetPort: 3306
+      targetPort: {{ service['mysql']['port']}}
 ---
 
 apiVersion: v1
@@ -17,6 +17,6 @@ metadata:
   namespace: kube-system
 subsets:
   - addresses:
-    - ip: 192.168.1.200
+    - ip: {{ service['mysql']['host']}}
     ports:
-    - port: 3306
+    - port: {{ service['mysql']['port']}}

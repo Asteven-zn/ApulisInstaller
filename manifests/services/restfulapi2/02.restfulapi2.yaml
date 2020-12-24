@@ -56,6 +56,9 @@ spec:
           hostPort: 5000
           name: main
       volumes:
+      - name: apiconfig
+        configMap:
+          name: restful-cm
       - name: kubectl-binary
         hostPath:
           path: /usr/bin/kubectl

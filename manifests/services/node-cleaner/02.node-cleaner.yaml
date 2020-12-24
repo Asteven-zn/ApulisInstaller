@@ -30,7 +30,7 @@ spec:
           name: appconfig
           subPath: config.yaml
         - mountPath: /data
-          name: dlwsdatadata
+          name: aiplatform-model-data-pvc
         - mountPath: /root/logs
           name: npulog
       env:
@@ -42,9 +42,9 @@ spec:
       - name: appconfig
         configMap:
           name: node-cleaner-cm
-      - name: dlwsdatadata
-        hostPath:
-          path: {{service["storage-mount-path"]}}/storage
+      - name: aiplatform-model-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-model-data-pvc
       - name: npulog
         hostPath:
           path: /var/log/npu/slog

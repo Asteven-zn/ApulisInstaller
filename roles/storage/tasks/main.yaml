@@ -17,8 +17,9 @@
 - name: export the directories editing the file /etc/exports
   lineinfile:
     dest: /etc/exports
-    regexp: "^{{ item.value['nfs_path'] }} "
+    regexp: "^{{ item.value['nfs_path'] | regex_replace('\\/$', '') }}"
     line: "{{ item.value['nfs_path'] }} {{hostvars[item.value['nfs_server']]['ansible_default_ipv4'].address}}{{ nfs_export_opts }}"
+    state: present
     create: yes
   with_dict:
     - "{{ nfs_pv_pvc_mounts }}"
