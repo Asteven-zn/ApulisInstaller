@@ -97,7 +97,7 @@ spec:
           path: /etc/hostname-fqdn
       - name: grafana-storage
         hostPath:
-          path: {{service["grafana_data_path"]}}
+          path: {{service["grafana"]["data_path"]}}
       tolerations:
       - key: CriticalAddonsOnly
         operator: Exists

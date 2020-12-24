@@ -1,17 +1,17 @@
-- name: 渲染config.yaml文件
-  template:
-    lstrip_blocks: yes
-    trim_blocks: yes
-    src: restfulapi.yaml.j2
-    dest: '{{ manifest_dest }}/restfulapi2/restful.conf'
-  tags: upgrade_service
-
 - name: Ensure directory structure exists
   file:
     path: '{{ manifest_dest }}{{sub_service}}/{{ item.path }}'
     state: directory
   with_filetree: '{{ base_dir}}/manifests/services{{sub_service}}'
   when: item.state == 'directory'
+  tags: upgrade_service
+
+- name: 渲染config.yaml文件
+  template:
+    lstrip_blocks: yes
+    trim_blocks: yes
+    src: restfulapi.yaml.j2
+    dest: '{{ manifest_dest }}/restfulapi2/config.yaml'
   tags: upgrade_service
 
 - name: Copy init scripts

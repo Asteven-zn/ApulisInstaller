@@ -17,6 +17,7 @@ service:
     password: ""
   prometheus:
     host: "{{kube_vip_address}}"
+    port: 9092
     reporter:
       port: 9092
     data_path: "{{container_mount_path}}/service/prometheus/data"

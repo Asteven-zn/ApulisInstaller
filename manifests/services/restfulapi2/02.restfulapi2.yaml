@@ -39,8 +39,9 @@ spec:
           readOnly: true
         - mountPath: /etc/resolv.conf
           name: resolv
-        - mountPath: /RestfulAPI
+        - mountPath: /RestfulAPI/config.yaml
           name: apiconfig
+          subPath: config.yaml
         - mountPath: /var/log/apache2
           name: log
         - mountPath: {{service['container-mount-path']}}/work
@@ -49,7 +50,7 @@ spec:
         - mountPath: /home
           name: aiplatform-app-data-pvc
           subPath: work/
-        - mountPath: service['container-mount-path']/storage
+        - mountPath: {{ service['container-mount-path'] }}/storage
           name: aiplatform-model-data-pvc
         ports:
         - containerPort: 5000
@@ -68,9 +69,6 @@ spec:
       - name: resolv
         hostPath:
           path: /etc/resolv.conf
-      - name: apiconfig
-        hostPath:
-          path: /etc/RestfulAPI
       - name: log
         hostPath:
           path: /var/log/restfulapi
