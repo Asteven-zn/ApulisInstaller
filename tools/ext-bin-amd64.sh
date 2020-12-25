@@ -79,5 +79,5 @@ tar zxf kubernetes-server-linux-amd64.tar.gz
 cd kubernetes/server/bin \
   && mv kube-apiserver kube-controller-manager kube-scheduler $DEST \
   && mv kubelet kube-proxy kubectl $DEST \
-  && cd ..
+  && cd ../../../
 rm -rf kubernetes*
