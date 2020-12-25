@@ -6,12 +6,15 @@
   when: item.state == 'directory'
   tags: upgrade_service
 
-- name: 渲染config.yaml文件
+- name: 渲染config.yaml等配置yaml文件
   template:
     lstrip_blocks: yes
     trim_blocks: yes
-    src: restfulapi.yaml.j2
-    dest: '{{ manifest_dest }}/restfulapi2/config.yaml'
+    src: "{{ item.src }}"
+    dest: '{{ manifest_dest }}/{{item.dest}}'
+  with_items:
+    - { src: "restfulapi.yaml.j2", dest: "restfulapi2/config.yaml" }
+    - { src: "dashboard.yaml.j2", dest: "custom-user-dashboard/local.config" }
   tags: upgrade_service
 
 - name: Copy init scripts

@@ -4,6 +4,9 @@ service:
   nvidia-driver-path: "/opt/nvidia-driver/current"
   per_user_gpu_limit: "-1"
 
+  enable_vc: true
+  enable_avisuals: false
+
   inference:
     tensorflow:
       allowedImageVersions:

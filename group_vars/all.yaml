@@ -1,6 +1,8 @@
 # Project Name
 PROJECT_NAME: "sz_gongdianju"
 
+PLATFORM_NAME: "Apulis"
+
 # -------- Additional Variables (don't change the default value right now)---
 # Binaries Directory
 i18n: "zh-CN"

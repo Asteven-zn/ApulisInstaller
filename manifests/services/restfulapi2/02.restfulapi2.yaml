@@ -62,10 +62,11 @@ spec:
           name: restful-cm
       - name: kubectl-binary
         hostPath:
-          path: /usr/bin/kubectl
+          path: {{ bin_dir }}/kubectl
+
       - name: kubeconfig
         hostPath:
-          path: /etc/kubernetes/admin.conf
+          path: /root/.kube/config
       - name: resolv
         hostPath:
           path: /etc/resolv.conf

@@ -39,8 +39,9 @@ spec:
         - mountPath: /root/.kube/config
           name: kubeconfig
           readOnly: true
-        - mountPath: /RestfulAPI
-          name: restfulapiconfig
+        - mountPath: /RestfulAPI/config.yaml
+          name: apiconfig
+          subPath: config.yaml
         - mountPath: /var/log/dlworkspace
           name: log
         - mountPath: {{service['container-mount-path']}}/work
@@ -110,19 +111,19 @@ spec:
       - name: kubectl-binary
         hostPath:
           path: {{ bin_dir }}/kubectl
+
       - name: kubeconfig
         hostPath:
-          path: /etc/kubernetes/admin.conf
-      - name: restfulapiconfig
-        hostPath:
-          path: /etc/RestfulAPI
+          path: /root/.kube/config
+      - name: apiconfig
+        configMap:
+          name: restful-cm
       - name: log
         hostPath:
           path: /var/log/clustermanager
       - name: resolv
         hostPath:
           path: /etc/resolv.conf
-
       - name: aiplatform-app-data-pvc
         persistentVolumeClaim:
           claimName: aiplatform-app-data-pvc
