@@ -11,7 +11,7 @@ ENV DIST_DIR=/ssh_build/dist ROOT=/ssh_build/root BUILD_DIR=/ssh_build/build
 
 RUN mkdir -p $DIST_DIR $ROOT $BUILD_DIR
 # make it cache friendly
-COPY download/glibc-2.31.tar.gz download/zlib-1.2.11.tar.gz download/openssh-8.1p1.tar.gz download/openssl-1.0.2t.tar.gz $DIST_DIR
+COPY download/glibc-2.31.tar.gz download/zlib-1.2.11.tar.gz download/openssh-8.1p1.tar.gz download/openssl-1.0.2t.tar.gz ${DIST_DIR}/
 COPY build_zlib.sh /ssh_build
 RUN sh build_zlib.sh
 COPY build_openssl.sh /ssh_build
