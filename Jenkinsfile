@@ -43,14 +43,14 @@ buildPlugin ( {
             'dockerfilePath': '',
             'arch': ['amd64', 'arm64']
         ],
-        [
-            'compileContainer': '',
-            'preBuild':[],
-            'imageName': 'apulistech/dlworkspace_image-label',
-            'directory': 'manifests/images/image-label',
-            'dockerfilePath': '',
-            'arch': ['amd64', 'arm64']
-        ],
+        // [
+        //     'compileContainer': '',
+        //     'preBuild':[],
+        //     'imageName': 'apulistech/dlworkspace_image-label',
+        //     'directory': 'manifests/images/image-label',
+        //     'dockerfilePath': '',
+        //     'arch': ['amd64', 'arm64']
+        // ],
         [
             'compileContainer': '',
             'preBuild':[],
