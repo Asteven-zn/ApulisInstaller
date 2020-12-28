@@ -35,7 +35,7 @@
         {{bin_dir}}/docker manifest create {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}} \
             {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_arm64:{{tag}} -a && \
         {{bin_dir}}/docker manifest annotate {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}} \
-            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_arm64:{{tag}} --os linux --arch _arm64 && \
+            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_arm64:{{tag}} --os linux --arch arm64 && \
         {{bin_dir}}/docker manifest push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}}
         "
   when: '"arm64" in orig_name'
