@@ -23,7 +23,9 @@ buildPlugin ( {
             'compileContainer': '',
             'sidecar': 'common/build-resources',
             'preBuild':[
-                ['manifests/images/grafana','docker cp {SIDECAR}:/resources/grafana/grafana_6.7.4_{ARCH}.deb ./download/']            ],
+                ['manifests/images/grafana','mkdir ./download/'],
+                ['manifests/images/grafana','docker cp {SIDECAR}:/resources/grafana/grafana_6.7.4_{ARCH}.deb ./download/']
+            ],
             'imageName': 'apulistech/dlworkspace_grafana',
             'directory': 'manifests/images/grafana',
             'dockerfilePath': '',
