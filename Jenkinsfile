@@ -13,7 +13,9 @@ buildPlugin ( {
         ],
         [
             'compileContainer': '',
-            'preBuild':[],
+            'preBuild':[
+                ''
+            ],
             'imageName': 'apulistech/dlworkspace_gpu-reporter',
             'directory': 'manifests/images/gpu-reporter',
             'dockerfilePath': '',
@@ -21,6 +23,7 @@ buildPlugin ( {
         ],
         [
             'compileContainer': '',
+            'sidecar': 'common/build-resources'
             'preBuild':[],
             'imageName': 'apulistech/dlworkspace_grafana',
             'directory': 'manifests/images/grafana',
