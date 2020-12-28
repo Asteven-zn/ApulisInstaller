@@ -53,7 +53,11 @@ buildPlugin ( {
         // ],
         [
             'compileContainer': '',
-            'preBuild':[],
+            'sidecar': 'common/build-resources',
+            'preBuild':[
+                ['manifests/images/init-container','mkdir -p ./download/'],
+                ['manifests/images/init-container','docker cp {SIDECAR}:/resources/common/*.tar.gz ./download/']
+            ],
             'imageName': 'apulistech/dlworkspace_init-container',
             'directory': 'manifests/images/init-container',
             'dockerfilePath': '',
