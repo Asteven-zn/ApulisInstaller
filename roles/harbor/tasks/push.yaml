@@ -1,28 +1,41 @@
-- name: 下载镜像tar文件
-  copy: src={{ item }} dest={{HARBOR_LOCATION}}/images/
-  with_fileglob:
-    - "{{ base_dir }}/images/*.tar"
+- name: Load Docker镜像本地
+  command:
+    cmd: "{{bin_dir}}/docker load -i {{ image }}"
+  register: result
 
-- name: Docker 登录 harbor
-  docker_login:
-    registry_url: https://{{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}
-    username: "admin"
-    password: "{{ lookup('file', '{{ base_dir }}/credentials/harbor.pwd') }}"
-    ca_cert: "{{ ca_dir }}/ca.pem"
-    client_cert: "{{ ca_dir }}/harbor.pem"
-    client_key: "{{ ca_dir }}/harbor-key.pem"
+- name: 解析镜像信息(name，arch和tag等)
+  set_fact:
+    manifest_name: '{{ (line.split(":")[1] | trim).split("/")[1:-1] | join("/") }}'
+    orig_name: '{{ line.split(":")[1:] | join(":") | trim }}'
+    tag: '{{ line.split(":")[2] | trim }}'
 
-- include_vars:
-    file: "{{ base_dir }}/images/list.json"
-    name: loaded_images
+  with_items: "{{ result.stdout_lines }}"
+  when: '"Loaded image" in line'
+  loop_control:
+    loop_var: line
 
-- name: Load Docker镜像并且Push到harbor
-  docker_image:
-    name: "{{item.name}}"
-    source: load
-    force: yes
-    repository: "{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{item.name}}:{{ item.tag if item.tag is defined else loaded_images.tag }}"
-    tag: "{{ item.tag if item.tag is defined else loaded_images.tag }}"
-    push: yes
-    load_path: "{{HARBOR_LOCATION}}/images/{{item.file}}"
-  with_items: "{{ loaded_images.images}}"
+- name: 推送AMD64镜像 {{ orig_name }} 到harbor
+  shell: "
+        {{bin_dir}}/docker tag {{orig_name}} {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_amd64:{{tag}} && \
+        {{bin_dir}}/docker manifest create {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}} \
+            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_amd64:{{tag}} | \
+      	{{bin_dir}}/docker manifest create {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}} \
+      	    {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_amd64:{{tag}} -a && \
+      	{{bin_dir}}/docker manifest annotate {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}} \
+      		{{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_amd64:{{tag}} --os linux --arch amd64 && \
+      	{{bin_dir}}/docker manifest push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}}
+        "
+  when: '"amd64" in orig_name'
+
+- name: 推送ARM64镜像 {{ orig_name }} 到harbor
+  shell: "
+        {{bin_dir}}/docker tag {{orig_name}} {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_arm64:{{tag}} && \
+        {{bin_dir}}/docker manifest create {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}} \
+            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_arm64:{{tag}} | \
+        {{bin_dir}}/docker manifest create {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}} \
+            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_arm64:{{tag}} -a && \
+        {{bin_dir}}/docker manifest annotate {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}} \
+            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}_arm64:{{tag}} --os linux --arch _arm64 && \
+        {{bin_dir}}/docker manifest push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ manifest_name }}:{{tag}}
+        "
+  when: '"arm64" in orig_name'

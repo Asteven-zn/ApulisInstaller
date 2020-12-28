@@ -3,7 +3,7 @@
 
 - hosts: harbor
   roles:
-  - { role: harbor, harbor_step: 'init', when: "NEW_INSTALL == 'yes'" }
+  - { role: harbor, when: "NEW_INSTALL == 'yes'" }
   tasks:
   - name: Fetching the HARBOR SERVER's CA cert
     fetch:
