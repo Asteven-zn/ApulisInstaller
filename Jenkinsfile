@@ -56,7 +56,10 @@ buildPlugin ( {
             'sidecar': 'common/build-resources',
             'preBuild':[
                 ['manifests/images/init-container','mkdir -p ./download/'],
-                ['manifests/images/init-container','docker cp {SIDECAR}:/resources/common/*.tar.gz ./download/']
+                ['manifests/images/init-container','docker cp {SIDECAR}:/resources/common/glibc-2.31.tar.gz ./download/'],
+                ['manifests/images/init-container','docker cp {SIDECAR}:/resources/common/zlib-1.2.11.tar.gz ./download/'],
+                ['manifests/images/init-container','docker cp {SIDECAR}:/resources/common/openssh-8.1p1.tar.gz ./download/'],
+                ['manifests/images/init-container','docker cp {SIDECAR}:/resources/common/openssl-1.0.2t.tar.gz ./download/']
             ],
             'imageName': 'apulistech/dlworkspace_init-container',
             'directory': 'manifests/images/init-container',
