@@ -11,7 +11,7 @@
 
 - block:
     - name: 下发 docker compose 二进制文件
-      copy: src={{ base_dir }}/bin/docker-compose dest={{ bin_dir }}/docker-compose mode=0755
+      copy: src={{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/docker-compose dest={{ bin_dir }}/docker-compose mode=0755
 
     - name: 下发 harbor 离线安装包
       copy:
@@ -44,7 +44,7 @@
       when: SELF_SIGNED_CERT == 'yes'
 
     - name: 复制 download 目录下 harbor 证书
-      copy: src={{ base_dir }}/down/{{ item }} dest={{ ca_dir }}/{{ item }}
+      copy: src={{ base_dir }}/download/{{ item }} dest={{ ca_dir }}/{{ item }}
       with_items:
         - harbor.pem
         - harbor-key.pem

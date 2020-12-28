@@ -10,7 +10,7 @@
 
         - name: get etcd cluster status
           shell: 'for ip in {{ NODE_IPS }};do \
-            ETCDCTL_API=3 {{ base_dir }}/bin/etcdctl \
+            ETCDCTL_API=3 {{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/etcdctl \
             --endpoints=https://"$ip":2379 \
             --cacert={{ base_dir }}/.cluster/ssl/ca.pem \
             --cert={{ base_dir }}/.cluster/ssl/admin.pem \
@@ -31,7 +31,7 @@
       connection: local
 
     - name: add a new etcd member
-      shell: "ETCDCTL_API=3 {{ bin_dir }}/etcdctl member add {{ NODE_NAME }} \
+      shell: "ETCDCTL_API=3 {{ bin_dir }}/bin/{{ arch_map[ansible_architecture] }}/etcdctl member add {{ NODE_NAME }} \
         --peer-urls=https://{{ NODE_TO_ADD }}:2380"
       delegate_to: "{{ RUNNING_NODE.stdout }}"
 

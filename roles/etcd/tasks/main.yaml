@@ -7,7 +7,7 @@
     - "/var/lib/etcd" # etcd 工作目录
 
 - name: 下载etcd二进制文件
-  copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
+  copy: src={{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
   with_items:
     - etcd
     - etcdctl
