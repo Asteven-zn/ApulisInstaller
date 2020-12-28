@@ -35,4 +35,4 @@ KUBE_APISERVER: "{%- if inventory_hostname in groups['kube-master'] -%} \
 MASTER_CHG: "no"
 
 # 离线安装 haproxy (offline|online)
-INSTALL_SOURCE: "online"
+INSTALL_SOURCE: "offline"
