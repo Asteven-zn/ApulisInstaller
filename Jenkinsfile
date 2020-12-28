@@ -23,7 +23,7 @@ buildPlugin ( {
         ],
         [
             'compileContainer': '',
-            'sidecar': 'common/build-resources'
+            'sidecar': 'common/build-resources',
             'preBuild':[],
             'imageName': 'apulistech/dlworkspace_grafana',
             'directory': 'manifests/images/grafana',
