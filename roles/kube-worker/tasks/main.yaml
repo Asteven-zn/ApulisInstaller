@@ -7,7 +7,7 @@
 
 - name: 下载 kubelet,kube-proxy 二进制和基础 cni plugins
   copy:
-    src: "{{ base_dir }}/bin/{{ item }}"
+    src: "{{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }}"
     dest: "{{ bin_dir }}/{{ item }}"
     mode: 0755
   with_items:
@@ -38,7 +38,7 @@
 
 # 判断 kubernetes 版本
 - name: 注册变量 TMP_VER
-  shell: "{{ base_dir }}/bin/kube-apiserver --version|cut -d' ' -f2|cut -d'v' -f2"
+  shell: "{{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/kube-apiserver --version|cut -d' ' -f2|cut -d'v' -f2"
   register: TMP_VER
   connection: local
   tags: upgrade_k8s, restart_node
