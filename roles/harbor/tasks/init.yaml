@@ -15,7 +15,7 @@
 
     - name: 下发 harbor 离线安装包
       copy:
-        src: "{{ base_dir }}/images/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
+        src: "{{ base_dir }}/resources/images/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
         dest: "{{HARBOR_LOCATION}}/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
 
     - name: 解压 harbor 离线安装包
@@ -52,10 +52,11 @@
 
     - name: 配置 harbor.yml 文件
       template: src=harbor-{{ HARBOR_VER_MAIN }}.yml.j2 dest={{HARBOR_LOCATION}}/harbor/harbor.yml
-      when: HARBOR_VER_MAIN in ["v1.10"]
+      when: HARBOR_VER_MAIN in ["v2.1"]
 
     - name: 安装 harbor --with-clair
       shell: "cd {{HARBOR_LOCATION}}/harbor && \
         export PATH={{ bin_dir }}:$PATH && \
         ./install.sh  --with-clair"
+
   when: '"registry" not in result.stdout'

@@ -8,9 +8,10 @@
   - name: Fetching the HARBOR SERVER's CA cert
     fetch:
       src: "{{ ca_dir }}/ca.pem"
-      dest: "{{ base_dir }}/down/"
+      dest: "{{ base_dir }}/download/"
       flat: yes
     when: hostvars[groups.harbor[0]]['SELF_SIGNED_CERT'] == 'yes'
+
 
 # change /etc/hosts
 - hosts: 
@@ -30,7 +31,7 @@
           file: name=/etc/docker/certs.d/{{ harbor_hostname }}:{{HARBOR_HTTPS_PORT}} state=directory
     
         - name: Installing the HARBOR SERVER's CA cert for docker
-          copy: src={{ base_dir }}/down/ca.pem dest=/etc/docker/certs.d/{{ harbor_hostname }}:{{HARBOR_HTTPS_PORT}}/ca.crt
+          copy: src={{ base_dir }}/download/ca.pem dest=/etc/docker/certs.d/{{ harbor_hostname }}:{{HARBOR_HTTPS_PORT}}/ca.crt
         when: "CONTAINER_RUNTIME == 'docker'"
     when: hostvars[groups.harbor[0]]['SELF_SIGNED_CERT'] == 'yes'
 
@@ -42,7 +43,3 @@
       regexp: '{{ harbor_hostname }}'
       line: "{{ groups['harbor'][0] }} {{ harbor_hostname }}"
     when: "hostvars[groups.harbor[0]]['HARBOR_DOMAIN'] != ''"
-
-- hosts: harbor
-  roles:
-    - { role: harbor, harbor_step: 'push' }
