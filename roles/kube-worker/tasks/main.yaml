@@ -9,7 +9,7 @@
   copy:
     src: "{{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }}"
     dest: "{{ bin_dir }}/{{ item }}"
-    mode: 0755
+    mode: '0777'
   with_items:
     - kubectl
     - kubelet
