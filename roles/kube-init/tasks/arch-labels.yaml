@@ -6,7 +6,7 @@
   set_fact:
     role_node_labels: "{{ role_node_labels + [ 'gpuType=nvidia_gpu_amd64', 'archType=amd64' ] }}"
   when:
-    - MASTER_AS_WORKER == 'true'
+    - MASTER_AS_WORKER
     - arch_map[ansible_architecture] == 'amd64'
     - inventory_hostname in groups['kube-master']
 
@@ -14,7 +14,7 @@
   set_fact:
     role_node_labels: "{{ role_node_labels + [ 'gpuType=huawei_npu_arm64', 'archType=arm64' ] }}"
   when:
-    - MASTER_AS_WORKER == 'true'
+    - MASTER_AS_WORKER
     - arch_map[ansible_architecture] == 'arm64'
     - inventory_hostname in groups['kube-master']
 

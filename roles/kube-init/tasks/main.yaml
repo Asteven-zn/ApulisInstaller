@@ -8,7 +8,7 @@
   command: >-
         {{ bin_dir }}/kubectl uncordon {{ inventory_hostname }}
   when:
-    - MASTER_AS_WORKER == 'true'
+    - MASTER_AS_WORKER
     - inventory_hostname in groups['kube-master']
 
 - name: 设置组内节点的标签
