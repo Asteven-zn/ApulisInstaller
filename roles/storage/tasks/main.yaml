@@ -32,8 +32,6 @@
 
 - name: generate pvc and pv service yaml files
   template:
-    lstrip_blocks: yes
-    trim_blocks: yes
     dest: "{{ manifest_dest }}/storage/{{item.key}}.yaml"
     src: nfs-pvc-pv.yaml.j2
   vars:
