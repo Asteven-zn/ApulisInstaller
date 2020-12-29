@@ -1,10 +1,20 @@
-
-
 - name: For each host, scan for its ssh public key
   shell: "ssh-keyscan {{ item }},`dig +short {{ item }}`"
   with_items: "{{ groups['cluster'] }}"
   register: ssh_known_host_results
   ignore_errors: yes
+
+- name: Add {{ user_name }} group to system
+  group:
+    name: "{{ user_name }}"
+    state: present
+
+- name: Add {{ user_name }} user to system
+  user:
+    name: "{{ user_name }}"
+    group: "{{ user_name }}"
+    generate_ssh_key: yes
+    state: present
 
 - name: Add/update the public key in the known_hosts
   known_hosts:
@@ -22,16 +32,6 @@
     path: "/home/{{user_name}}/.ssh/known_hosts"
   with_items: "{{ ssh_known_host_results.results }}"
 
-- name: Add {{ user_name }} group to system
-  user:
-    name: "{{ user_name }}"
-    state: present
-
-- name: Add {{ user_name }} user to system
-  user:
-    name: "{{ user_name }}"
-    group: "{{ user_name }}"
-    state: present
 
 - name: Set authorized key in alternate location
   authorized_key:
