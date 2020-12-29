@@ -40,7 +40,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: {{ util.image_name('weave-kube') }}
+              image: {{ util.image_name('weave-kube', 'third') }}
               readinessProbe:
                 httpGet:
                   host: 127.0.0.1
@@ -73,7 +73,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: {{ util.image_name('weave-npc') }}
+              image: {{ util.image_name('weave-npc', 'third') }}
               resources:
                 requests:
                   cpu: 10m

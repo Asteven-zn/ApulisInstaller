@@ -1,21 +1,15 @@
+- name: 准备{{manifest_dest}}/network目录
+  file:
+    path: "{{manifest_dest}}/network/"
+    state: directory
+    mode: 0755
+
 - name: 下发weave-role.yaml文件
   copy:
-    src: weavenet-role.yaml
-    dest: /tmp/weave-role.yaml
-
-- name: 初始化weave net role信息
-  k8s:
-    state: present
-    src: /tmp/weave-role.yaml
-  run_once: true
+    src: weave-role.yaml
+    dest: "{{manifest_dest}}/network/01-weave-role.yaml"
 
 - name: Render weave.yaml文件
   template:
-    dest: /tmp/weave.yaml
+    dest: "{{manifest_dest}}/network/02-weave.yaml"
     src: weave.yaml.j2
-
-- name: 初始化weave net
-  k8s:
-    state: present
-    src: /tmp/weave.yaml
-  run_once: true
