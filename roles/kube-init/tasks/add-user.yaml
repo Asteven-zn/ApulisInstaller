@@ -4,11 +4,15 @@
     state: directory
   delegate_to: localhost
 
-- name: Generate an OpenSSH keypair with the default values (2048 bits, rsa)
-  community.crypto.openssh_keypair:
-    path: credentials/rsa/id_rsa
-    size: 2048
+- name: 检查是否已经有密钥文件
+  command: ls {{base_dir}}/credentials/rsa
   delegate_to: localhost
+  register: result
+
+- name: Generate an OpenSSH keypair with the default values (2048 bits, rsa)
+  command: 'ssh-keygen -q -t rsa -f {{base_dir}}/credentials/rsa/id_rsa -C "" -N ""'
+  delegate_to: localhost
+  when: '"id_rsa" not in result.stdout'
 
 - name: For each host, scan for its ssh public key
   shell: "ssh-keyscan {{ item }},`dig +short {{ item }}`"
