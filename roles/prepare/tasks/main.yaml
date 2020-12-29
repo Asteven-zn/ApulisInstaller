@@ -1,4 +1,3 @@
-- import_tasks: password.yaml
 
 - import_tasks: python.yaml
 

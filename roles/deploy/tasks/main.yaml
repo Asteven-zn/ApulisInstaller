@@ -1,3 +1,18 @@
+- import_tasks: password.yaml
+
+- name: Ensure the directory exist
+  file:
+    path: credentials/rsa
+    state: directory
+
+- name: 检查是否已经有密钥文件
+  command: ls {{base_dir}}/credentials/rsa
+  register: result
+
+- name: Generate an OpenSSH keypair with the default values (2048 bits, rsa)
+  command: 'ssh-keygen -q -t rsa -f {{base_dir}}/credentials/rsa/id_rsa -C "" -N ""'
+  when: '"id_rsa" not in result.stdout'
+
 - name: prepare some dirs
   file: name={{ item }} state=directory
   with_items:
