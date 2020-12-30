@@ -12,26 +12,18 @@
       flat: yes
     when: hostvars[groups.harbor[0]]['SELF_SIGNED_CERT'] == 'yes'
 
-
 # change /etc/hosts
 - hosts: 
   - kube-master
   - kube-worker
   tasks:
-  - name: Define 'harbor_hostname', a domain name
-    set_fact: harbor_hostname={{ hostvars[groups.harbor[0]]['HARBOR_DOMAIN'] }}
-
-  - name: Define 'harbor_hostname', an IP Addr
-    set_fact: harbor_hostname={{ groups['harbor'][0] }}
-    when: hostvars[groups.harbor[0]]['HARBOR_DOMAIN'] == ''
-  
-  - block:  
+  - block:
       - block:  
         - name: Creating cert dir for the docker daemon
-          file: name=/etc/docker/certs.d/{{ harbor_hostname }}:{{HARBOR_HTTPS_PORT}} state=directory
+          file: name=/etc/docker/certs.d/{{ HARBOR_DOMAIN }}:{{HARBOR_HTTPS_PORT}} state=directory
     
         - name: Installing the HARBOR SERVER's CA cert for docker
-          copy: src={{ base_dir }}/download/ca.pem dest=/etc/docker/certs.d/{{ harbor_hostname }}:{{HARBOR_HTTPS_PORT}}/ca.crt
+          copy: src={{ base_dir }}/download/ca.pem dest=/etc/docker/certs.d/{{ HARBOR_DOMAIN }}:{{HARBOR_HTTPS_PORT}}/ca.crt
         when: "CONTAINER_RUNTIME == 'docker'"
     when: hostvars[groups.harbor[0]]['SELF_SIGNED_CERT'] == 'yes'
 
@@ -40,6 +32,6 @@
     lineinfile:
       dest: /etc/hosts
       state: present
-      regexp: '{{ harbor_hostname }}'
-      line: "{{ groups['harbor'][0] }} {{ harbor_hostname }}"
-    when: "hostvars[groups.harbor[0]]['HARBOR_DOMAIN'] != ''"
+      regexp: '{{ HARBOR_DOMAIN }}'
+      line: "{{ groups['harbor'][0] }} {{ HARBOR_DOMAIN }}"
+    when: "HARBOR_DOMAIN != ''"

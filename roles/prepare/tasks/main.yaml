@@ -7,6 +7,9 @@
 # 公共系统参数设置
 - import_tasks: common.yaml
 
+# 用户
+- import_tasks: add-user.yaml
+
 - name: prepare some dirs
   file: name={{ item }} state=directory
   with_items:
