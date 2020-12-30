@@ -6,10 +6,10 @@
     src: "{{ item }}"
     dest: "/tmp/apt/"
   with_fileglob:
-    - "{{resource_dir}}/apt/{{UBUNTU_VERSION}}/"
+    - "{{resource_dir}}/apt/{{UBUNTU_VERSION}}/*"
   when:
     - 'INSTALL_SOURCE == "offline"'
-    - ("{{ arch_map[ansible_architecture] in item }}") or ('"all" in {{item}}')
+    - ('{{ item.endswith("_all.deb") }}') or ('{{item.endswith("_" + arch_map[ansible_architecture] +".deb")}}')
 
 - name: 安装系统依赖包
   command: "dpkg -i -R /tmp/apt"
