@@ -11,7 +11,6 @@ data:
     db:
       username: {{ service["mysql"]["username"] }}
       password: {{ service["mysql"]["password"] }}
-      host: {{ service["mysql"]["username"] }}
       host: {{ service["mysql"]["host"] }}
       port: {{ service["mysql"]["port"] }}
       database: ai_arts
