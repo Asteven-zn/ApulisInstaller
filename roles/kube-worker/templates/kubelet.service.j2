@@ -1,3 +1,4 @@
+{% import 'macros/common.j2' as util with context %}
 [Unit]
 Description=Kubernetes Kubelet
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
@@ -37,7 +38,7 @@ ExecStart={{ bin_dir }}/kubelet \
   --hostname-override={{ inventory_hostname }} \
   --kubeconfig=/etc/kubernetes/kubelet.kubeconfig \
   --network-plugin=cni \
-  --pod-infra-container-image={{ SANDBOX_IMAGE }} \
+  --pod-infra-container-image={{ util.image_name('pause') }} \
   --root-dir={{ KUBELET_ROOT_DIR }} \
   --v=2
 Restart=always
