@@ -20,7 +20,7 @@ service:
   enable_custom_registry_secrets: false
   extranet_port: 80
   extranet_protocol: http
-  apt_mirror_url: "http:\/\/mirrors.aliyun.com"
+  apt_mirror_url: "http://mirrors.aliyun.com"
   ssh_port: 22
   rest-api: ""
   network:
