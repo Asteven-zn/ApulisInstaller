@@ -26,6 +26,7 @@ spec:
     spec:
       nodeSelector:
         archType: {{ arch_map[ansible_architecture] }}
+        mysql: active
       hostNetwork: true    
       containers:
       - name: mysql
