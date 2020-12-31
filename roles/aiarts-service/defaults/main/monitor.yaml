@@ -10,11 +10,11 @@ service:
 
   datasource: MySQL
   mysql:
-    host: ""
+    host: "mysql.kube-system"
     port: 3306
     data_path: "{{container_mount_path}}/service/mysql/data"
-    username: ""
-    password: ""
+    username: "root"
+    password: "{{ lookup('file', '{{ base_dir }}/credentials/mysql.pwd') }}"
   prometheus:
     host: "{{kube_vip_address}}"
     port: 9092
