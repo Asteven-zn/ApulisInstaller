@@ -21,6 +21,8 @@ spec:
     - mountPath: /etc/kube-vip/
       name: config
   hostNetwork: true
+  nodeSelector:
+    kubernetes.io/role: master
   priorityClassName: system-node-critical
   volumes:
   - hostPath:

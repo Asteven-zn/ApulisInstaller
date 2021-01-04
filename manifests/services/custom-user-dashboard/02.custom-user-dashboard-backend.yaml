@@ -41,7 +41,7 @@ spec:
             name: redis
             protocol: TCP
       - name: custom-user-dashboard-backend
-        {{util.image_name('custom-user-dashboard-backend')}}
+        image: {{util.image_name('custom-user-dashboard-backend')}}
         imagePullPolicy: Always
         volumeMounts:
         - mountPath: /etc/app/config
@@ -62,8 +62,8 @@ spec:
 
       volumes:
       - name: userdashboardconfig
-        hostPath:
-          path: /etc/UserDashboard
+        configMap:
+          name: custom-user-dashboard-cm
 
       tolerations:
       - key: CriticalAddonsOnly
