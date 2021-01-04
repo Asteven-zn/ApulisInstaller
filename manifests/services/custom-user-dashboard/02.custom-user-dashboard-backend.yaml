@@ -32,7 +32,7 @@ spec:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
       - name: redis
-        {{util.image_name('redis', 'third')}}
+        image: {{util.image_name('redis', 'third')}}
         imagePullPolicy: Always
         command: ["redis-server", "--port", "9301", "--maxmemory", "100mb", "--maxmemory-policy", "allkeys-lru"]
         ports:
