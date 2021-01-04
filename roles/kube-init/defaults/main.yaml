@@ -15,3 +15,5 @@ group_labels:
       - restfulapi
       - webui
       - mysql
+      - postgres
+      - nginx
