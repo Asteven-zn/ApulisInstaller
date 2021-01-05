@@ -12,7 +12,7 @@ modes:
 step: "render"
 
 service:
-  clusterId: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') | to_uuid }}"
+  clusterId: "{{ lookup('file', '{{ base_dir }}/credentials/cluster-id') }}"
   kube_vip_address: "{{kube_vip_address}}"
   k8sAPIport: 6443
   defalt_virtual_cluster_name: platform
