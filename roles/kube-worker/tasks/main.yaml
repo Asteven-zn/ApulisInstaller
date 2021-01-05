@@ -5,7 +5,7 @@
     - /var/lib/kube-proxy
     - /etc/cni/net.d
 
-- name: 下载 kubelet,kube-proxy 二进制和基础 cni plugins
+- name: 下载 kubelet,kube-proxy 二进制
   copy:
     src: "{{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }}"
     dest: "{{ bin_dir }}/{{ item }}"
@@ -14,6 +14,14 @@
     - kubectl
     - kubelet
     - kube-proxy
+  tags: upgrade_k8s
+
+- name: 下载基础 cni plugins
+  copy:
+    src: "{{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }}"
+    dest: "{{ default_cni_path }}"
+    mode: '0777'
+  with_items:
     - bridge
     - host-local
     - loopback

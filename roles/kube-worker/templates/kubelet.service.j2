@@ -33,7 +33,7 @@ ExecStart={{ bin_dir }}/kubelet \
 {% if KUBE_VER|float < 1.13 %}
   --allow-privileged=true \
 {% endif %}
-  --cni-bin-dir={{ bin_dir }} \
+  --cni-bin-dir={{ default_cni_path }} \
   --cni-conf-dir=/etc/cni/net.d \
   --hostname-override={{ inventory_hostname }} \
   --kubeconfig=/etc/kubernetes/kubelet.kubeconfig \

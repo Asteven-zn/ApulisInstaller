@@ -8,6 +8,8 @@ manifest_dest: "/root/build"
 # the name of cluster
 cluster_name: "DLWS"
 
+default_cni_path: /opt/cni/bin
+
 # kube vip address
 kube_vip_address: "192.168.1.154"
 
