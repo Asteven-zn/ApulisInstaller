@@ -10,10 +10,10 @@ root-path: /DLWorkspace/src/
 nvidiaDriverPath : {{service["nvidia-driver-path"]}}
 clusterId : {{service["clusterId"]}}
 domain: {{service["network"]["domain"]}}
-apiserver: {{ util.api_servers() }}
-certificate-authority: /etc/kubernetes/ssl/ca.pem
-client-certificate: /etc/kubernetes/ssl/apiserver.pem
-client-key: /etc/kubernetes/ssl/apiserver-key.pem
+apiserver: https://{{ util.api_servers() }}:{{ service["k8sAPIport"] }}
+certificate-authority: {{ ca_dir }}/ca.pem
+client-certificate: {{ ca_dir }}/admin.pem
+client-key: {{ ca_dir }}/admin-key.pem
 pod_ip_range: {{ SERVICE_CIDR }}
 per_user_gpu_limit: {{service["per_user_gpu_limit"]}}
 mountpoints : {{service["mountpoints"]}}

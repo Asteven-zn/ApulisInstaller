@@ -1,6 +1,6 @@
 service:
   webportal_node: "{{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0]}}"
-  usermanagerapitoken: ""
+  usermanagerapitoken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMwMDAwLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxOTIwODUyOTA0fQ.kT7Bf9xc1SPR_5QI0k7dqMYzgWfuHjUGdq2tstVPEf0"
 
   secret_key_for_password: "123abcABC!@#"
 
@@ -24,4 +24,4 @@ service:
   ssh_port: 22
   rest-api: ""
   network:
-    domain: ""
+    domain: "sigsus.cn"
