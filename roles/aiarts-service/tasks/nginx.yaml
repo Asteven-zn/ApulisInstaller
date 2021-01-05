@@ -1,7 +1,11 @@
 - name: Ensure /etc/nginx/ssl/ directory exists
   file:
-    path: '/etc/nginx/ssl/'
+    path: '/etc/nginx/{{item}}'
     state: directory
+  with_items:
+    - ssl
+    - conf.other
+    - fqdn
 
 - name: copy ssl 证书
   copy:
@@ -10,3 +14,8 @@
   with_items:
     - aiarts.crt
     - aiarts.key
+
+- name: 拷贝nginx 配置文件
+  copy:
+    src: "{{ base_dir }}/manifests/services/nginx/default.conf"
+    dest: "/etc/nginx/conf.other/default.conf"
