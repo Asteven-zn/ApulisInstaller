@@ -29,7 +29,7 @@ items:
             name: weave-net-{{ arch_map[ansible_architecture] }}
         spec:
           nodeSelector:
-              archType: {{ arch_map[ansible_architecture] }}
+            archType: {{ arch_map[ansible_architecture] }}
           containers:
             - name: weave
               command:

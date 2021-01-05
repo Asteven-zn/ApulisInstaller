@@ -13,3 +13,22 @@
   template:
     dest: "{{manifest_dest}}/network/02-weave.yaml"
     src: weave.yaml.j2
+
+# 只需单节点执行一次
+- name: 运行 flannel网络
+  shell: "{{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/01-weave-role.yaml | \
+    {{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/02-weave.yaml"
+  run_once: true
+
+# 删除原有cni配置
+- name: 删除默认cni配置
+  file: path=/etc/cni/net.d/10-default.conf state=absent
+
+# 等待网络插件部署成功
+- name: 轮询等待weave 运行
+  shell: "{{ bin_dir }}/kubectl get pod -n kube-system -o wide|grep 'weave'|grep ' {{ inventory_hostname }} '|awk '{print $3}'"
+  register: pod_status
+  until: pod_status.stdout == "Running"
+  retries: 15
+  delay: 8
+  ignore_errors: true
