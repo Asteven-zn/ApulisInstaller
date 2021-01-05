@@ -8,6 +8,12 @@
     - kube-controller-manager
     - kube-scheduler
     - kubectl
+    - kubelet
+    - kube-proxy
+    - bridge
+    - host-local
+    - loopback
+    - portmap
   tags: upgrade_k8s
 
 - name: 创建 kubernetes 证书签名请求
