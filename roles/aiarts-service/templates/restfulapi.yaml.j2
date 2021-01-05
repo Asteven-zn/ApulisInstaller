@@ -62,6 +62,11 @@ gpu_reporter: 'http://{{service["prometheus"]["host"]}}:{{service["prometheus"][
 
 vc_without_shared_storage: {{service["vc_without_shared_storage"]}}
 
+jwt:
+  secret_key: {{service["jwt"]["secret_key"]}}
+  algorithm: {{service["jwt"]["algorithm"]}}
+  token_ttl: {{service["jwt"]["token_ttl"]}}
+
 Authentication:
   WeChat:
     AppId: "{{service["Authentications"]["Wechat"]["AppId"]}}"
