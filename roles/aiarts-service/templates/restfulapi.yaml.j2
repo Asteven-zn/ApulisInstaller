@@ -101,7 +101,7 @@ extranet_port: {{service["extranet_port"]}}
 {% endif %}
 extranet_protocol: {{service["extranet_protocol"]}}
 
-default_virtual_cluster_device_type_list:
+defalt_virtual_cluster_device_type_list:
 {% for one in service["defalt_virtual_cluster_device_type_list"] %}
   - {{ one }}
 {% endfor %}
