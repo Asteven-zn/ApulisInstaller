@@ -4,7 +4,7 @@ mysql :
   port: {{service["mysql"]["port"]}}
   username: {{service["mysql"]["username"]}}
   password: "{{service["mysql"]["password"]}}"
-kubelet-path: {{bin_dir}}/kubectl
+kubelet-path: /usr/bin/kubectl
 storage-mount-path: {{service["container-mount-path"]}}
 root-path: /DLWorkspace/src/
 nvidiaDriverPath: {{service["nvidia-driver-path"]}}
