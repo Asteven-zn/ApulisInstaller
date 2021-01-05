@@ -1,0 +1,12 @@
+- name: Ensure /etc/nginx/ssl/ directory exists
+  file:
+    path: '/etc/nginx/ssl/'
+    state: directory
+
+- name: copy ssl 证书
+  copy:
+    src: "{{ base_dir }}/manifests/services/nginx/ssl/{{item}}"
+    dest: "/etc/nginx/ssl/{{item}}"
+  with_items:
+    - aiarts.crt
+    - aiarts.key

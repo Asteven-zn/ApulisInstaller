@@ -15,7 +15,7 @@
     src: weave.yaml.j2
 
 # 只需单节点执行一次
-- name: 运行 flannel网络
+- name: 运行 weave 网络
   shell: "{{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/01-weave-role.yaml | \
     {{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/02-weave.yaml"
   run_once: true
