@@ -10,6 +10,7 @@ group_labels:
     labels:
       - aiarts-backend
       - aiarts-frontend
+      - alert-manager
       - image-label
       - jobmanager
       - restfulapi
@@ -17,3 +18,4 @@ group_labels:
       - mysql
       - postgres
       - nginx
+      - watchdog
