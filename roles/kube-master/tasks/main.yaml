@@ -12,6 +12,11 @@
     - kube-proxy
   tags: upgrade_k8s
 
+- name: Ensure directory {{default_cni_path }} structure exists
+  file:
+    path: "{{default_cni_path }}"
+    state: directory
+
 - name: 下载基础 cni plugins
   copy:
     src: "{{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }}"
