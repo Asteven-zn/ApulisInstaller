@@ -61,7 +61,7 @@ spec:
           path: /var/log/webui3
       - name: nodejsconfig
         configMap:
-          path: webui-cm
+          name: webui-cm
       tolerations:
       - key: CriticalAddonsOnly
         operator: Exists

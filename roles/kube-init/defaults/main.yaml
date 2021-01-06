@@ -21,3 +21,4 @@ group_labels:
       - postgres
       - nginx
       - watchdog
+      - webportal
