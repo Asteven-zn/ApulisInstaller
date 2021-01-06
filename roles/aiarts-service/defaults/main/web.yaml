@@ -1,4 +1,6 @@
 service:
+  restfulapi_node: "{{ kube_vip_address }}"
+  restfulapiport: 5000
   webportal_node: "{{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0]}}"
   usermanagerapitoken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMwMDAwLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxOTIwODUyOTA0fQ.kT7Bf9xc1SPR_5QI0k7dqMYzgWfuHjUGdq2tstVPEf0"
 
@@ -14,9 +16,11 @@ service:
       AppId: "wx403e175ad2bf1d2d"
       AppSecret: "dc8cb2946b1d8fe6256d49d63cd776d0"
     Microsoft:
+      TenantId: ""
       ClientId: ""
       ClientSecret: ""
 
+  DeployAuthentications: ['Corp', 'Live', 'Gmail']
   enable_custom_registry_secrets: false
   extranet_port: 80
   extranet_protocol: http
@@ -25,3 +29,28 @@ service:
   rest-api: ""
   network:
     domain: "sigsus.cn"
+
+  WebUIadminGroups:
+    - DLWSAdmins
+
+  WebUIauthorizedGroups:
+    - DLWSAdmins
+
+  WebUIregisterGroups:
+    - DLWSRegister
+
+  UserGroups:
+    DLWSAdmins:
+      Allowed:
+        - admin
+      gid: "20001"
+      uid: "20000"
+    DLWSRegister:
+      Allowed:
+        - '@gmail.com'
+        - '@live.com'
+        - '@outlook.com'
+        - '@hotmail.com'
+        - '@apulis.com'
+      gid: "20001"
+      uid: 20001-29999

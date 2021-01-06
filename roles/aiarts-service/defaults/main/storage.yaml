@@ -10,6 +10,15 @@ service:
       options: rsize=8192,timeo=14,intr,tcp
       server: "{{ hostvars[groups['nfs-server'][0]]['ansible_default_ipv4'].address }}"
       type: nfs
+  mountdescription:
+    azurefileshare: "Azure file storage"
+    glusterfs: "GlusterFS (replicated distributed storage)"
+    nfs: "NFS (remote file share)"
+    hdfs: "Hadoop file system (replicated distribute storage)."
+    local: "Local SSD. "
+    localHDD: "Local HDD. "
+    emptyDir: "Kubernetes emptyDir (folder will be erased after job termination)."
+
   container-mount-path: "{{container_mount_path}}"
   physical-mount-path: "{{physical_mount_path}}"
   data_platform_path: "{{container_mount_path}}/label/"
