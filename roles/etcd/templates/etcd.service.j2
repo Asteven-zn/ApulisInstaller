@@ -7,6 +7,9 @@ Documentation=https://github.com/coreos
 
 [Service]
 Type=notify
+{% if arch_map[ansible_architecture] == "arm64" %}
+Environment="ETCD_UNSUPPORTED_ARCH=arm64"
+{% endif %}
 WorkingDirectory=/var/lib/etcd/
 ExecStart={{ bin_dir }}/etcd \
   --name={{ NODE_NAME }} \
