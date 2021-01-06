@@ -3,13 +3,13 @@ winbind: "Will call /domaininfo/GetUserId with userName query to get the user's 
 masterToken: "Access token of all users"
 
 authEnabled:
-{% if service["Authentications"]["Wechat"] %}
+{% if service["Authentications"]["Wechat"] is defined %}
   wechat: 1
 {% else %}
   wechat: 0
 {% endif %}
 
-{% if service["Authentications"]["Microsoft"] %}
+{% if service["Authentications"]["Microsoft"] is defined %}
   microsoft: 1
 {% else %}
   microsoft: 0

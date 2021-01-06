@@ -16,9 +16,9 @@ service:
       AppId: "wx403e175ad2bf1d2d"
       AppSecret: "dc8cb2946b1d8fe6256d49d63cd776d0"
     Microsoft:
-      TenantId: ""
-      ClientId: ""
-      ClientSecret: ""
+      TenantId: "1"
+      ClientId: "1"
+      ClientSecret: "1"
 
   DeployAuthentications: ['Corp', 'Live', 'Gmail']
   enable_custom_registry_secrets: false
