@@ -129,8 +129,9 @@ spec:
           mountPath: /etc/prometheus
         - name: rules-volume
           mountPath: /etc/prometheus-alert
-        - name: prometheus-data
+        - name: aiplatform-component-data-pvc
           mountPath: /prometheus-data
+          subPath: prometheus/
       - name: gpu-reporter
         image: {{ util.image_name('gpu-reporter') }}
         args:

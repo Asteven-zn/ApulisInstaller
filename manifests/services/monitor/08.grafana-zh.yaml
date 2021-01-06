@@ -42,7 +42,8 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /var/lib/grafana
-          name: grafana-storage
+          name: aiplatform-component-data-pvc
+          subPath: grafana/
         - mountPath: /etc/grafana/grafana.ini
           name: grafana-ini-conf
           subPath: grafana.ini
@@ -95,9 +96,9 @@ spec:
       - name: hostname-fqdn
         hostPath:
           path: /etc/hostname-fqdn
-      - name: grafana-storage
-        hostPath:
-          path: {{service["grafana"]["data_path"]}}
+      - name: aiplatform-component-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-component-data-pvc
       tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
