@@ -12,6 +12,7 @@ group_labels:
       - aiarts-frontend
       - alert-manager
       - grafana
+      - prometheus
       - image-label
       - jobmanager
       - restfulapi
