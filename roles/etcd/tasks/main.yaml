@@ -30,6 +30,10 @@
     -config={{ ca_dir }}/ca-config.json \
     -profile=kubernetes etcd-csr.json | {{ bin_dir }}/cfssljson -bare etcd"
 
+- name: 设置 ARM64 ETCD 环境变量
+  command: 'declare -x ETCD_UNSUPPORTED_ARCH="arm64"'
+  when: "{{arch_map[ansible_architecture]}} == arm64"
+
 - name: 创建etcd的systemd unit文件
   template: src=etcd.service.j2 dest=/etc/systemd/system/etcd.service
   tags: upgrade_etcd
