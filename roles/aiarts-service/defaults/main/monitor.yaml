@@ -17,18 +17,15 @@ service:
     password: "{{ lookup('file', '{{ base_dir }}/credentials/mysql.pwd') }}"
   prometheus:
     host: "{{kube_vip_address}}"
-    port: 9092
+    port: 9091
     reporter:
       port: 9092
-    data_path: "{{container_mount_path}}/service/prometheus/data"
   grafana:
     port: 3000
     prometheus-ip: localhost
-    data_path: "{{container_mount_path}}/service/grafana/data"
   grafana-zh:
     port: 3001
     prometheus-ip: "localhost"
-    data_path: "{{container_mount_path}}/service/grafana/data"
 
   enable_jobmanager_debug_mode: false
   job-exporter:

@@ -11,6 +11,7 @@ group_labels:
       - aiarts-backend
       - aiarts-frontend
       - alert-manager
+      - grafana=active
       - image-label
       - jobmanager
       - restfulapi
