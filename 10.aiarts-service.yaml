@@ -1,6 +1,6 @@
 - hosts: kube-master
   roles:
-    - { role: "aiarts-service", step: "render", sub_service: ""}
+    - { role: "aiarts-service", step: "render"}
     - { role: "aiarts-service", step: "saml" }
 
 - hosts:
@@ -8,3 +8,8 @@
   - kube-worker
   roles:
     - { role: "aiarts-service", step: "nginx" }
+
+- hosts: kube-master
+  roles:
+    - { role: "aiarts-service", step: "start_service" }
+
