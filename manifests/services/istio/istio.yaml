@@ -374,7 +374,7 @@ spec:
       env: {}
       envSecrets: {}
       image:
-        repository: {{util.image_name('grafana')}}
+        repository: {{util.image_name('grafana', 'third')}}
         tag: 6.7.4
       nodeSelector:
         restfulapi: active
