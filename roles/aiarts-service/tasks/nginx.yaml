@@ -19,3 +19,35 @@
   copy:
     src: "{{ base_dir }}/manifests/services/nginx/default.conf"
     dest: "/etc/nginx/conf.other/default.conf"
+
+- name: 从webui镜像拷贝/www/static-1
+  vars:
+    webui: '{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images["webui3"]["name"]}}:{{apulis_images["webui3"]["tag"] if apulis_images["webui3"]["tag"] is defined else image_tag}}'
+  shell: >-
+    {{ bin_dir }}/docker cp $({{ bin_dir }}/docker create {{webui}}):/usr/src/app/build/ /tmp/dashboard
+  delegate_to: "{{ groups['harbor'][0] }}"
+  when: '":" not in apulis_images["webui3"]["name"]'
+
+- name: 从webui镜像拷贝/www/static-2
+  vars:
+    webui: '{{apulis_images["webui3"]["name"]}}:{{apulis_images["webui3"]["tag"] if apulis_images["webui3"]["tag"] is defined else image_tag}}'
+  shell: >-
+    {{ bin_dir }}/docker cp $({{ bin_dir }}/docker create {{webui}}):/usr/src/app/build/ /tmp/dashboard
+  delegate_to: "{{ groups['harbor'][0] }}"
+  when: '":" in apulis_images["webui3"]["name"]'
+
+- name: 从harbor服务器拷贝到本地
+  fetch:
+    dest: /tmp/dashboard
+    src: /tmp/
+  delegate_to: "{{ groups['harbor'][0] }}"
+
+- name: Ensure /www/static/ directory exists
+  file:
+    path: '/www/static/'
+    state: directory
+
+- name: 分发webui资源到各个节点
+  copy:
+    dest: /www/static/
+    src: /tmp/dashboard
