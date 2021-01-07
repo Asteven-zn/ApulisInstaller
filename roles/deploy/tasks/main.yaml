@@ -84,6 +84,3 @@
     line: "source <(kubectl completion bash)"
   when: "procs.stdout|int > 50"
   ignore_errors: true
-
-# ansible 下载必要的资源或者安装文件
-- import_tasks: download-bins.yaml

@@ -1,0 +1,10 @@
+- name: "开启{{ PLATFORM_MODE}}类型服务列表"
+  include: start-k8s.yaml service={{item | trim }}
+  with_items: "{{modes[PLATFORM_MODE]}}"
+  when: "{{ sub_service == '' }}"
+  tags: aiarts_start
+
+- name: "开启{{ sub_service}}服务"
+  include: start-k8s.yaml service={{sub_service}}
+  when: "{{ sub_service != '' }}"
+  tags: aiarts_start

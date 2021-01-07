@@ -1,19 +1,22 @@
 - name: "开启{{ PLATFORM_MODE}}类型服务列表"
-  command: "{{bin_dir}}/kubectl apply -f {{ manifest_dest }}/{{item}}"
+  include: start-k8s.yaml service={{item | trim }}
   with_items: "{{modes[PLATFORM_MODE]}}"
   when: "{{ sub_service == '' }}"
   tags: aiarts_start
 
 - name: "开启{{ sub_service}}服务"
-  command: "{{bin_dir}}/kubectl apply -f {{ manifest_dest }}{{sub_service}}"
+
+  include: start-k8s.yaml service={{sub_service}}
   when: "{{ sub_service != '' }}"
+  tags: aiarts_start
 
 - name: "关闭{{ PLATFORM_MODE}}类型服务列表"
-  command: "{{bin_dir}}/kubectl delete -f {{ manifest_dest }}/{{item}}"
-  with_items: "{{modes[PLATFORM_MODE]}}"
+  include: stop-k8s.yaml service={{item | trim}}
+  with_items: "{{modes[PLATFORM_MODE] | reverse }}"
   when: "{{ sub_service == '' }}"
   tags: aiarts_stop
 
 - name: "关闭{{ sub_service}}服务"
-  command: "{{bin_dir}}/kubectl delete -f {{ manifest_dest }}{{sub_service}}"
+  include: stop-k8s.yaml service={{sub_service}}
   when: "{{ sub_service != '' }}"
+  tags: aiarts_stop

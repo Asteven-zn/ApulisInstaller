@@ -16,6 +16,44 @@ kube_vip_address: "192.168.1.154"
 # cluster api address
 cluster_api_address: "{{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0]}}"
 
+# 平台类型，决定了可以启动多少服务
+PLATFORM_MODE: "express"
+
+modes:
+  preview:
+    - storage
+    - mysql
+    - restfulapi2
+    - jobmanager2
+    - custommetrics
+    - monitor
+    - nginx
+    - openresty
+    - aiarts-backend
+    - aiarts-frontend
+  express:
+    - storage
+    - mysql
+    - restfulapi2
+    - jobmanager2
+    - custommetrics
+    - monitor
+    - nginx
+    - openresty
+    - aiarts-backend
+    - aiarts-frontend
+  professional:
+    - storage
+    - mysql
+    - restfulapi2
+    - jobmanager2
+    - custommetrics
+    - monitor
+    - nginx
+    - openresty
+    - aiarts-backend
+    - aiarts-frontend
+
 # the unified image tag
 image_tag: "v1.2.0"
 

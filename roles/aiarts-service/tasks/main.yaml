@@ -1,2 +1,1 @@
-- include_tasks: "{{step}}.yaml"
-
+- import_tasks: "{{step}}.yaml"

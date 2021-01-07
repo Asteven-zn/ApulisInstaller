@@ -168,7 +168,8 @@ thirdparty_images:
   vc-controller-manager:
     name: ""
   ascend-k8sdeviceplugin:
-    name: ""
+    name: "ascend-k8sdeviceplugin"
+    tag: "v0.0.1 "
   reaper:
     name: ""
 
