@@ -2,14 +2,17 @@
   any_errors_fatal: yes
   vars_prompt:
     name: "confirmation"
-    prompt: "Do you want to start all aiarts service?(yes/no)"
+    prompt: 'Do you want to start {{ sn if sn is defined else "all aiarts"}} service?(yes/no)'
     default: "no"
     private: no
   tasks:
     - name: First Check Confirmation
-      fail: msg="Playbook start aiarts service action canceled"
-      when: confirmation | bool
+      fail: msg="Playbook start {{ sn if sn is defined else "all aiarts"}} service action canceled"
+      when: not(confirmation | bool)
 
-- hosts: cluster
+- hosts:
+  - kube-master
+  - kube-worker
   roles:
-    - { role: aiarts-service, tags: ['aiarts_start']}
+    - { role: aiarts-service, step: "render", service_name: '{{sn if sn is defined else ""}}'}
+    - { role: aiarts-service, step: "start_service", service_name: '{{sn if sn is defined else ""}}'}

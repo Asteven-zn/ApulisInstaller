@@ -1,9 +1,16 @@
 {% import 'macros/common.j2' as util with context %}
+datasource: {{service["datasource"]}}
 mysql :
   hostname: {{service["mysql"]["host"]}}
   port: {{service["mysql"]["port"]}}
   username: {{service["mysql"]["username"]}}
   password: "{{service["mysql"]["password"]}}"
+postgresql:
+  hostname: {{service["kube_vip_address"]}}
+  port: {{service["postgres"]["port"]}}
+  username: {{service["postgres"]["username"]}}
+  password: {{service["postgres"]["password"]}}
+
 kubelet-path: /usr/bin/kubectl
 storage-mount-path: {{service["container-mount-path"]}}
 root-path: /DLWorkspace/src/
@@ -20,7 +27,6 @@ mountpoints: {{service["mountpoints"]}}
 mounthomefolder: {{service["mounthomefolder"]}}
 deploymounts: {{service["deploymounts"]}}
 webportal_node: {{service["webportal_node"]}}
-datasource: {{service["datasource"]}}
 kube_custom_scheduler: {{service["kube_custom_scheduler"]}}
 gpu_count_per_node: {{service["gpu_count_per_node"]}}
 worker_node_num: {{service["worker_node_num"]}}

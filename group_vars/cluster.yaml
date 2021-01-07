@@ -19,6 +19,8 @@ cluster_api_address: "{{ kube_vip_address if kube_vip_address is defined else gr
 # 平台类型，决定了可以启动多少服务
 PLATFORM_MODE: "express"
 
+datasource: mysql
+
 modes:
   preview:
     - storage

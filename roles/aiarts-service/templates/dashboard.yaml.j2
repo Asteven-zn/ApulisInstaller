@@ -18,6 +18,11 @@ APP_HOST=127.0.0.1
 APP_PORT=5001
 
 # Database
+DB_TYPE={{service["datasource"]}}
+DB_NAME=user_group
+
+{% if service["datasource"] == "mysql" %}
+
 {% if service["db_archtype"] == "amd64" %}
 DB_HOST=mysql.kube-system
 {% elif service["db_archtype"] == "arm64" %}
@@ -25,11 +30,18 @@ DB_HOST=mysql-arm64.kube-system
 {% else %}
 DB_HOST=mysql.kube-system
 {% endif %}
-DB_TYPE=mysql
 DB_PORT={{service["mysql"]["port"]}}
 DB_USERNAME={{service["mysql"]["username"]}}
 DB_PASSWORD="{{service["mysql"]["password"]}}"
-DB_NAME=user_group
+
+{% elif service["datasource"] == "postgres" %}
+
+DB_HOST=postgres.kube-system
+DB_PORT={{service["postgres"]["port"]}}
+DB_USERNAME={{service["postgres"]["username"]}}
+DB_PASSWORD="{{service["postgres"]["password"]}}"
+
+{% endif %}
 
 ADMINISTRATOR_USER_NAME="[{% for admin in service["UserGroups"]["DLWSAdmins"]["Allowed"] %}"{{admin.split("@")[0]}}"{% if loop.index != loop.length %},{% else %} {% endif %}{% endfor %}]"
 ADMINISTRATOR_PASSWORD=123456

@@ -131,6 +131,9 @@ thirdparty_images:
   mysql-server:
     name: "mysql/mysql-server"
     tag: "8.0"
+  postgresql:
+    name: "postgres"
+    tag: "11.10-alpine"
   nvidia-device-plugin:
     name: "nvidia/k8s-device-plugin"
     tag: "1.11"

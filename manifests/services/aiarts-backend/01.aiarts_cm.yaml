@@ -8,14 +8,30 @@ data:
       filedir: logs
       filename: ai_arts_backend.log
 
+    database: {{ service["datasource"]}}
     db:
-      username: {{ service["mysql"]["username"] }}
-      password: {{ service["mysql"]["password"] }}
-      host: {{ service["mysql"]["host"] }}
-      port: {{ service["mysql"]["port"] }}
-      database: ai_arts
-      maxopenconns: 10
-      maxidleconns: 2
+      mysql:
+        username: root
+        password: apulis#2019#wednesday
+        {% if service["db_archtype"] == "amd64" %}
+        host: mysql.kube-system
+        {% elif service["db_archtype"] == "arm64" %}
+        host: mysql-arm64.kube-system
+        {% else %}
+        host: mysql.kube-system
+        {% endif %}
+        port: 3306
+        database: ai_arts
+        maxopenconns: 10
+        maxidleconns: 2
+      postgresql:
+        username: {{service["postgres"]["username"]}}
+        password: {{service["postgres"]["password"]}}
+        host: postgres.kube-system
+        port: {{service["postgres"]["port"]}}
+        database: ai_arts
+        maxopenconns: 10
+        maxidleconns: 2
 
     file:
       datasetdir: /data/dataset

@@ -8,12 +8,16 @@ service:
 
   db_archtype: "amd64"
 
-  datasource: MySQL
   mysql:
     host: "mysql.kube-system"
     port: 3306
     data_path: "{{container_mount_path}}/service/mysql/data"
     username: "root"
+    password: "{{ lookup('file', '{{ base_dir }}/credentials/mysql.pwd') }}"
+  postgres:
+    host: "postgres.kube-system"
+    port: 5432
+    username: "postgres"
     password: "{{ lookup('file', '{{ base_dir }}/credentials/mysql.pwd') }}"
   prometheus:
     host: "{{kube_vip_address}}"

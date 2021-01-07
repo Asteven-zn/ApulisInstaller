@@ -12,7 +12,7 @@
   shell: "
     {{bin_dir}}/kubectl delete -f {{yaml}}
     "
-  loop: "{{ yamls.files | sort(attribute='path') | map(attribute='path') | list }}"
+  loop: "{{ yamls.files | sort(reverse=true, attribute='path') | map(attribute='path') | list }}"
   loop_control:
     loop_var: yaml
   ignore_errors: true

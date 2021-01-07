@@ -1,7 +1,8 @@
 step: "render"
-sub_service: ""
+service_name: ""
 
 service:
+  datasource: "{{ datasource }}"
   clusterId: "{{ lookup('file', '{{ base_dir }}/credentials/cluster-id') }}"
   kube_vip_address: "{{kube_vip_address}}"
   k8sAPIport: 6443
