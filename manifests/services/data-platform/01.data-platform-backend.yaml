@@ -38,11 +38,13 @@ spec:
           tcpSocket:
             port: 3088
           timeoutSeconds: 10
+
         volumeMounts:
         - mountPath: /var/log/webui
           name: dotnet-log
         - mountPath: /app/appsettings.json
           name: dotnet-config
+
         - mountPath: /mntdlws/nfs/label
           name: aiplatform-label-data-pvc
 
