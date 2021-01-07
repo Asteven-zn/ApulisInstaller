@@ -32,7 +32,7 @@
 
 - name: generate pvc and pv service yaml files
   template:
-    dest: "{{ manifest_dest }}/storage/{{item.key}}.yaml"
+    dest: "{{ manifest_dest }}/storage/{{item.value['index']}}.{{item.key}}.yaml"
     src: nfs-pvc-pv.yaml.j2
   vars:
     - name: "{{ item.key }}"

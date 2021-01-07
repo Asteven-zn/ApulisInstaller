@@ -16,11 +16,11 @@
 - name: 推送AMD64镜像 {{ orig_name }} 到harbor
   shell: "
         {{bin_dir}}/docker tag {{orig_name}} {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_amd64:{{tag}} && \
-        {{bin_dir}}/docker push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_amd64:{{tag}} && \
+        {{bin_dir}}/docker push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_amd64:{{tag}}; \
         {{bin_dir}}/docker manifest create {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}:{{tag}} \
-            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_amd64:{{tag}} | \
+            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_amd64:{{tag}} || \
       	{{bin_dir}}/docker manifest create {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}:{{tag}} \
-      	    {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_amd64:{{tag}} -a && \
+      	    {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_amd64:{{tag}} -a; \
       	{{bin_dir}}/docker manifest annotate {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}:{{tag}} \
       		{{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_amd64:{{tag}} --os linux --arch amd64 && \
       	{{bin_dir}}/docker manifest push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}:{{tag}}
@@ -30,11 +30,11 @@
 - name: 推送ARM64镜像 {{ orig_name }} 到harbor
   shell: "
         {{bin_dir}}/docker tag {{orig_name}} {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_arm64:{{tag}} && \
-        {{bin_dir}}/docker push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_arm64:{{tag}} && \
+        {{bin_dir}}/docker push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_arm64:{{tag}}; \
         {{bin_dir}}/docker manifest create {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}:{{tag}} \
-            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_arm64:{{tag}} | \
+            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_arm64:{{tag}} || \
         {{bin_dir}}/docker manifest create {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}:{{tag}} \
-            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_arm64:{{tag}} -a && \
+            {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_arm64:{{tag}} -a; \
         {{bin_dir}}/docker manifest annotate {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}:{{tag}} \
             {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}_arm64:{{tag}} --os linux --arch arm64 && \
         {{bin_dir}}/docker manifest push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}:{{tag}}
