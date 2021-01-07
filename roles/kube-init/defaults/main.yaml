@@ -22,3 +22,6 @@ group_labels:
       - nginx
       - watchdog
       - webportal
+  - group: kube-worker
+    labels:
+      - worker

@@ -25,6 +25,7 @@ modes:
   preview:
     - storage
     - mysql
+    - postgres
     - restfulapi2
     - jobmanager2
     - custommetrics
@@ -36,6 +37,7 @@ modes:
   express:
     - storage
     - mysql
+    - postgres
     - restfulapi2
     - jobmanager2
     - custommetrics
@@ -47,6 +49,7 @@ modes:
   professional:
     - storage
     - mysql
+    - postgres
     - restfulapi2
     - jobmanager2
     - custommetrics
