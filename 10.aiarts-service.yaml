@@ -14,14 +14,13 @@
         webui: '{{apulis_images["webui3"]["name"]}}:{{apulis_images["webui3"]["tag"] if apulis_images["webui3"]["tag"] is defined else image_tag}}'
       shell: >-
         {{ bin_dir }}/docker cp $({{ bin_dir }}/docker create {{webui}}):/usr/src/app/build/ /tmp/dashboard && \
-        tar -czvf /tmp/dashboard.tar.gz /tmp/dashboard && \
-        rm -rf /tmp/dashboard
+        cd /tmp && tar -czvf /tmp/dashboard.tar.gz dashboard && rm -rf /tmp/dashboard
       when: '":" in apulis_images["webui3"]["name"]'
 
     - name: 从harbor服务器拷贝到本地
       fetch:
-        dest: /tmp/dashboard.tar.gz
-        src: /tmp/
+        src: /tmp/dashboard.tar.gz
+        dest: /tmp/
 
 - hosts: localhost
   tasks:
