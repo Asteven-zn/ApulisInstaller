@@ -1,3 +1,34 @@
+- hosts: harbor
+  tasks:
+    - name: 从webui镜像拷贝/www/static-1
+      vars:
+        webui: '{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images["webui3"]["name"]}}:{{apulis_images["webui3"]["tag"] if apulis_images["webui3"]["tag"] is defined else image_tag}}'
+      shell: >-
+        {{ bin_dir }}/docker cp $({{ bin_dir }}/docker create {{webui}}):/usr/src/app/build/ /tmp/dashboard && \
+        tar -czvf /tmp/dashboard.tar.gz /tmp/dashboard && \
+        rm -rf /tmp/dashboard
+      when: '":" not in apulis_images["webui3"]["name"]'
+
+    - name: 从webui镜像拷贝/www/static-2
+      vars:
+        webui: '{{apulis_images["webui3"]["name"]}}:{{apulis_images["webui3"]["tag"] if apulis_images["webui3"]["tag"] is defined else image_tag}}'
+      shell: >-
+        {{ bin_dir }}/docker cp $({{ bin_dir }}/docker create {{webui}}):/usr/src/app/build/ /tmp/dashboard && \
+        tar -czvf /tmp/dashboard.tar.gz /tmp/dashboard && \
+        rm -rf /tmp/dashboard
+      when: '":" in apulis_images["webui3"]["name"]'
+
+    - name: 从harbor服务器拷贝到本地
+      fetch:
+        dest: /tmp/dashboard.tar.gz
+        src: /tmp/
+
+- hosts: localhost
+  tasks:
+    - name: 本地解压dashboard.tar.gz
+      shell: "tar zxvf /tmp/dashboard.tar.gz"
+      run_once: true
+
 - hosts:
   - kube-master
   roles:
