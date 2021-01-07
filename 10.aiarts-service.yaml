@@ -20,13 +20,15 @@
     - name: 从harbor服务器拷贝到本地
       fetch:
         src: /tmp/dashboard.tar.gz
-        dest: /tmp/
+        dest: /tmp/local-dashboard.tar.gz
+        flat: yes
 
 - hosts: localhost
   tasks:
     - name: 本地解压dashboard.tar.gz
-      shell: "tar zxvf /tmp/dashboard.tar.gz"
-      run_once: true
+      unarchive:
+        src: /tmp/local-dashboard.tar.gz
+        dest: /tmp/
 
 - hosts:
   - kube-master
