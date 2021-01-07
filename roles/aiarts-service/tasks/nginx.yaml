@@ -28,4 +28,9 @@
 - name: 分发webui资源到各个节点
   copy:
     dest: /www/static/
-    src: /tmp/dashboard
+    src: /tmp/local-dashboard.tar.gz
+
+- name: 解压dashboard.tar.gz
+  unarchive:
+    src: /www/static/local-dashboard.tar.gz
+    dest: /www/static/
