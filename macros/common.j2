@@ -6,7 +6,11 @@ dnsPolicy: {{service['dnsPolicy']}}
 
 {% macro image_name(image, type='apulis') %}
 {% if ':' in image %}
-{{ image }}
+{% if type == 'apulis' %}
+{{ image }}:{{apulis_images[image]['tag'] if apulis_images[image]['tag'] is defined else image_tag}}
+{% else %}
+{{ image }}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
+{% endif %}
 {% else %}
 {% if type == 'apulis' %}
 {{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images[image]['name']}}:{{apulis_images[image]['tag'] if apulis_images[image]['tag'] is defined else image_tag}}
