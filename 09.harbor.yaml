@@ -1,19 +1,5 @@
 # [optional] to set up a HARBOR, and to integrate the HARBOR with k8s cluster
 # read the doc: 'doc/harbor.md'
-
-- hosts: harbor
-  vars_prompt:
-    name: "confirmation"
-    prompt: "Do you want to reset harbor data(yes/no)?"
-    default: "no"
-    private: no
-  tasks:
-    - name: First Check Confirmation
-      file:
-        path: "{{HARBOR_LOCATION}}"
-        state: absent
-      when: confirmation | bool
-
 - hosts: harbor
   roles:
   - { role: harbor, when: "NEW_INSTALL == 'yes'" }

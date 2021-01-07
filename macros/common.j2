@@ -5,15 +5,15 @@ dnsPolicy: {{service['dnsPolicy']}}
 {%- endmacro -%}
 
 {% macro image_name(image, type='apulis') %}
-{% if ':' in image %}
 {% if type == 'apulis' %}
+{% if ':' in apulis_images[image]['name'] %}
 {{ image }}:{{apulis_images[image]['tag'] if apulis_images[image]['tag'] is defined else image_tag}}
 {% else %}
-{{ image }}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
+{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images[image]['name']}}:{{apulis_images[image]['tag'] if apulis_images[image]['tag'] is defined else image_tag}}
 {% endif %}
 {% else %}
-{% if type == 'apulis' %}
-{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images[image]['name']}}:{{apulis_images[image]['tag'] if apulis_images[image]['tag'] is defined else image_tag}}
+{% if ':' in thirdparty_images[image]['name'] %}
+{{ image }}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
 {% else %}
 {{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{thirdparty_images[image]['name']}}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
 {% endif %}
