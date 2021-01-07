@@ -13,7 +13,7 @@ bin_dir: "/opt/kube/bin"
 ca_dir: "/etc/kubernetes/ssl"
 
 # Deploy Directory (aiarts workspace)
-base_dir: "/home/liaodingbai/Documents/workspace/InstallationYTung"
+base_dir: "{{ lookup('env', 'PWD') }}"
 
 # resource directory (include apt, images, dlws code and other package)
 resource_dir: "{{base_dir}}/resources"
@@ -37,10 +37,10 @@ CLUSTER_CIDR: "172.20.0.0/16"
 NODE_PORT_RANGE: "20000-40000"
 
 # Cluster DNS Domain
-CLUSTER_DNS_DOMAIN: "cluster.local."
+CLUSTER_DNS_DOMAIN: "cluster.local"
 
 # harbor domain value
-HARBOR_DOMAIN: "harbor.sigsus.cn"
+HARBOR_DOMAIN: "harbor.apulis.cn"
 
 # harbor https port
 HARBOR_HTTPS_PORT: 8443
@@ -169,28 +169,28 @@ thirdparty_images:
     name: ""
   ascend-k8sdeviceplugin:
     name: "ascend-k8sdeviceplugin"
-    tag: "v0.0.1 "
+    tag: "v0.0.1"
   reaper:
     name: ""
 
 apulis_images:
   aiarts-backend:
     name: "apulistech/aiarts-backend"
-    tag: "1.0"
+    tag: "v1.5.0"
   aiarts-frontend:
     name: "apulistech/aiarts-frontend"
-    tag: "1.0"
+    tag: "v1.5.0"
   custom-user-dashboard-backend:
     name: "apulistech/custom-user-dashboard-backend"
-    tag: "latest"
+    tag: "v1.5.0"
   custom-user-dashboard-frontend:
     name: "apulistech/custom-user-dashboard-frontend"
-    tag: "latest"
+    tag: "v1.5.0"
   data-platform-backend:
     name: "apulistech/data-platform-backend"
     tag: "latest"
   gpu-reporter:
-    name: "apulistech/gpu-reporter"
+    name: "apulistech/apulistech/dlworkspace_gpu-reporter"
     tag: "latest"
   image-label:
     name: "apulistech/image-label"
@@ -199,7 +199,8 @@ apulis_images:
     name: "apulistech/init-container"
     tag: "latest"
   openresty:
-    name: "apulistech/openresty"
+    name: "apulistech/dlworkspace_openresty"
+    tag: "latest"
   repairmanager2:
     name: "apulistech/repairmanager2"
     tag: "latest"
@@ -207,7 +208,7 @@ apulis_images:
     name: "apulistech/dlworkspace_restfulapi2"
     tag: "latest"
   webui3:
-    name: "apulistech/webui3"
+    name: "apulistech/dlworkspace_webui3"
     tag: "latest"
   job-exporter:
     name: "apulistech/job-exporter"

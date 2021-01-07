@@ -16,6 +16,6 @@ dnsPolicy: {{service['dnsPolicy']}}
 {% endif %}
 {% endmacro %}
 
-{% macro api_servers() %}
+{% macro api_servers() -%}
 {{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0] }}
-{% endmacro %}
+{%- endmacro %}

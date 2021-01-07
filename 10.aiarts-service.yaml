@@ -9,7 +9,3 @@
   roles:
     - { role: "aiarts-service", step: "nginx" }
 
-- hosts: kube-master
-  roles:
-    - { role: "aiarts-service", step: "start_service" }
-
