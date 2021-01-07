@@ -97,6 +97,10 @@ spec:
                     custom:
                       description: Spec for a custom explainer
                       properties:
+                        resources:
+                          description: Defaults to requests and limits of 1CPU, 2Gb
+                            MEM.
+                          type: object
                         container:
                           type: object
                       required:
@@ -137,6 +141,10 @@ spec:
                     custom:
                       description: Spec for a custom predictor
                       properties:
+                        resources:
+                          description: Defaults to requests and limits of 1CPU, 2Gb
+                            MEM.
+                          type: object
                         container:
                           type: object
                       required:
@@ -362,6 +370,10 @@ spec:
                     custom:
                       description: Spec for a custom explainer
                       properties:
+                        resources:
+                          description: Defaults to requests and limits of 1CPU, 2Gb
+                            MEM.
+                          type: object
                         container:
                           type: object
                       required:
@@ -402,6 +414,10 @@ spec:
                     custom:
                       description: Spec for a custom predictor
                       properties:
+                        resources:
+                          description: Defaults to requests and limits of 1CPU, 2Gb
+                            MEM.
+                          type: object
                         container:
                           type: object
                       required:
@@ -884,47 +900,20 @@ data:
             "defaultGpuImageVersion": "2.2.0-gpu",
             "allowedImageVersions": [
                "1.15.0",
+               "1.15.0-arm64",
                "1.15.0-gpu",
                "2.2.0",
-               "2.2-gpu"
+               "2.2.0-arm64",
+               "2.2.0-gpu"
             ]
         },
-        "onnx": {
-            "image": {{ util.image_name('onnxruntime-server', 'third') }}
-            "defaultImageVersion": "v0.5.1",
-            "allowedImageVersions": [
-               "v0.5.1"
-            ]
-        },
-        "sklearn": {
-            "image": {{ util.image_name('sklearnserver', 'third') }}
-            "defaultImageVersion": "0.2.2",
-            "allowedImageVersions": [
-               "0.2.2"
-            ]
-        },
-        "xgboost": {
-            "image": {{ util.image_name('xgbserver', 'third') }}
-            "defaultImageVersion": "0.2.2",
-            "allowedImageVersions": [
-               "0.2.2"
-            ]
-        },
-        "pytorch": {
-            "image": {{ util.image_name('kfserving-pytorchserver', 'third') }}
-            "defaultImageVersion": "1.5.1",
-            "allowedImageVersions": [
-               "1.5.1",
-               "1.5.1-gpu"
-            ]
-        },
-        "tensorrt": {
-            "image": {{ util.image_name('tensorrtserver', 'third') }}
-            "defaultImageVersion": "19.05-py3",
-            "allowedImageVersions": [
-               "19.05-py3"
-            ]
-        }
+        "apulisVision": {
+              "image": {{ util.image_name('apulisvision') }},
+              "defaultImageVersion": "1.0.0",
+              "allowedImageVersions": [
+                 "1.0.0"
+              ]
+          }
     }
   storageInitializer: |-
     {
