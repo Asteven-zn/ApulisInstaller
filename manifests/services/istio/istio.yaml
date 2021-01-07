@@ -1,3 +1,4 @@
+{% import 'macros/common.j2' as util with context %}
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
@@ -373,7 +374,7 @@ spec:
       env: {}
       envSecrets: {}
       image:
-        repository: grafana/grafana
+        repository: {{util.image_name('grafana')}}
         tag: 6.7.4
       nodeSelector:
         restfulapi: active
@@ -415,7 +416,7 @@ spec:
         secretName: kiali
         usernameKey: username
         viewOnlyMode: false
-      hub: quay.io/kiali
+      hub: {{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/prom
       nodeSelector:
         restfulapi: active
         archType: {{ arch_map[ansible_architecture] }}
