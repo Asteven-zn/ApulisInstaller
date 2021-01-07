@@ -1,6 +1,6 @@
 - name: Ensure directory structure exists
   file:
-    path: '{{ manifest_dest }}{{service_name}}/{{ item.path }}'
+    path: '{{ manifest_dest }}/{{service_name}}/{{ item.path }}'
     state: directory
   with_filetree: '{{ base_dir}}/manifests/services/{{service_name}}'
   when: item.state == 'directory'
@@ -26,7 +26,7 @@
 - name: Copy un-template files
   copy:
     src: '{{ item.src }}'
-    dest: '{{ manifest_dest }}{{service_name}}/{{ item.path }}'
+    dest: '{{ manifest_dest }}/{{service_name}}/{{ item.path }}'
   with_filetree: '{{ base_dir}}/manifests/services/{{service_name}}'
   when:
     - item.state == 'file'
@@ -38,7 +38,7 @@
     lstrip_blocks: yes
     trim_blocks: yes
     src: '{{ item.src }}'
-    dest: '{{ manifest_dest }}{{service_name}}/{{ item.path }}'
+    dest: '{{ manifest_dest }}/{{service_name}}/{{ item.path }}'
   with_filetree: '{{ base_dir}}/manifests/services/{{service_name}}'
   when:
     - item.state == 'file'
@@ -47,7 +47,7 @@
 
 - name: 保证shell和python脚本的权限
   file:
-    path: '{{ manifest_dest }}{{service_name}}/{{ item.path }}'
+    path: '{{ manifest_dest }}/{{service_name}}/{{ item.path }}'
     mode: 777
     state: file
   with_filetree: '{{ base_dir}}/manifests/services/{{service_name}}'
@@ -57,7 +57,7 @@
   tags: upgrade_service
 
 - name: 执行pre-render.sh脚本
-  shell: "{{ manifest_dest }}{{service_name}}/{{ item.path }}"
+  shell: "{{ manifest_dest }}/{{service_name}}/{{ item.path }}"
   with_filetree: '{{ base_dir}}/manifests/services/{{service_name}}'
   when:
     - "{{item.path|basename == 'pre-render.sh'}}"
