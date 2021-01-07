@@ -5,8 +5,7 @@
         webui: '{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images["webui3"]["name"]}}:{{apulis_images["webui3"]["tag"] if apulis_images["webui3"]["tag"] is defined else image_tag}}'
       shell: >-
         {{ bin_dir }}/docker cp $({{ bin_dir }}/docker create {{webui}}):/usr/src/app/build/ /tmp/dashboard && \
-        tar -czvf /tmp/dashboard.tar.gz /tmp/dashboard && \
-        rm -rf /tmp/dashboard
+        cd /tmp && tar -czvf /tmp/dashboard.tar.gz dashboard && rm -rf /tmp/dashboard
       when: '":" not in apulis_images["webui3"]["name"]'
 
     - name: 从webui镜像拷贝/www/static-2
