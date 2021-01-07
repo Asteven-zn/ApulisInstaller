@@ -30,6 +30,9 @@ spec:
       labels:
         app: postgres-{{ arch_map[ansible_architecture] }}
     spec:
+      nodeSelector:
+        archType: { { arch_map[ ansible_architecture ] } }
+        postgres: active
       hostNetwork: true
       containers:
       - image: {{ util.image_name('postgresql', 'third') }}
