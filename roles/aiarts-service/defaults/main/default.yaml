@@ -10,3 +10,4 @@ service:
   master_token:
   nccl_ib_disable:
   vc_node_hard_assignment:
+  use_service: istio
