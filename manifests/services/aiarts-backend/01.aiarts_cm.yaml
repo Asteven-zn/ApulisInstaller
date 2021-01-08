@@ -11,8 +11,8 @@ data:
     database: {{ service["datasource"]}}
     db:
       mysql:
-        username: root
-        password: apulis#2019#wednesday
+        username: {{service["mysql"]["username"]}}
+        password: {{service["mysql"]["password"]}}
         {% if service["db_archtype"] == "amd64" %}
         host: mysql.kube-system
         {% elif service["db_archtype"] == "arm64" %}
@@ -20,7 +20,7 @@ data:
         {% else %}
         host: mysql.kube-system
         {% endif %}
-        port: 3306
+        port: {{service["mysql"]["port"]}}
         database: ai_arts
         maxopenconns: 10
         maxidleconns: 2
