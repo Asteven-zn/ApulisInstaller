@@ -10,6 +10,7 @@
     - kubectl
     - kubelet
     - kube-proxy
+    - istioctl
   tags: upgrade_k8s
 
 - name: Ensure directory {{default_cni_path }} structure exists

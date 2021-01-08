@@ -22,6 +22,7 @@ group_labels:
       - nginx
       - watchdog
       - webportal
+      - mlflow
   - group: kube-worker
     labels:
       - worker

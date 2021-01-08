@@ -8,34 +8,38 @@ spec:
   ports:
   - port: 9010
   selector:
-    app: mlflow
+    app: mlflow-{{ arch_map[ansible_architecture] }}
 ---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: mlflow
+  name: mlflow-{{ arch_map[ansible_architecture] }}
   namespace: default
   labels:
-     app: mlflow
+     app: mlflow-{{ arch_map[ansible_architecture] }}
 spec:
   selector:
     matchLabels:
       mlflow-node: pod
   template:
     metadata:
-      name: mlflow
+      name: mlflow-{{ arch_map[ansible_architecture] }}
       labels:
         mlflow-node: pod
-        app: mlflow
+        app: mlflow-{{ arch_map[ansible_architecture] }}
     spec:
       nodeSelector:
         mlflow:   active
-        archType: amd64
+        archType: {{ arch_map[ansible_architecture] }}
       containers:
       - name: mlflow
         image: {{ util.image_name('mlflow') }}
         imagePullPolicy: Always
-        command: ["mlflow", "server", "--backend-store-uri", "mysql://root:apulis#2019#wednesday@mysql.kube-system/mlflow", "--default-artifact-root", "file:///app/mlflow-data", "--port", "9010", "--host" ,"0.0.0.0"]
+        {% if service['datasource'] == 'mysql'%}
+        command: ["mlflow", "server", "--backend-store-uri", 'mysql://{{service["mysql"]["username"]}}:{{service["mysql"]["password"]}}@{{service["mysql"]["host"]}}:{{service["mysql"]["port"]}}/mlflow', "--default-artifact-root", "file:///app/mlflow-data", "--port", "9010", "--host" ,"0.0.0.0"]
+        {% elif service['datasource'] == 'postgres' %}
+        command: ["mlflow", "server", "--backend-store-uri", 'postgresql://{{service["postgres"]["username"]}}:{{service["postgres"]["password"]}}@{{service["postgres"]["host"]}}:{{service["postgres"]["port"]}}/mlflow', "--default-artifact-root", "file:///app/mlflow-data", "--port", "9010", "--host" ,"0.0.0.0"]
+        {% endif %}
         ports:
         - containerPort: 9010
           hostPort:      9010
