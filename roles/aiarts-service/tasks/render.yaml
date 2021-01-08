@@ -44,6 +44,7 @@
     - item.state == 'file'
     - item.src.endswith('.yaml') or item.src.endswith('.sh') or item.src.endswith('.json')
   tags: upgrade_service
+  ignore_errors: true
 
 - name: 保证shell和python脚本的权限
   file:
