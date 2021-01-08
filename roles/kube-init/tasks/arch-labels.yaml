@@ -20,7 +20,7 @@
 
 - name: Worker label for nvidia GPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels + [ 'gpuType=nvidia_gpu_amd64', 'archType=amd64' ] }}"
+    role_node_labels: "{{ role_node_labels + [ 'gpuType=nvidia_gpu_amd64', 'archType=amd64', 'gpu=active' ] }}"
   when:
     - arch_map[ansible_architecture] == 'amd64'
     - inventory_hostname in groups['kube-worker']

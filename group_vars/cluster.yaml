@@ -24,9 +24,11 @@ datasource: mysql
 modes:
   preview:
     - storage
+    - network
     - mysql
     - postgres
     - restfulapi2
+    - custom-user-dashboard
     - jobmanager2
     - custommetrics
     - monitor
@@ -36,9 +38,11 @@ modes:
     - aiarts-frontend
   express:
     - storage
+    - network
     - mysql
     - postgres
     - restfulapi2
+    - custom-user-dashboard
     - jobmanager2
     - custommetrics
     - monitor
@@ -48,9 +52,11 @@ modes:
     - aiarts-frontend
   professional:
     - storage
+    - network
     - mysql
     - postgres
     - restfulapi2
+    - custom-user-dashboard
     - jobmanager2
     - custommetrics
     - monitor
