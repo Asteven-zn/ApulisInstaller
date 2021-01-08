@@ -196,7 +196,7 @@ apulis_images:
     name: "apulistech/data-platform-backend"
     tag: "latest"
   gpu-reporter:
-    name: "apulistech/apulistech/dlworkspace_gpu-reporter"
+    name: "apulistech/dlworkspace_gpu-reporter"
     tag: "latest"
   image-label:
     name: "apulistech/image-label"
