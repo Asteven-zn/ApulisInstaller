@@ -264,4 +264,5 @@ apulis_images:
     name: "apulistech/kfserving-kube-rbac-proxy"
     tag: "latest"
   mlflow:
-    name: ""
+    name: "apulistech/mlflow"
+    tag: "v1.0.0"
