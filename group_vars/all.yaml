@@ -177,6 +177,9 @@ thirdparty_images:
     name: ""
 
 apulis_images:
+  apulisvision:
+    name: ""
+    tag: ""
   aiarts-backend:
     name: "apulistech/aiarts-backend"
     tag: "v1.5.0"
