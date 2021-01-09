@@ -3,7 +3,7 @@
 {% if service["prometheus"]["cluster_name"] is defined %}
 {% set cluster_name = service["prometheus"]["cluster_name"] %}
 {% else %}
-{% set cluster_name = cluster_name %}
+{% set cluster_name = CLUSTER_NAME %}
 {% endif %}
 
 apiVersion: v1
@@ -15,7 +15,7 @@ data:
   prometheus.yml: |-
     global:
       external_labels:
-        cluster: {{ cluster_name }}
+        cluster: {{ CLUSTER_NAME }}
     rule_files:
       - "/etc/prometheus-alert/*.rules"
     scrape_configs:

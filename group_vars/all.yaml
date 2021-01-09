@@ -3,6 +3,9 @@ PROJECT_NAME: "sz_gongdianju"
 
 PLATFORM_NAME: "Apulis"
 
+# the name of cluster
+CLUSTER_NAME: "DLWS"
+
 # -------- Additional Variables (don't change the default value right now)---
 # Binaries Directory
 i18n: "zh-CN"

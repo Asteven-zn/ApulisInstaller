@@ -40,7 +40,7 @@ administrators:
   - {{admin}}
 {% endfor %}
 clusters:
-  {{cluster_name}}:
+  {{CLUSTER_NAME}}:
     restfulapi: http://127.0.0.1/apis
     title: Grafana-endpoint-of-the-cluster
     workStorage: {{service["container-mount-path"]}}/work

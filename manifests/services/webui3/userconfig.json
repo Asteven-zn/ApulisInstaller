@@ -15,7 +15,7 @@
 
   "DLClusters" : 
   {
-     "{{cluster_name}}" : {
+     "{{CLUSTER_NAME}}" : {
         "AdminGroups": {{service["WebUIadminGroups"]}},
         "AuthorizedGroups": {{service["WebUIauthorizedGroups"]}},
         "RegisterGroups": {{service["WebUIregisterGroups"]}},

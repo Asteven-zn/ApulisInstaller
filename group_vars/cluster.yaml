@@ -5,9 +5,6 @@ physical_mount_path: /mntdlws
 
 manifest_dest: "/root/build"
 
-# the name of cluster
-cluster_name: "DLWS"
-
 default_cni_path: /opt/cni/bin
 
 # kube vip address
