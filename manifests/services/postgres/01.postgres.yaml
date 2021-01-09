@@ -31,7 +31,7 @@ spec:
         app: postgres-{{ arch_map[ansible_architecture] }}
     spec:
       nodeSelector:
-        archType: { { arch_map[ ansible_architecture ] } }
+        archType: {{ arch_map[ ansible_architecture ] }}
         postgres: active
       hostNetwork: true
       containers:
