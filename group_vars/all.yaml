@@ -205,7 +205,7 @@ apulis_images:
     name: "apulistech/dlworkspace_gpu-reporter"
     tag: "latest"
   image-label:
-    name: "apulistech/image-label"
+    name: "apulistech/dlworkspace_image-label"
     tag: "latest"
   init-container:
     name: "apulistech/init-container"
