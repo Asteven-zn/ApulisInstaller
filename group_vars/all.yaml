@@ -184,8 +184,8 @@ thirdparty_images:
 
 apulis_images:
   apulisvision:
-    name: ""
-    tag: ""
+    name: "apulistech/apulisvision"
+    tag: "1.2.1"
   aiarts-backend:
     name: "apulistech/aiarts-backend"
     tag: "v1.5.0-rc3"
@@ -229,7 +229,8 @@ apulis_images:
     name: "apulistech/nginx"
     tag: "1.9"
   node-cleaner:
-    name: ""
+    name: "node-cleaner"
+    tag: "latest"
   watchdog:
     name: "apulistech/watchdog"
     tag: "1.9"
@@ -270,4 +271,5 @@ apulis_images:
     name: "apulistech/kfserving-kube-rbac-proxy"
     tag: "latest"
   mlflow:
-    name: ""
+    name: "apulistech/mlflow"
+    tag: "v1.0.0"
