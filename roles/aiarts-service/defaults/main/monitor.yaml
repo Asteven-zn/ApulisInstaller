@@ -18,7 +18,7 @@ service:
     host: "postgres.kube-system"
     port: 5432
     username: "postgres"
-    password: "{{ lookup('file', '{{ base_dir }}/credentials/mysql.pwd') }}"
+    password: "{{ lookup('file', '{{ base_dir }}/credentials/postgres.pwd') }}"
   prometheus:
     host: "{{kube_vip_address}}"
     port: 9091

@@ -886,7 +886,7 @@ data:
     }
   logger: |-
     {
-        "image": {{ util.image_name('kfserving-logger', 'third') }}
+        "image": "{{ util.image_name('kfserving-logger', 'third') }}",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -895,7 +895,7 @@ data:
   predictors: |-
     {
         "tensorflow": {
-            "image": {{ util.image_name('tensorflow-serving', 'third') }}
+            "image": "{{ util.image_name('tensorflow-serving', 'third') }}",
             "defaultImageVersion": "2.2.0",
             "defaultGpuImageVersion": "2.2.0-gpu",
             "allowedImageVersions": [
@@ -908,7 +908,7 @@ data:
             ]
         },
         "apulisVision": {
-              "image": {{ util.image_name('apulisvision') }},
+              "image": "{{ util.image_name('apulisvision') }}",
               "defaultImageVersion": "1.0.0",
               "allowedImageVersions": [
                  "1.0.0"
@@ -917,7 +917,7 @@ data:
     }
   storageInitializer: |-
     {
-        "image": {{ util.image_name('kfserving-storage-initializer') }}
+        "image": "{{ util.image_name('kfserving-storage-initializer') }}"
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
