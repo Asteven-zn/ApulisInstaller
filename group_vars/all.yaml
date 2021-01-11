@@ -3,9 +3,6 @@ PROJECT_NAME: "sz_gongdianju"
 
 PLATFORM_NAME: "Apulis"
 
-# the name of cluster
-CLUSTER_NAME: "DLWS"
-
 # -------- Additional Variables (don't change the default value right now)---
 # Binaries Directory
 i18n: "zh-CN"
@@ -24,8 +21,26 @@ resource_dir: "{{base_dir}}/resources"
 # --------- Main Variables ---------------
 CONTAINER_RUNTIME: "docker"
 
+# Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
+CLUSTER_NETWORK: "weavenet"
+
+# Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
+PROXY_MODE: "iptables"
+
+# K8S Service CIDR, not overlap with node(host) networking
+SERVICE_CIDR: "10.68.0.0/16"
+
+# Cluster CIDR (Pod CIDR), not overlap with node(host) networking
+CLUSTER_CIDR: "172.20.0.0/16"
+
+# NodePort Range
+NODE_PORT_RANGE: "20000-40000"
+
+# Cluster DNS Domain
+CLUSTER_DNS_DOMAIN: "cluster.local"
+
 # harbor domain value
-HARBOR_DOMAIN: "harbor.apulis.cn"
+HARBOR_DOMAIN: "harbor.atlas.cn"
 
 # harbor https port
 HARBOR_HTTPS_PORT: 8443
@@ -150,11 +165,11 @@ thirdparty_images:
   onnxruntime-server:
     name: ""
   vc-scheduler:
-    name: ""
+    name: "vc-scheduler"
   vc-webhook-manager:
-    name: ""
+    name: "vc-webhook-manager-base"
   vc-controller-manager:
-    name: ""
+    name: "vc-controller-manager"
   ascend-k8sdeviceplugin:
     name: "ascend-k8sdeviceplugin"
     tag: "v0.0.1"
@@ -167,21 +182,21 @@ apulis_images:
     tag: ""
   aiarts-backend:
     name: "apulistech/aiarts-backend"
-    tag: "v1.5.0"
+    tag: "v1.5.0-rc3"
   aiarts-frontend:
     name: "apulistech/aiarts-frontend"
-    tag: "v1.5.0"
+    tag: "v1.5.0-rc3"
   custom-user-dashboard-backend:
     name: "apulistech/custom-user-dashboard-backend"
-    tag: "v1.5.0"
+    tag: "v1.5.0-rc3"
   custom-user-dashboard-frontend:
     name: "apulistech/custom-user-dashboard-frontend"
-    tag: "v1.5.0"
+    tag: "v1.5.0-rc3"
   data-platform-backend:
     name: "apulistech/data-platform-backend"
     tag: "latest"
   gpu-reporter:
-    name: "apulistech/dlworkspace_gpu-reporter"
+    name: "apulistech/apulistech/dlworkspace_gpu-reporter"
     tag: "latest"
   image-label:
     name: "apulistech/image-label"
@@ -197,10 +212,10 @@ apulis_images:
     tag: "latest"
   restfulapi2:
     name: "apulistech/dlworkspace_restfulapi2"
-    tag: "latest"
+    tag: "v1.5.0-rc3"
   webui3:
     name: "apulistech/dlworkspace_webui3"
-    tag: "latest"
+    tag: "v1.5.0-rc3"
   job-exporter:
     name: "apulistech/job-exporter"
     tag: "1.9"
@@ -249,5 +264,4 @@ apulis_images:
     name: "apulistech/kfserving-kube-rbac-proxy"
     tag: "latest"
   mlflow:
-    name: "apulistech/mlflow"
-    tag: "v1.0.0"
+    name: ""
