@@ -166,10 +166,13 @@ thirdparty_images:
     name: ""
   vc-scheduler:
     name: "vc-scheduler"
+    tag: "v0.0.1"
   vc-webhook-manager:
     name: "vc-webhook-manager-base"
+    tag: "v0.0.1"
   vc-controller-manager:
     name: "vc-controller-manager"
+    tag: "v0.0.1"
   ascend-k8sdeviceplugin:
     name: "ascend-k8sdeviceplugin"
     tag: "v0.0.1"
