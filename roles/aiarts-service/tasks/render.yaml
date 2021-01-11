@@ -1,9 +1,3 @@
-- name: 清空之前的生成的文件
-  file:
-    path: '{{ manifest_dest }}'
-    state: absent
-  tags: upgrade_service
-
 - name: Ensure directory structure exists
   file:
     path: '{{ manifest_dest }}/{{service_name}}/{{ item.path }}'
