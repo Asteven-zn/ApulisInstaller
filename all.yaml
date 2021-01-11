@@ -1,0 +1,267 @@
+# Project Name
+PROJECT_NAME: "sz_gongdianju"
+
+PLATFORM_NAME: "Apulis"
+
+# -------- Additional Variables (don't change the default value right now)---
+# Binaries Directory
+i18n: "zh-CN"
+
+bin_dir: "/opt/kube/bin"
+
+# CA and other components cert/key Directory
+ca_dir: "/etc/kubernetes/ssl"
+
+# Deploy Directory (aiarts workspace)
+base_dir: "{{ lookup('env', 'PWD') }}"
+
+# resource directory (include apt, images, dlws code and other package)
+resource_dir: "{{base_dir}}/resources"
+
+# --------- Main Variables ---------------
+CONTAINER_RUNTIME: "docker"
+
+# Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
+CLUSTER_NETWORK: "weavenet"
+
+# Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
+PROXY_MODE: "iptables"
+
+# K8S Service CIDR, not overlap with node(host) networking
+SERVICE_CIDR: "10.68.0.0/16"
+
+# Cluster CIDR (Pod CIDR), not overlap with node(host) networking
+CLUSTER_CIDR: "172.20.0.0/16"
+
+# NodePort Range
+NODE_PORT_RANGE: "20000-40000"
+
+# Cluster DNS Domain
+CLUSTER_DNS_DOMAIN: "cluster.local"
+
+# harbor domain value
+HARBOR_DOMAIN: "harbor.atlas.cn"
+
+# harbor https port
+HARBOR_HTTPS_PORT: 8443
+
+# CPU Architecture
+arch_map:
+  i386: "386"
+  x86_64: "amd64"
+  aarch64: "arm64"
+  armv7l: "armv7"
+  armv6l: "armv6"
+
+thirdparty_images:
+  grafana:
+    name: "apulistech/grafana"
+    tag: "6.7.4"
+  grafana-zh:
+    name: "apulistech/grafana-zh"
+    tag: "6.7.4"
+  a910-device-plugin:
+    name: "apulistech/a910-device-plugin"
+    tag: "devel3"
+  alibi-explainer:
+    name: ""
+  atc:
+    name: "apulistech/atc"
+    tag: "0.0.1"
+  visualjob:
+    name: "apulistech/visualjob"
+    tag: "1.0"
+  tensorflow:
+    name: "apulistech/tensorflow"
+    tag: "1.14.0-gpu-py3"
+  pytorch:
+    name: "apulistech/pytorch"
+    tag: "1.5"
+  mxnet:
+    name: "apulistech/mxnet"
+    tag: "2.0.0-gpu-py3"
+  ubuntu:
+    name: "apulistech/ubuntu"
+    tag: "18.04"
+  bash:
+    name: "bash"
+    tag: "5"
+  k8s-prometheus-adapter:
+    name: "directxman12/k8s-prometheus-adapter"
+    tag: "v0.7.0"
+  tensorflow-serving:
+    name: "apulistech/tensorflow-serving"
+    tag: "1.15.0"
+  tensorrtserver:
+    name: ""
+  kfserving-pytorchserver:
+    name: "apulistech/kfserving-pytorchserver"
+    tag: "1.5.1"
+  knative-serving:
+    name: ""
+  kfserving-logger:
+    name: ""
+  golang:
+    name: "golang"
+    tag: "1.13.7-alpine3.11"
+  prometheus-operator:
+    name: "jessestuart/prometheus-operator"
+    tag: "v0.38.0"
+  coredns:
+    name: "k8s.gcr.io/coredns"
+    tag: "1.6.7"
+  etcd:
+    name: "k8s.gcr.io/etcd"
+    tag: "3.4.3-0"
+  kube-apiserver:
+    name: "k8s.gcr.io/kube-apiserver"
+    tag: "v1.18.2"
+  kube-controller-manager:
+    name: "k8s.gcr.io/kube-controller-manager"
+    tag: "v1.18.2"
+  kube-proxy:
+    name: "k8s.gcr.io/kube-proxy"
+    tag: "v1.18.2"
+  kube-scheduler:
+    name: "k8s.gcr.io/kube-scheduler"
+    tag: "v1.18.2"
+  pause:
+    name: "k8s.gcr.io/pause"
+    tag: "3.2"
+  mysql-server:
+    name: "mysql/mysql-server"
+    tag: "8.0"
+  postgresql:
+    name: "postgres"
+    tag: "11.10-alpine"
+  nvidia-device-plugin:
+    name: "nvidia/k8s-device-plugin"
+    tag: "1.11"
+  kube-vip:
+    name: "plndr/kube-vip"
+    tag: "0.1.8"
+  alertmanager:
+    name: "prom/alertmanager"
+    tag: "v0.20.0"
+  node-exporter:
+    name: "prom/node-exporter"
+    tag: "v0.18.1"
+  prometheus:
+    name: "prom/prometheus"
+    tag: "v2.18.0"
+  redis:
+    name: "redis"
+    tag: "5.0.6-alpine"
+  weave-kube:
+    name: "weaveworks/weave-kube"
+    tag: "2.7.0"
+  weave-npc:
+    name: "weaveworks/weave-npc"
+    tag: "2.7.0"
+  xgbserver:
+    name: ""
+  sklearnserver:
+    name: ""
+  onnxruntime-server:
+    name: ""
+  vc-scheduler:
+    name: ""
+  vc-webhook-manager:
+    name: ""
+  vc-controller-manager:
+    name: ""
+  ascend-k8sdeviceplugin:
+    name: "ascend-k8sdeviceplugin"
+    tag: "v0.0.1"
+  reaper:
+    name: ""
+
+apulis_images:
+  apulisvision:
+    name: ""
+    tag: ""
+  aiarts-backend:
+    name: "apulistech/aiarts-backend"
+    tag: "v1.5.0-rc3"
+  aiarts-frontend:
+    name: "apulistech/aiarts-frontend"
+    tag: "v1.5.0-rc3"
+  custom-user-dashboard-backend:
+    name: "apulistech/custom-user-dashboard-backend"
+    tag: "v1.5.0-rc3"
+  custom-user-dashboard-frontend:
+    name: "apulistech/custom-user-dashboard-frontend"
+    tag: "v1.5.0-rc3"
+  data-platform-backend:
+    name: "apulistech/data-platform-backend"
+    tag: "latest"
+  gpu-reporter:
+    name: "apulistech/dlworkspace_gpu-reporter"
+    tag: "latest"
+  image-label:
+    name: "apulistech/image-label"
+    tag: "latest"
+  init-container:
+    name: "apulistech/init-container"
+    tag: "latest"
+  openresty:
+    name: "apulistech/dlworkspace_openresty"
+    tag: "latest"
+  repairmanager2:
+    name: "apulistech/repairmanager2"
+    tag: "latest"
+  restfulapi2:
+    name: "apulistech/dlworkspace_restfulapi2"
+    tag: "v1.5.0-rc3"
+  webui3:
+    name: "apulistech/dlworkspace_webui3"
+    tag: "v1.5.0-rc3"
+  job-exporter:
+    name: "apulistech/job-exporter"
+    tag: "1.9"
+  nginx:
+    name: "apulistech/nginx"
+    tag: "1.9"
+  node-cleaner:
+    name: ""
+  watchdog:
+    name: "apulistech/watchdog"
+    tag: "1.9"
+  istio-proxy:
+    name: "apulistech/istio-proxy"
+    tag: "latest"
+  istio-pilot:
+    name: "apulistech/istio-pilot"
+    tag: "latest"
+  knative-serving-webhook:
+    name: "apulistech/knative-serving-webhook"
+    tag: "latest"
+  knative-serving-queue:
+    name: "apulistech/knative-serving-queue"
+    tag: "latest"
+  knative-serving-controller:
+    name: "apulistech/knative-serving-controller"
+    tag: "latest"
+  knative-serving-activator:
+    name: "apulistech/knative-serving-activator"
+    tag: "latest"
+  knative-serving-autoscaler:
+    name: "apulistech/knative-serving-autoscaler"
+    tag: "latest"
+  knative-net-istio-webhook:
+    name: "apulistech/knative-net-istio-webhook"
+    tag: "latest"
+  knative-net-istio-controller:
+    name: "apulistech/knative-net-istio-controller"
+    tag: "latest"
+  kfserving-manager:
+    name: "apulistech/kfserving-manager"
+    tag: "latest"
+  kfserving-storage-initializer:
+    name: "apulistech/kfserving-storage-initializer"
+    tag: "latest"
+  kfserving-kube-rbac-proxy:
+    name: "apulistech/kfserving-kube-rbac-proxy"
+    tag: "latest"
+  mlflow:
+    name: ""
