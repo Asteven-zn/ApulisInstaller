@@ -199,7 +199,7 @@ apulis_images:
     name: "apulistech/custom-user-dashboard-frontend"
     tag: "v1.5.0-rc3"
   data-platform-backend:
-    name: "apulistech/data-platform-backend"
+    name: "apulistech/dlworkspace_data-platform-backend"
     tag: "latest"
   gpu-reporter:
     name: "apulistech/apulistech/dlworkspace_gpu-reporter"
