@@ -14,6 +14,7 @@
     dest: '{{ manifest_dest }}/{{item.dest}}'
   with_items:
     - { src: "restfulapi.yaml.j2", dest: "restfulapi2/config.yaml" }
+    - { src: "appsettings.json.j2", dest: "restfulapi2/appsettings.json" }
     - { src: "dashboard.yaml.j2", dest: "custom-user-dashboard/local.config" }
   tags: upgrade_service
 
