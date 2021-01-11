@@ -44,6 +44,7 @@ spec:
           name: dotnet-log
         - mountPath: /app/appsettings.json
           name: dotnet-config
+          subPath: appsettings.json
 
         - mountPath: /mntdlws/nfs/label
           name: aiplatform-label-data-pvc
