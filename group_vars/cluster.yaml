@@ -49,8 +49,15 @@ modes:
     - monitor
     - nginx
     - openresty
+    - webui3
     - aiarts-backend
     - aiarts-frontend
+    - image-label
+    - data-platform
+    - volcanosh
+    - istio
+    - kfserving
+    - knative
   express:
     - storage
     - network
@@ -63,8 +70,15 @@ modes:
     - monitor
     - nginx
     - openresty
+    - webui3
     - aiarts-backend
     - aiarts-frontend
+    - image-label
+    - data-platform
+    - volcanosh
+    - istio
+    - kfserving
+    - knative
   professional:
     - storage
     - network
@@ -77,8 +91,15 @@ modes:
     - monitor
     - nginx
     - openresty
+    - webui3
     - aiarts-backend
     - aiarts-frontend
+    - image-label
+    - data-platform
+    - volcanosh
+    - istio
+    - kfserving
+    - knative
 
 # the unified image tag
 image_tag: "v1.2.0"
