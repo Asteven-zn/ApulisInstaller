@@ -17,19 +17,19 @@ authEnabled:
 
 {% if service["Authentications"]["Microsoft"] is defined %}
 activeDirectory:
-  tenant: {{service["Authentications"]["Microsoft"]["TenantId"]}}
-  clientId: {{service["Authentications"]["Microsoft"]["ClientId"]}}
-  clientSecret: {{service["Authentications"]["Microsoft"]["ClientSecret"]}}
+  tenant: "{{service["Authentications"]["Microsoft"]["TenantId"]}}"
+  clientId: "{{service["Authentications"]["Microsoft"]["ClientId"]}}"
+  clientSecret: "{{service["Authentications"]["Microsoft"]["ClientSecret"]}}"
 {% endif %}
 {% if service["Authentications"]["DingTalk"] is defined %}
 dingtalk:
-  appId: {{service["Authentications"]["DingTalk"]["AppId"]}}
-  appSecret: {{service["Authentications"]["DingTalk"]["AppSecret"]}}
+  appId: "{{service["Authentications"]["DingTalk"]["AppId"]}}"
+  appSecret: "{{service["Authentications"]["DingTalk"]["AppSecret"]}}"
 {% endif %}
 {% if service["Authentications"]["Wechat"] is defined %}
 wechat:
-  appId: {{service["Authentications"]["Wechat"]["AppId"]}}
-  appSecret: {{service["Authentications"]["Wechat"]["AppSecret"]}}
+  appId: "{{service["Authentications"]["Wechat"]["AppId"]}}"
+  appSecret: "{{service["Authentications"]["Wechat"]["AppSecret"]}}"
 {% endif %}
 
 domain: http://{{service["webportal_node"]}}
