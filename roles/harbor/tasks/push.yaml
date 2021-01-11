@@ -40,3 +40,7 @@
         {{bin_dir}}/docker manifest push {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}/{{ PROJECT_NAME }}/{{ manifest_name }}:{{tag}}
         "
   when: '"arm64" in orig_name'
+
+- name: 暂存已经到push到harbor的镜像到另外一个地方
+  shell: "mv {{ base_dir }}/resources/images-pushed/{{ image | basename }} {{ base_dir }}/resources/images-pushed/{{ image | basename }}"
+  connection: local
