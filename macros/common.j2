@@ -4,7 +4,7 @@ dnsPolicy: {{service['dnsPolicy']}}
 {% endif %}
 {%- endmacro -%}
 
-{% macro image_name(image, type='apulis') %}
+{% macro image_name(image, type='apulis') -%}
 {% if type == 'apulis' %}
 {% if ':' in apulis_images[image]['name'] %}
 {{ apulis_images[image]['name'] }}:{{apulis_images[image]['tag'] if apulis_images[image]['tag'] is defined else image_tag}}
@@ -18,7 +18,7 @@ dnsPolicy: {{service['dnsPolicy']}}
 {{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{thirdparty_images[image]['name']}}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
 {% endif %}
 {% endif %}
-{% endmacro %}
+{%- endmacro %}
 
 {% macro api_servers() -%}
 {{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0] }}
