@@ -30,3 +30,10 @@
   with_fileglob:
     - "{{ base_dir }}/resources/images/*.tar"
   when: '"Login Succeeded" in login_result.stdout'
+
+- name: 暂存已经到push到harbor的镜像到另外一个地方
+  shell: "mv {{item}} {{ base_dir }}/resources/images-pushed/{{ item | basename }}"
+  connection: local
+  with_fileglob:
+    - "{{ base_dir }}/resources/images/*.tar"
+  when: '"Login Succeeded" in login_result.stdout'
