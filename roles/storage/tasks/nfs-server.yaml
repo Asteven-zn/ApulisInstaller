@@ -1,3 +1,13 @@
+# tasks file for roles/nfs-mount
+- name: Install NFS mount utility
+  become: true
+  apt:
+    name:
+      - nfs-common
+      - nfs-kernel-server
+    state: present
+  when: ansible_os_family == "Debian"
+
 - name: Ensure directories to export exist
   file:  # noqa 208
     path: "{{ item.value['nfs_path'] }}"
@@ -7,12 +17,33 @@
 - name: export the directories editing the file /etc/exports
   lineinfile:
     dest: /etc/exports
-    regexp: "^{{ item.value['nfs_path'] }} "
-    line: "{{ item.value['nfs_path'] }} {{hostvars[item.value['nfs_server']]['ansible_default_ipv4'].address}}{{ nfs_export_opts }}"
+    regexp: "^{{ item.value['nfs_path'] | regex_replace('\\/$', '') }}"
+    line: "{{ item.value['nfs_path'] }} *{{ nfs_export_opts }}"
+    state: present
     create: yes
   with_dict:
     - "{{ nfs_pv_pvc_mounts }}"
   register: nfs_exports_result
+
+- name: Ensure storage yaml directories to exist
+  file:
+    path: "{{ manifest_dest }}/storage/"
+    state: directory
+
+- name: generate pvc and pv service yaml files
+  template:
+    dest: "{{ manifest_dest }}/storage/{{item.value['index']}}.{{item.key}}.yaml"
+    src: nfs-pvc-pv.yaml.j2
+  vars:
+    - name: "{{ item.key }}"
+    - namespace: "{{ item.value['namespace'] | default('default') }}"
+    - storage: "{{ item.value['storage'] }}"
+    - accessModes: "{{ item.value['accessModes'] }}"
+    - mountOpts: "{{ item.value['mountOpts'] | default(default_mount_opts) }}"
+    - nfs_server: "{{ item.value['nfs_server'] }}"
+    - nfs_path: "{{ item.value['nfs_path'] }}"
+  with_dict:
+    - "{{ nfs_pv_pvc_mounts }}"
 
 - include: "nfs-server-{{ansible_os_family}}.yaml"
 
@@ -34,3 +65,4 @@
 - name: Ensure rpcbind.socket is stopped
   service: name=rpcbind.socket state=stopped enabled=no
   when: ansible_os_family == "RedHat" and nfs_only_v4
+

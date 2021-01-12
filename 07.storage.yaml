@@ -1,3 +1,9 @@
 - hosts: nfs-server
   roles:
     - { role: 'storage', nfs_mode: 'server' }
+
+- hosts:
+    - kube-master
+    - kube-worker
+  roles:
+    - { role: "storage", nfs_mode: 'client' }
