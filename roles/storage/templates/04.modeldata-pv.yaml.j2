@@ -8,14 +8,10 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: manual
-  mountOptions:
-    - rsize=8192
-    - timeo=14
-    - intr
-    - tcp
+  mountOptions: {{ default_mount_opts }}
   nfs:
-    server: master
-    path: /mnt/local/pvc/aiplatform-model-data
+    server: {{groups['nfs-server'][0]}}
+    path: {{ nfs_pv_pvc_mounts["model-data"]["nfs_path"] }}
 
 ---
 kind: PersistentVolumeClaim
@@ -42,14 +38,10 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: manual
-  mountOptions:
-    - rsize=8192
-    - timeo=14
-    - intr
-    - tcp
+  mountOptions: {{ default_mount_opts }}
   nfs:
-    server: master
-    path: /mnt/local/pvc/aiplatform-model-data
+    server: {{groups['nfs-server'][0]}}
+    path: {{ nfs_pv_pvc_mounts["model-data"]["nfs_path"] }}
 
 ---
 kind: PersistentVolumeClaim
