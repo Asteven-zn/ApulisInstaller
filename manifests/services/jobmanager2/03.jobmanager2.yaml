@@ -26,12 +26,12 @@ spec:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
       - name: jobmanager
-        image: {{ util.image_name('restfulapi2') }}
+        image: {{ util.image_fullname('restfulapi2') }}
         command: ["/runScheduler.sh"]
         imagePullPolicy: Always
         env:
         - name: INIT_CONTAINER_IMAGE
-          value: {{ util.image_name('init-container') }}
+          value: {{ util.image_fullname('init-container') }}
         volumeMounts:
         - mountPath: /usr/bin/kubectl
           name: kubectl-binary
@@ -100,7 +100,7 @@ spec:
             port: 9200
           timeoutSeconds: 10
       - name: redis
-        image: {{ util.image_name('redis', 'third')}}
+        image: {{ util.image_fullname('redis', 'third')}}
         command: ["redis-server", "--port", "9300", "--maxmemory", "100mb", "--maxmemory-policy", "allkeys-lru"]
         ports:
         - containerPort: 9300

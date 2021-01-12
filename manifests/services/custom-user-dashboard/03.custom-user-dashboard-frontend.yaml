@@ -22,7 +22,7 @@ spec:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
       - name: custom-user-dashboard-frontend
-        image: {{util.image_name('custom-user-dashboard-frontend')}}
+        image: {{util.image_fullname('custom-user-dashboard-frontend')}}
         imagePullPolicy: Always
         ports:
           - containerPort: 3083

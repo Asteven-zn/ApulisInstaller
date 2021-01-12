@@ -95,7 +95,7 @@ spec:
       hostNetwork: true
       initContainers:
       - name: init
-        image: {{ util.image_name('bash', 'third') }}
+        image: {{ util.image_fullname('bash', 'third') }}
         volumeMounts:
         - name: aiplatform-component-data-pvc
           mountPath:  /prometheus-data
@@ -108,7 +108,7 @@ spec:
       {% endif %}
       containers:
       - name: prometheus
-        image: {{ util.image_name('prometheus', 'third') }}
+        image: {{ util.image_fullname('prometheus', 'third') }}
         resources:
           limits:
             memory: "10Gi"
@@ -133,7 +133,7 @@ spec:
           mountPath: /prometheus-data
           subPath: prometheus/
       - name: gpu-reporter
-        image: {{ util.image_name('gpu-reporter') }}
+        image: {{ util.image_fullname('gpu-reporter') }}
         args:
           - 'python'
           - '/gpu-reporter/reporter.py'

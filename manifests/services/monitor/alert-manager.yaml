@@ -26,7 +26,7 @@ spec:
       hostNetwork: true
       containers:
       - name: alert-manager
-        image: {{ util.image_name('alertmanager', 'third') }}
+        image: {{ util.image_fullname('alertmanager', 'third') }}
         args:
           - '--config.file=/etc/alertmanager/config.yml'
           - '--storage.path=/alertmanager'
@@ -44,7 +44,7 @@ spec:
           mountPath: /etc/alertmanager/template
       {% if service["alert-manager"]["reaper"] is defined %}
       - name: reaper
-        image: {{ util.image_name("reaper", 'third') }}
+        image: {{ util.image_fullname("reaper", 'third') }}
         command:
           - 'python'
           - '/reaper/main.py'

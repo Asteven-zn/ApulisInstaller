@@ -34,7 +34,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: grafana
-        image: {{ util.image_name('grafana', 'third') }}
+        image: {{ util.image_fullname('grafana', 'third') }}
         imagePullPolicy: Always
         ports:
         - containerPort: {{service["grafana"]["port"]}}

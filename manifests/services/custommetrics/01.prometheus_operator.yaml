@@ -95,7 +95,7 @@ spec:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
        - name: prometheus-operator
-         image: {{ util.image_name('prometheus-operator', 'third') }}
+         image: {{ util.image_fullname('prometheus-operator', 'third') }}
          resources:
            requests:
              cpu: 100m

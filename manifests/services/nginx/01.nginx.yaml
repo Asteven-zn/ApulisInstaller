@@ -23,7 +23,7 @@ spec:
       {% endif %}
       containers:
       - name: nginx
-        image: {{ util.image_name('nginx') }}
+        image: {{ util.image_fullname('nginx') }}
         imagePullPolicy: Always   
         command: ["/home/auto-reload-nginx.sh"]
         livenessProbe:

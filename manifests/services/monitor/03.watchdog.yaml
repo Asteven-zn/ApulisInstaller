@@ -50,7 +50,7 @@ spec:
         - mountPath: /root/.kube/config 
           name: kubeconfig
           readOnly: true    
-        image: {{ util.image_name('watchdog') }}
+        image: {{ util.image_fullname('watchdog') }}
         imagePullPolicy: Always
         name: watchdog
         readinessProbe:

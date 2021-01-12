@@ -119,7 +119,7 @@ spec:
       
       containers:
         - name: volcano-scheduler
-          image: {{ util.image_name('vc-scheduler', 'third') }}
+          image: {{ util.image_fullname('vc-scheduler', 'third') }}
           imagePullPolicy: "IfNotPresent"
           args:
             - --scheduler-conf=/volcano.scheduler/volcano-scheduler.conf
@@ -243,7 +243,7 @@ spec:
             - --log_dir=/var/log/atlas_dls/volcano-admission
             - --log_file=/var/log/atlas_dls/volcano-admission/volcano-admission.log
             - -v=4
-          image: {{util.image_name('vc-webhook-manager', 'third')}}
+          image: {{util.image_fullname('vc-webhook-manager', 'third')}}
           imagePullPolicy: IfNotPresent
           name: admission
           volumeMounts:
@@ -313,7 +313,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: main
-          image: {{ util.image_name('vc-webhook-manager', 'third') }}
+          image: {{ util.image_fullname('vc-webhook-manager', 'third') }}
           imagePullPolicy: IfNotPresent
           command: ["./gen-admission-secret.sh", "--service", "volcano-admission-service", "--namespace",
                     "volcano-system", "--secret", "volcano-admission-secret"]
@@ -419,7 +419,7 @@ spec:
       
       containers:
           - name: volcano-controllers
-            image: {{ util.image_name('vc-controller-manager', 'third') }}
+            image: {{ util.image_fullname('vc-controller-manager', 'third') }}
             imagePullPolicy: "IfNotPresent"
             args:
               - mkdir -p /var/log/atlas_dls/volcano-admission /var/log/atlas_dls/volcano-controller /var/log/atlas_dls/volcano-scheduler
@@ -437,7 +437,7 @@ spec:
 
       initContainers:
       - command: ["/bin/sh", "-c", "mkdir -p /var/log/atlas_dls/volcano-admission /var/log/atlas_dls/volcano-controller /var/log/atlas_dls/volcano-scheduler"]
-        image: {{ util.image_name('vc-controller-manager', 'third') }}
+        image: {{ util.image_fullname('vc-controller-manager', 'third') }}
         imagePullPolicy: "IfNotPresent"
         name: init
         volumeMounts:

@@ -33,7 +33,7 @@ spec:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
       - name: mlflow
-        image: {{ util.image_name('mlflow') }}
+        image: {{ util.image_fullname('mlflow') }}
         imagePullPolicy: Always
         {% if service['datasource'] == 'mysql'%}
         command: ["mlflow", "server", "--backend-store-uri", 'mysql://{{service["mysql"]["username"]}}:{{service["mysql"]["password"]}}@{{service["mysql"]["host"]}}:{{service["mysql"]["port"]}}/mlflow', "--default-artifact-root", "file:///app/mlflow-data", "--port", "9010", "--host" ,"0.0.0.0"]

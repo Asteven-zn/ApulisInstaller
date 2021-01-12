@@ -44,7 +44,7 @@ spec:
       nodeSelector:
         gpuType: huawei_npu_{{ arch_map[ansible_architecture] }}
       containers:
-      - image: {{ util.image_name('ascend-k8sdeviceplugin', 'third') }}
+      - image: {{ util.image_fullname('ascend-k8sdeviceplugin', 'third') }}
         name: device-plugin-01
         command: [ "/bin/bash", "-c", "--"]
         args: [ "./build/build_in_docker.sh;ascendplugin  --useAscendDocker=${USE_ASCEND_DOCKER} --volcanoType=true" ]

@@ -23,7 +23,7 @@ spec:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
       - name: aiarts-frontend-{{ arch_map[ansible_architecture] }}
-        image: {{ util.image_name('aiarts-frontend')}}
+        image: {{ util.image_fullname('aiarts-frontend')}}
         imagePullPolicy: Always
         ports:
         - containerPort: 3084

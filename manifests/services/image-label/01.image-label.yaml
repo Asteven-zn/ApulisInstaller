@@ -23,7 +23,7 @@ spec:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
       - name: image-label-{{ arch_map[ansible_architecture] }}
-        image: {{ util.image_name('image-label') }}
+        image: {{ util.image_fullname('image-label') }}
         imagePullPolicy: Always
         ports:
         - containerPort: 3085

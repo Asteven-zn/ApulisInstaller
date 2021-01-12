@@ -30,7 +30,7 @@ spec:
       hostNetwork: true    
       containers:
       - name: mysql
-        image: {{ util.image_name('mysql-server', 'third') }}
+        image: {{ util.image_fullname('mysql-server', 'third') }}
         env:
           # Use secret in real usage
         - name: MYSQL_ROOT_HOST

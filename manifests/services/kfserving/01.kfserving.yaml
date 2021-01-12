@@ -872,7 +872,7 @@ data:
   explainers: |-
     {
         "alibi": {
-            "image" : "{{ util.image_name('alibi-explainer', 'third') }}",
+            "image" : "{{ util.image_short('alibi-explainer', 'third') }}",
             "defaultImageVersion": "0.2.2",
             "allowedImageVersions": [
                "0.2.2"
@@ -881,12 +881,12 @@ data:
     }
   ingress: |-
     {
-        "ingressGateway" : "{{ util.image_name('knative-serving', 'third') }}",
+        "ingressGateway" : "{{ util.image_short('knative-serving', 'third') }}",
         "ingressService" : "istio-ingressgateway.istio-system.svc.cluster.local"
     }
   logger: |-
     {
-        "image": "{{ util.image_name('kfserving-logger', 'third') }}",
+        "image": "{{ util.image_short('kfserving-logger', 'third') }}",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -895,7 +895,7 @@ data:
   predictors: |-
     {
         "tensorflow": {
-            "image": "{{ util.image_name('tensorflow-serving', 'third') }}",
+            "image": "{{ util.image_short('tensorflow-serving', 'third') }}",
             "defaultImageVersion": "2.2.0",
             "defaultGpuImageVersion": "2.2.0-gpu",
             "allowedImageVersions": [
@@ -908,7 +908,7 @@ data:
             ]
         },
         "apulisVision": {
-              "image": "{{ util.image_name('apulisvision') }}",
+              "image": "{{ util.image_short('apulisvision') }}",
               "defaultImageVersion": "1.0.0",
               "allowedImageVersions": [
                  "1.0.0"
@@ -917,7 +917,7 @@ data:
     }
   storageInitializer: |-
     {
-        "image": "{{ util.image_name('kfserving-storage-initializer') }}"
+        "image": "{{ util.image_short('kfserving-storage-initializer') }}"
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -1007,7 +1007,7 @@ spec:
         - --upstream=http://127.0.0.1:8080/
         - --logtostderr=true
         - --v=10
-        image: {{ util.image_name('kfserving-kube-rbac-proxy')}}
+        image: {{ util.image_fullname('kfserving-kube-rbac-proxy')}}
         imagePullPolicy: IfNotPresent
         name: kube-rbac-proxy
         ports:
@@ -1026,7 +1026,7 @@ spec:
           value: kfserving-webhook-server-secret
         - name: ENABLE_WEBHOOK_NAMESPACE_SELECTOR
           value: enabled
-        image: {{ util.image_name('kfserving-manager')}}
+        image: {{ util.image_fullname('kfserving-manager')}}
         imagePullPolicy: IfNotPresent
         name: manager
         ports:

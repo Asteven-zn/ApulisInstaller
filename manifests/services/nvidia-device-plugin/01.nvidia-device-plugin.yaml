@@ -33,7 +33,7 @@ spec:
       containers:
         #- image: nvidia/k8s-device-plugin:1.11
       - name: nvidia-device-plugin-ctr
-        image: {{ util.image_name('nvidia-device-plugin', 'third') }}
+        image: {{ util.image_fullname('nvidia-device-plugin', 'third') }}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

@@ -38,7 +38,7 @@ spec:
       {% endif %}
       containers:
       - name: webui3
-        image: {{ util.image_name('webui3') }}
+        image: {{ util.image_fullname('webui3') }}
         imagePullPolicy: Always
         {% if false %}
         ports:

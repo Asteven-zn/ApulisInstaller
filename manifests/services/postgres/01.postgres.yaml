@@ -35,7 +35,7 @@ spec:
         postgres: active
       hostNetwork: true
       containers:
-      - image: {{ util.image_name('postgresql', 'third') }}
+      - image: {{ util.image_fullname('postgresql', 'third') }}
         name: postgres
         env:
         - name: POSTGRES_USER

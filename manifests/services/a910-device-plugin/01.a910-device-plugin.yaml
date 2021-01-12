@@ -21,7 +21,7 @@ spec:
         gpuType: huawei_npu_{{ arch_map[ansible_architecture] }}
       containers:
         - name: a910-device-plugin
-          image: {{ util.image_name('a910-device-plugin', 'third') }}
+          image: {{ util.image_fullname('a910-device-plugin', 'third') }}
           imagePullPolicy: Always
           env:
             - name: NODE_NAME

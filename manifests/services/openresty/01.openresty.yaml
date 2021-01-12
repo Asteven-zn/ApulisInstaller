@@ -22,7 +22,7 @@ spec:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
       - name: openresty
-        image: {{ util.image_name('openresty') }}
+        image: {{ util.image_fullname('openresty') }}
         imagePullPolicy: Always
         command: ["/start.sh"]
         ports:

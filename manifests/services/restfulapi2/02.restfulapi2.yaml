@@ -28,7 +28,7 @@ spec:
       hostNetwork: true
       containers:
       - name: restfulapi
-        image: {{ util.image_name('restfulapi2') }}
+        image: {{ util.image_fullname('restfulapi2') }}
         imagePullPolicy: Always
         volumeMounts:
         - mountPath: /usr/bin/kubectl

@@ -110,7 +110,7 @@ spec:
             topologyKey: kubernetes.io/hostname
       containers:
       - name: coredns
-        image: {{ util.image_name('coredns', 'third') }}
+        image: {{ util.image_fullname('coredns', 'third') }}
         imagePullPolicy: IfNotPresent
         resources:
           limits:
