@@ -21,19 +21,19 @@ dnsPolicy: {{service['dnsPolicy']}}
 {%- endmacro %}
 
 {% macro image_short(image, type='apulis') -%}
-{% if type == 'apulis' %}
-{% if ':' in apulis_images[image]['name'] %}
+{%- if type == 'apulis' -%}
+{%- if ':' in apulis_images[image]['name'] -%}
 {{ apulis_images[image]['name'] }}
-{% else %}
+{%- else -%}
 {{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images[image]['name']}}
-{% endif %}
-{% else %}
-{% if ':' in thirdparty_images[image]['name'] %}
+{%- endif -%}
+{%- else -%}
+{%- if ':' in thirdparty_images[image]['name'] -%}
 {{ apulis_images[image]['name'] }}
-{% else %}
+{%- else -%}
 {{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{thirdparty_images[image]['name']}}
-{% endif %}
-{% endif %}
+{%- endif -%}
+{%- endif -%}
 {%- endmacro %}
 
 {% macro api_servers() -%}
