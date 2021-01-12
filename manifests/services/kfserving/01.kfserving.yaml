@@ -917,7 +917,7 @@ data:
     }
   storageInitializer: |-
     {
-        "image": "{{ util.image_short('kfserving-storage-initializer') }}"
+        "image": "{{ util.image_short('kfserving-storage-initializer') }}",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
