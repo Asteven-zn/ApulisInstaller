@@ -15,14 +15,15 @@ default_mount_opts:
   - tcp
 
 nfs_pv_pvc_mounts:
-  aiplatform-app-data:
+  - name: "aiplatform-app-data"
     index: "01"
     storage: 300Mi
     accessModes:
       - ReadWriteMany
     nfs_server: "{{ groups['nfs-server'][0]}}"
     nfs_path: /mnt/local/aiplatform-app-data
-  aiplatform-component-data:
+    suffix: ""
+  - name: aiplatform-component-data
     index: "02"
     storage: 300Mi
     namespace: kube-system
@@ -30,17 +31,28 @@ nfs_pv_pvc_mounts:
       - ReadWriteMany
     nfs_server: "{{ groups['nfs-server'][0]}}"
     nfs_path: /mnt/local/aiplatform-app-data/
-  aiplatform-label-data:
+    suffix: ""
+  - name: "aiplatform-label-data"
     index: "03"
     storage: 300Mi
     accessModes:
       - ReadWriteMany
     nfs_server: "{{ groups['nfs-server'][0]}}"
     nfs_path: /mnt/local/aiplatform-label-data/
-  aiplatform-model-data:
+    suffix: ""
+  - name: "aiplatform-model-data"
     index: "04"
     storage: 300Mi
     accessModes:
       - ReadWriteMany
     nfs_server: "{{ groups['nfs-server'][0]}}"
     nfs_path: /mnt/local/aiplatform-model-data/
+    suffix: ""
+  - name: "aiplatform-model-data"
+    index: "05"
+    storage: 300Mi
+    accessModes:
+      - ReadWriteMany
+    nfs_server: "{{ groups['nfs-server'][0]}}"
+    nfs_path: /mnt/local/aiplatform-model-data/
+    suffix: kfserving-pod

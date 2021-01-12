@@ -10,18 +10,18 @@
 
 - name: Ensure directories to export exist
   file:  # noqa 208
-    path: "{{ item.value['nfs_path'] }}"
+    path: "{{ item['nfs_path'] }}"
     state: directory
-  with_dict: "{{ nfs_pv_pvc_mounts }}"
+  with_items: "{{ nfs_pv_pvc_mounts }}"
 
 - name: export the directories editing the file /etc/exports
   lineinfile:
     dest: /etc/exports
-    regexp: "^{{ item.value['nfs_path'] | regex_replace('\\/$', '') }}"
-    line: "{{ item.value['nfs_path'] }} *{{ nfs_export_opts }}"
+    regexp: "^{{ item['nfs_path'] | regex_replace('\\/$', '') }}"
+    line: "{{ item['nfs_path'] }} *{{ nfs_export_opts }}"
     state: present
     create: yes
-  with_dict:
+  with_items:
     - "{{ nfs_pv_pvc_mounts }}"
   register: nfs_exports_result
 
@@ -32,17 +32,18 @@
 
 - name: generate pvc and pv service yaml files
   template:
-    dest: "{{ manifest_dest }}/storage/{{item.value['index']}}.{{item.key}}.yaml"
+    dest: "{{ manifest_dest }}/storage/{{item['index']}}.{{item['name']}}{{ '-' + item['suffix'] if item['suffix'] != '' else '' }}.yaml"
     src: nfs-pvc-pv.yaml.j2
   vars:
-    - name: "{{ item.key }}"
+    - name: "{{ item['name'] }}"
     - namespace: "{{ item.value['namespace'] | default('default') }}"
-    - storage: "{{ item.value['storage'] }}"
-    - accessModes: "{{ item.value['accessModes'] }}"
-    - mountOpts: "{{ item.value['mountOpts'] | default(default_mount_opts) }}"
-    - nfs_server: "{{ item.value['nfs_server'] }}"
-    - nfs_path: "{{ item.value['nfs_path'] }}"
-  with_dict:
+    - storage: "{{ item['storage'] }}"
+    - accessModes: "{{ item['accessModes'] }}"
+    - mountOpts: "{{ item['mountOpts'] | default(default_mount_opts) }}"
+    - nfs_server: "{{ item['nfs_server'] }}"
+    - nfs_path: "{{ item['nfs_path'] }}"
+    - suffix: "{{  '-' + item['suffix'] if item['suffix'] != '' else '' }}"
+  with_items:
     - "{{ nfs_pv_pvc_mounts }}"
 
 - include: "nfs-server-{{ansible_os_family}}.yaml"
