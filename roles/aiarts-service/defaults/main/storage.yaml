@@ -27,7 +27,7 @@ service:
   mounthomefolder: true
   deploymounts:
 
-  private_docker_registry: "{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}"
+  private_docker_registry: "{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/"
   endpoint_use_short_domian:
   infiniband_mounts:
   vc_without_shared_storage:
