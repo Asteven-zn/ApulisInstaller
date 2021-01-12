@@ -171,7 +171,7 @@ thirdparty_images:
     name: "vc-scheduler"
     tag: "v0.0.1"
   vc-webhook-manager:
-    name: "vc-webhook-manager-base"
+    name: "vc-webhook-manager"
     tag: "v0.0.1"
   vc-controller-manager:
     name: "vc-controller-manager"
@@ -208,7 +208,7 @@ apulis_images:
     name: "apulistech/dlworkspace_image-label"
     tag: "latest"
   init-container:
-    name: "apulistech/init-container"
+    name: "apulistech/dlworkspace_init-container"
     tag: "latest"
   openresty:
     name: "apulistech/dlworkspace_openresty"
