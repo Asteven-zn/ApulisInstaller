@@ -1,6 +1,6 @@
 service:
   # abount storage
-  dltsdata-storage-mount-path: /dltsdata
+  dltsdata-storage-mount-path: "{{container_mount_path}}"
   mountpoints:
     nfsshare1:
       curphysicalmountpoint: "{{physical_mount_path}}"
