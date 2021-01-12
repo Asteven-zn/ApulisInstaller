@@ -34,3 +34,10 @@
       regexp: '{{ HARBOR_DOMAIN }}'
       line: "{{ groups['harbor'][0] }} {{ HARBOR_DOMAIN }}"
     when: "HARBOR_DOMAIN != ''"
+
+  - name: Docker登录harbor - {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}
+    become_user: "{{ user_name }}"
+    command:
+      cmd: "{{bin_dir}}/docker login {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}} \
+        -u admin -p {{ lookup('file', '{{ base_dir }}/credentials/harbor.pwd') }}"
+    register: login_result
