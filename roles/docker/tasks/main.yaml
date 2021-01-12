@@ -25,6 +25,12 @@
     var: "DOCKER_VER"
   tags: upgrade_docker, download_docker
 
+# 判断nvidia显卡是否存在
+- name: 判断nvidia显卡是否存在
+  shell: "nvidia-smi"
+  register: NVIDIA_VAR
+  ignore_errors: true
+
 - block:
     - name: 准备docker相关目录
       file: name={{ item }} state=directory
@@ -49,6 +55,11 @@
 
     - name: docker国内镜像加速
       template: src=daemon.json.j2 dest=/etc/docker/daemon.json
+      when: NVIDIA_VAR.rc != 0
+
+    - name: docker国内镜像加速
+      template: src=gpu.daemon.json.j2 dest=/etc/docker/daemon.json
+      when: NVIDIA_VAR.rc == 0
 
     - name: flush-iptables
       shell: "iptables -P INPUT ACCEPT \
