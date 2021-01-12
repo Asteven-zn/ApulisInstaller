@@ -26,3 +26,4 @@ group_labels:
   - group: kube-worker
     labels:
       - worker
+      - FragmentGPUJob
