@@ -1,6 +1,6 @@
 {% import 'macros/common.j2' as util with context %}
-#datasource: {{service["datasource"]}}
-datasource: "PostgreSQL"
+datasource: {{service["datasource"]}}
+#datasource: "PostgreSQL"
 mysql :
   hostname: {{service["mysql"]["host"]}}
   port: {{service["mysql"]["port"]}}
