@@ -47,7 +47,7 @@ spec:
           name: postgres
         volumeMounts:
         - name: aiplatform-component-data-pvc
-          mountPath: /var/lib/postgres/data
+          mountPath: /var/lib/postgresql/data
           subPath: postgres/
       volumes:
       - name: aiplatform-component-data-pvc
