@@ -1,5 +1,5 @@
 service:
-  private_docker_registry: ""
+  private_docker_registry: "{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/"
   webuiport: "9090"
 
   repair-manager:
