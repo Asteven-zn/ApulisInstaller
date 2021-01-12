@@ -5,10 +5,13 @@
   run_once: true
   ignore_errors: yes
 
-- name: Add {{ user_name }} group to system
+- name: Add {{ user_name }} and docker group to system
   group:
-    name: "{{ user_name }}"
+    name: "{{ item }}"
     state: present
+  with_items:
+    - "{{ user_name }}"
+    - docker
 
 - name: Add {{ user_name }} user to system
   user:
@@ -17,7 +20,7 @@
     shell: /bin/bash
     generate_ssh_key: yes
     state: present
-    groups: sudo
+    groups: sudo,docker
     append: yes
 
 - name: Add/update the public key in the known_hosts
