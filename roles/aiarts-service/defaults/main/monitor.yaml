@@ -1,5 +1,5 @@
 service:
-  private_docker_registry: ""
+  private_docker_registry: "{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/"
   webuiport: "9090"
 
   repair-manager:
@@ -8,27 +8,28 @@ service:
 
   db_archtype: "amd64"
 
-  datasource: MySQL
   mysql:
-    host: ""
+    host: "mysql.kube-system"
     port: 3306
     data_path: "{{container_mount_path}}/service/mysql/data"
-    username: ""
-    password: ""
+    username: "root"
+    password: "{{ lookup('file', '{{ base_dir }}/credentials/mysql.pwd') }}"
+  postgres:
+    host: "postgres.kube-system"
+    port: 5432
+    username: "postgres"
+    password: "{{ lookup('file', '{{ base_dir }}/credentials/postgres.pwd') }}"
   prometheus:
     host: "{{kube_vip_address}}"
-    port: 9092
+    port: 9091
     reporter:
       port: 9092
-    data_path: "{{container_mount_path}}/service/prometheus/data"
   grafana:
     port: 3000
     prometheus-ip: localhost
-    data_path: "{{container_mount_path}}/service/grafana/data"
   grafana-zh:
     port: 3001
     prometheus-ip: "localhost"
-    data_path: "{{container_mount_path}}/service/grafana/data"
 
   enable_jobmanager_debug_mode: false
   job-exporter:

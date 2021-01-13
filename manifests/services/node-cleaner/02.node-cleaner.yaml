@@ -23,7 +23,7 @@ spec:
         gpuType: huawei_npu_arm64
       containers:
       - name: node-cleaner
-        image: {{ util.image_name('node-cleaner') }}
+        image: {{ util.image_fullname('node-cleaner') }}
         imagePullPolicy: Always
         volumeMounts:
         - mountPath: /root/config.yaml

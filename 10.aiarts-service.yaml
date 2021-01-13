@@ -1,7 +1,40 @@
-- hosts: kube-master
-  roles:
-    - { role: "aiarts-service", step: "render", sub_service: ""}
+- hosts: harbor
+  tasks:
+    - name: 从webui镜像拷贝/www/static-1
+      vars:
+        webui: '{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images["webui3"]["name"]}}:{{apulis_images["webui3"]["tag"] if apulis_images["webui3"]["tag"] is defined else image_tag}}'
+      shell: >-
+        rm -rf /tmp/dashboard; \
+        {{ bin_dir }}/docker cp $({{ bin_dir }}/docker create {{webui}}):/usr/src/app/build/ /tmp/dashboard && \
+        cd /tmp && tar -czvf /tmp/dashboard.tar.gz dashboard && \
+        rm -rf /tmp/dashboard
+      when: '":" not in apulis_images["webui3"]["name"]'
 
-- hosts: kube-master
+    - name: 从webui镜像拷贝/www/static-2
+      vars:
+        webui: '{{apulis_images["webui3"]["name"]}}:{{apulis_images["webui3"]["tag"] if apulis_images["webui3"]["tag"] is defined else image_tag}}'
+      shell: >-
+        rm -rf /tmp/dashboard; \
+        {{ bin_dir }}/docker cp $({{ bin_dir }}/docker create {{webui}}):/usr/src/app/build/ /tmp/dashboard && \
+        cd /tmp && tar -czvf /tmp/dashboard.tar.gz dashboard && \
+        rm -rf /tmp/dashboard
+      when: '":" in apulis_images["webui3"]["name"]'
+
+    - name: 从harbor服务器拷贝到本地
+      fetch:
+        src: /tmp/dashboard.tar.gz
+        dest: /tmp/local-dashboard.tar.gz
+        flat: yes
+
+- hosts:
+  - kube-master
   roles:
     - { role: "aiarts-service", step: "saml" }
+
+- hosts:
+  - kube-master
+  - kube-worker
+  roles:
+    - { role: "aiarts-service", step: "render"}
+    - { role: "aiarts-service", step: "nginx" }
+#    - { role: "aiarts-service", step: "start_service"}

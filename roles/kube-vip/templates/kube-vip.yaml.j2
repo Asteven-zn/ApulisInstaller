@@ -10,7 +10,7 @@ spec:
     - start
     - -c
     - /etc/kube-vip/config.yaml
-    image: {{ util.image_name('kube-vip', 'third') }}
+    image: {{ util.image_fullname('kube-vip', 'third') }}
     name: kube-vip
     securityContext:
       capabilities:
@@ -21,6 +21,8 @@ spec:
     - mountPath: /etc/kube-vip/
       name: config
   hostNetwork: true
+  nodeSelector:
+    kubernetes.io/role: master
   priorityClassName: system-node-critical
   volumes:
   - hostPath:

@@ -1,0 +1,36 @@
+- name: Ensure /etc/nginx/ssl/ directory exists
+  file:
+    path: '/etc/nginx/{{item}}'
+    state: directory
+  with_items:
+    - ssl
+    - conf.other
+    - fqdn
+
+- name: copy ssl 证书
+  copy:
+    src: "{{ base_dir }}/manifests/services/nginx/ssl/{{item}}"
+    dest: "/etc/nginx/ssl/{{item}}"
+  with_items:
+    - aiarts.crt
+    - aiarts.key
+
+- name: 拷贝nginx 配置文件
+  copy:
+    src: "{{ base_dir }}/manifests/services/nginx/default.conf"
+    dest: "/etc/nginx/conf.other/default.conf"
+
+- name: Ensure /www/static/ directory exists
+  file:
+    path: '/www/static/'
+    state: directory
+
+- name: 分发webui资源到各个节点
+  copy:
+    dest: /www/static/
+    src: /tmp/local-dashboard.tar.gz
+
+- name: 解压dashboard.tar.gz
+  unarchive:
+    src: /www/static/local-dashboard.tar.gz
+    dest: /www/static/

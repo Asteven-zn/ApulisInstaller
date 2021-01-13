@@ -3,9 +3,14 @@
 
 - name: 下发Ubuntu-{{UBUNTU_VERSION}}系统的依赖包
   copy:
-    src: "{{resource_dir}}/apt/{{UBUNTU_VERSION}}/{{ arch_map[ansible_architecture] }}/"
+    src: "{{ item }}"
     dest: "/tmp/apt/"
-  when: 'INSTALL_SOURCE == "offline"'
+  with_fileglob:
+    - "{{resource_dir}}/apt/{{UBUNTU_VERSION}}/*"
+  when:
+    - 'INSTALL_SOURCE == "offline"'
+    - ('{{ item.endswith("_all.deb") }}') or ('{{item.endswith("_" + arch_map[ansible_architecture] +".deb")}}')
 
 - name: 安装系统依赖包
   command: "dpkg -i -R /tmp/apt"
+  ignore_errors: true

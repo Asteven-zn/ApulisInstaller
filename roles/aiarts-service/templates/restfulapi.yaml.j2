@@ -1,26 +1,34 @@
 {% import 'macros/common.j2' as util with context %}
+datasource: {{service["datasource"]}}
+#datasource: "PostgreSQL"
 mysql :
-  hostname : {{service["mysql"]["host"]}}
-  port : {{service["mysql"]["port"]}}
-  username : {{service["mysql"]["username"]}}
-  password : "{{service["mysql"]["password"]}}"
-kubelet-path: {{bin_dir}}/kubectl
+  hostname: {{service["mysql"]["host"]}}
+  port: {{service["mysql"]["port"]}}
+  username: {{service["mysql"]["username"]}}
+  password: "{{service["mysql"]["password"]}}"
+postgresql:
+  hostname: {{service["kube_vip_address"]}}
+  port: {{service["postgres"]["port"]}}
+  username: {{service["postgres"]["username"]}}
+  password: {{service["postgres"]["password"]}}
+
+dltsdata-storage-mount-path: {{service["container-mount-path"]}}
+kubelet-path: /usr/bin/kubectl
 storage-mount-path: {{service["container-mount-path"]}}
 root-path: /DLWorkspace/src/
-nvidiaDriverPath : {{service["nvidia-driver-path"]}}
-clusterId : {{service["clusterId"]}}
+nvidiaDriverPath: {{service["nvidia-driver-path"]}}
+clusterId: {{service["clusterId"]}}
 domain: {{service["network"]["domain"]}}
-apiserver: {{ util.api_servers() }}
-certificate-authority: /etc/kubernetes/ssl/ca.pem
-client-certificate: /etc/kubernetes/ssl/apiserver.pem
-client-key: /etc/kubernetes/ssl/apiserver-key.pem
+apiserver: "https://{{ util.api_servers() }}:{{ service["k8sAPIport"] }}"
+certificate-authority: {{ ca_dir }}/ca.pem
+client-certificate: {{ ca_dir }}/admin.pem
+client-key: {{ ca_dir }}/admin-key.pem
 pod_ip_range: {{ SERVICE_CIDR }}
 per_user_gpu_limit: {{service["per_user_gpu_limit"]}}
-mountpoints : {{service["mountpoints"]}}
-mounthomefolder : {{service["mounthomefolder"]}}
-deploymounts : {{service["deploymounts"]}}
+mountpoints: {{service["mountpoints"]}}
+mounthomefolder: {{service["mounthomefolder"]}}
+deploymounts: {{service["deploymounts"]}}
 webportal_node: {{service["webportal_node"]}}
-datasource : {{service["datasource"]}}
 kube_custom_scheduler: {{service["kube_custom_scheduler"]}}
 gpu_count_per_node: {{service["gpu_count_per_node"]}}
 worker_node_num: {{service["worker_node_num"]}}
@@ -62,6 +70,11 @@ gpu_reporter: 'http://{{service["prometheus"]["host"]}}:{{service["prometheus"][
 
 vc_without_shared_storage: {{service["vc_without_shared_storage"]}}
 
+jwt:
+  secret_key: {{service["jwt"]["secret_key"]}}
+  algorithm: {{service["jwt"]["algorithm"]}}
+  token_ttl: {{service["jwt"]["token_ttl"]}}
+
 Authentication:
   WeChat:
     AppId: "{{service["Authentications"]["Wechat"]["AppId"]}}"
@@ -96,7 +109,7 @@ extranet_port: {{service["extranet_port"]}}
 {% endif %}
 extranet_protocol: {{service["extranet_protocol"]}}
 
-default_virtual_cluster_device_type_list:
+defalt_virtual_cluster_device_type_list:
 {% for one in service["defalt_virtual_cluster_device_type_list"] %}
   - {{ one }}
 {% endfor %}

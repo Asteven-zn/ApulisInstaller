@@ -52,7 +52,7 @@ spec:
   replicas: 1
   #baseImage: prom/prometheus
   #version: v2.14.0-rc.0
-  image: {{ util.image_name('prometheus', 'third') }}
+  image: {{ util.image_fullname('prometheus', 'third') }}
   serviceAccountName: prometheus
   serviceMonitorSelector:
     matchLabels:

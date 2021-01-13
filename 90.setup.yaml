@@ -16,5 +16,12 @@
 - name: "集群其他初始化"
   import_playbook: '06.kube-init.yaml'
 
+- name: "cluster storage init"
+  import_playbook: '07.storage.yaml'
+
 - name: "配置harbor"
-  import_playbook: "09.harbor.yaml"
+  import_playbook: "08.harbor.yaml"
+  
+- name: "集群network init"
+  import_playbook: '09.network.yaml'
+

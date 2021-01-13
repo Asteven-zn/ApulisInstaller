@@ -15,7 +15,7 @@
 
     - name: 下发 harbor 离线安装包
       copy:
-        src: "{{ base_dir }}/images/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
+        src: "{{ base_dir }}/resources/images/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
         dest: "{{HARBOR_LOCATION}}/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
 
     - name: 解压 harbor 离线安装包
@@ -46,16 +46,35 @@
     - name: 复制 download 目录下 harbor 证书
       copy: src={{ base_dir }}/download/{{ item }} dest={{ ca_dir }}/{{ item }}
       with_items:
+        - ca.pem
         - harbor.pem
         - harbor-key.pem
       when: SELF_SIGNED_CERT == 'no'
 
     - name: 配置 harbor.yml 文件
       template: src=harbor-{{ HARBOR_VER_MAIN }}.yml.j2 dest={{HARBOR_LOCATION}}/harbor/harbor.yml
-      when: HARBOR_VER_MAIN in ["v1.10"]
+      when: HARBOR_VER_MAIN in ["v2.1"]
 
     - name: 安装 harbor --with-clair
       shell: "cd {{HARBOR_LOCATION}}/harbor && \
         export PATH={{ bin_dir }}:$PATH && \
         ./install.sh  --with-clair"
+
   when: '"registry" not in result.stdout'
+
+- name: Creating cert dir for the docker daemon
+  file: name=/etc/docker/certs.d/{{ HARBOR_HOSTNAME }}:{{HARBOR_HTTPS_PORT}} state=directory
+
+- name: Installing the HARBOR SERVER's CA cert for docker
+  copy:
+    src: "{{ ca_dir }}/ca.pem"
+    dest: "/etc/docker/certs.d/{{ HARBOR_HOSTNAME }}:{{HARBOR_HTTPS_PORT}}/ca.crt"
+    remote_src: true
+
+- name: Adding an '/etc/hosts' entry for the HARBOR DOMAIN
+  lineinfile:
+    dest: /etc/hosts
+    state: present
+    regexp: '{{ HARBOR_DOMAIN }}'
+    line: "{{ groups['harbor'][0] }} {{ HARBOR_DOMAIN }}"
+  when: "HARBOR_DOMAIN != ''"

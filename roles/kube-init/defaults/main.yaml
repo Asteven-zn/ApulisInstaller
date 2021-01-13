@@ -10,7 +10,20 @@ group_labels:
     labels:
       - aiarts-backend
       - aiarts-frontend
+      - alert-manager
+      - grafana
+      - prometheus
       - image-label
       - jobmanager
       - restfulapi
       - webui
+      - mysql
+      - postgres
+      - nginx
+      - watchdog
+      - webportal
+      - mlflow
+  - group: kube-worker
+    labels:
+      - worker
+      - FragmentGPUJob

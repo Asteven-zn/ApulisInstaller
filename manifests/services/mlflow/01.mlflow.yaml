@@ -1,0 +1,54 @@
+{% import 'macros/common.j2' as util with context %}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+  namespace: default
+spec:
+  ports:
+  - port: 9010
+  selector:
+    app: mlflow-{{ arch_map[ansible_architecture] }}
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mlflow-{{ arch_map[ansible_architecture] }}
+  namespace: default
+  labels:
+     app: mlflow-{{ arch_map[ansible_architecture] }}
+spec:
+  selector:
+    matchLabels:
+      mlflow-node: pod
+  template:
+    metadata:
+      name: mlflow-{{ arch_map[ansible_architecture] }}
+      labels:
+        mlflow-node: pod
+        app: mlflow-{{ arch_map[ansible_architecture] }}
+    spec:
+      nodeSelector:
+        mlflow:   active
+        archType: {{ arch_map[ansible_architecture] }}
+      containers:
+      - name: mlflow
+        image: {{ util.image_fullname('mlflow') }}
+        imagePullPolicy: Always
+        {% if service['datasource'] == 'mysql'%}
+        command: ["mlflow", "server", "--backend-store-uri", 'mysql://{{service["mysql"]["username"]}}:{{service["mysql"]["password"]}}@{{service["mysql"]["host"]}}:{{service["mysql"]["port"]}}/mlflow', "--default-artifact-root", "file:///app/mlflow-data", "--port", "9010", "--host" ,"0.0.0.0"]
+        {% elif service['datasource'] == 'postgres' %}
+        command: ["mlflow", "server", "--backend-store-uri", 'postgresql://{{service["postgres"]["username"]}}:{{service["postgres"]["password"]}}@{{service["postgres"]["host"]}}:{{service["postgres"]["port"]}}/mlflow', "--default-artifact-root", "file:///app/mlflow-data", "--port", "9010", "--host" ,"0.0.0.0"]
+        {% endif %}
+        ports:
+        - containerPort: 9010
+          hostPort:      9010
+          name: main
+        volumeMounts:
+      volumes:
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+

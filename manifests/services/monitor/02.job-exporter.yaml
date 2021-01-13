@@ -22,7 +22,7 @@ spec:
       nodeSelector:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
-      - image: {{ util.image_name('job-exporter') }}
+      - image: {{ util.image_fullname('job-exporter') }}
         imagePullPolicy: Always
         livenessProbe: # in case job-exporter hangs
           httpGet:

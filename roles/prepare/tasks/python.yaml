@@ -1,5 +1,5 @@
 - name: pip install modules
   pip:
-    name: ['netaddr', 'docker', 'openshift', 'kubernetes']
+    name: ['netaddr']
     extra_args: -i https://mirrors.aliyun.com/pypi/simple/
   ignore_errors: true

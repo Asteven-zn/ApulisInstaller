@@ -112,7 +112,7 @@ metadata:
 spec:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
-  image: {{ util.image_name('knative-serving-queue') }}
+  image: {{ util.image_fullname('knative-serving-queue') }}
 
 ---
 # Copyright 2018 The Knative Authors
@@ -424,7 +424,7 @@ metadata:
 data:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
-  queueSidecarImage: {{ util.image_name('knative-serving-queue') }}
+  queueSidecarImage: {{ util.image_fullname('knative-serving-queue') }}
   _example: |
     ################################
     #                              #
@@ -777,6 +777,13 @@ data:
     # domainTemplate specifies the golang text template string to use
     # when constructing the Knative service's DNS name. The default
 
+    # values (Name, Namespace, Domain) are the only variables defined.
+    #
+    # Changing this value might be necessary when the extra levels in
+    # the domain name generated is problematic for wildcard certificates
+    # that only support a single level of domain name added to the
+    # certificate's domain. In those cases you might consider using a value
+
 
     # Controls whether TLS certificates are automatically provisioned and
     # installed in the Knative ingress to terminate external TLS connection.
@@ -1046,7 +1053,7 @@ spec:
       - name: activator
         # This is the Go import path for the binary that is containerized
         # and substituted here.
-        image: {{ util.image_name('knative-serving-activator') }}
+        image:{{ util.image_fullname('knative-serving-activator') }}
         imagePullPolicy: IfNotPresent
         # The numbers are based on performance test results from
         # https://github.com/knative/serving/issues/1625#issuecomment-511930023
@@ -1183,7 +1190,7 @@ spec:
       - name: autoscaler
         # This is the Go import path for the binary that is containerized
         # and substituted here.
-        image: {{ util.image_name('knative-serving-autoscaler') }}
+        image: {{ util.image_fullname('knative-serving-autoscaler') }}
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -1300,7 +1307,7 @@ spec:
       - name: controller
         # This is the Go import path for the binary that is containerized
         # and substituted here.
-        image: {{ util.image_name('knative-serving-controller') }}
+        image: {{ util.image_fullname('knative-serving-controller') }}
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -1408,7 +1415,7 @@ spec:
       - name: webhook
         # This is the Go import path for the binary that is containerized
         # and substituted here.
-        image: {{ util.image_name('knative-serving-webhook') }}
+        image: {{ util.image_fullname('knative-serving-webhook') }}
         imagePullPolicy: IfNotPresent
         resources:
           requests:

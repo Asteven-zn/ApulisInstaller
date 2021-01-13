@@ -1,0 +1,55 @@
+{% import 'macros/common.j2' as util with context %}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: kube-system
+  labels:
+    app: postgres
+spec:
+  ports:
+  - port: {{service["postgres"]["port"]}}
+    protocol: TCP
+  selector:
+    app: postgres-{{ arch_map[ansible_architecture] }}
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: postgres-{{ arch_map[ansible_architecture] }}
+  namespace: kube-system
+  labels:
+    app: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres-{{ arch_map[ansible_architecture] }}
+  template:
+    metadata:
+      labels:
+        app: postgres-{{ arch_map[ansible_architecture] }}
+    spec:
+      nodeSelector:
+        archType: {{ arch_map[ ansible_architecture ] }}
+        postgres: active
+      hostNetwork: true
+      containers:
+      - image: {{ util.image_fullname('postgresql', 'third') }}
+        name: postgres
+        env:
+        - name: POSTGRES_USER
+          value: {{service["postgres"]["username"]}}
+        - name: POSTGRES_PASSWORD
+          value: {{service["postgres"]["password"]}}
+        ports:
+        - containerPort: {{service["postgres"]["port"]}}
+          name: postgres
+        volumeMounts:
+        - name: aiplatform-component-data-pvc
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres/
+      volumes:
+      - name: aiplatform-component-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-component-data-pvc

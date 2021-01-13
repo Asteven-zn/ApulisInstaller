@@ -92,10 +92,10 @@ spec:
       serviceAccountName: prometheus-operator
       nodeSelector:
         prometheus: active
-        archType: k8s-prometheus-adapter
+        archType: {{ arch_map[ansible_architecture] }}
       containers:
        - name: prometheus-operator
-         image: {{ util.image_name('prometheus-operator', 'third') }}
+         image: {{ util.image_fullname('prometheus-operator', 'third') }}
          resources:
            requests:
              cpu: 100m

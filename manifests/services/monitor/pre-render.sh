@@ -21,7 +21,7 @@ for i in `find ${dir}/grafana-config-raw/ -type f -regex ".*json" ` ; do
     ${dir}/gen_grafana-config.py ${i} ${dir}/grafana-config
 done
 
-cp ${dir}/email-notification.json ${dir}/grafana-config
+mv ${dir}/email-notification.json ${dir}/grafana-config/
 
 # create configmap
 for i in `find ${dir}/grafana-config/ -type f -regex ".*json" ` ; do

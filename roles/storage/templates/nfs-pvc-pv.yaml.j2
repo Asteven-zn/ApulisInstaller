@@ -1,7 +1,8 @@
+#jinja2: lstrip_blocks: True
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ name }}-pv
+  name: {{ name }}-pv{{suffix}}
 spec:
   capacity:
     storage: {{ storage }}
@@ -22,7 +23,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ name }}-pvc
+  name: {{ name }}-pvc{{suffix}}
   namespace: {{ namespace }}
 spec:
   storageClassName: manual

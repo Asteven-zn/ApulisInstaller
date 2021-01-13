@@ -3,7 +3,7 @@
 {% if service["prometheus"]["cluster_name"] is defined %}
 {% set cluster_name = service["prometheus"]["cluster_name"] %}
 {% else %}
-{% set cluster_name = cluster_name %}
+{% set cluster_name = CLUSTER_NAME %}
 {% endif %}
 
 apiVersion: v1
@@ -15,7 +15,7 @@ data:
   prometheus.yml: |-
     global:
       external_labels:
-        cluster: {{ cluster_name }}
+        cluster: {{ CLUSTER_NAME }}
     rule_files:
       - "/etc/prometheus-alert/*.rules"
     scrape_configs:
@@ -95,7 +95,7 @@ spec:
       hostNetwork: true
       initContainers:
       - name: init
-        image: {{ util.image_name('bash', 'third') }}
+        image: {{ util.image_fullname('bash', 'third') }}
         volumeMounts:
         - name: aiplatform-component-data-pvc
           mountPath:  /prometheus-data
@@ -108,7 +108,7 @@ spec:
       {% endif %}
       containers:
       - name: prometheus
-        image: {{ util.image_name('prometheus', 'third') }}
+        image: {{ util.image_fullname('prometheus', 'third') }}
         resources:
           limits:
             memory: "10Gi"
@@ -129,10 +129,11 @@ spec:
           mountPath: /etc/prometheus
         - name: rules-volume
           mountPath: /etc/prometheus-alert
-        - name: prometheus-data
+        - name: aiplatform-component-data-pvc
           mountPath: /prometheus-data
+          subPath: prometheus/
       - name: gpu-reporter
-        image: {{ util.image_name('gpu-reporter') }}
+        image: {{ util.image_fullname('gpu-reporter') }}
         args:
           - 'python'
           - '/gpu-reporter/reporter.py'

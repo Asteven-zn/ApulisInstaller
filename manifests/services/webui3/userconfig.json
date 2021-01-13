@@ -1,0 +1,65 @@
+{
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Information",
+      "Microsoft": "Information"
+    }
+  },
+  
+  "UserGroups": {{service["UserGroups"]}},
+  "WinbindServers": "",
+  "DeployAuthentications": {{service["DeployAuthentications"]}},
+
+
+  "DLClusters" : 
+  {
+     "{{CLUSTER_NAME}}" : {
+        "AdminGroups": {{service["WebUIadminGroups"]}},
+        "AuthorizedGroups": {{service["WebUIauthorizedGroups"]}},
+        "RegisterGroups": {{service["WebUIregisterGroups"]}},
+        "ClusterId": "{{service["clusterId"]}}",
+        "Restapi": "http://{{ kube_vip_address }}:{{service["restfulapiport"]}}",
+        "Grafana": "",
+        "WorkFolderAccessPoint": "/",
+        "DataFolderAccessPoint": "",
+        "smbUsername": "",
+        "smbUserPassword": "",
+        "SQLHostname": "",
+        "SQLUsername": "",
+        "SQLPassword": "",
+        "SQLDatabaseForUser": "AuthorizeUser-",
+        "MySQLHostname": "{{service["mysql"]["host"]}}",
+        "MySQLPort": "{{service["mysql"]["port"]}}",
+        "MySQLUsername": "{{service["mysql"]["username"]}}",
+        "MySQLPassword": "{{service["mysql"]["password"]}}",
+        "datasource": "{{service["datasource"]}}",
+        "mountdescription" : "{{service["mountdescription"]}}",
+        "mountpoints" : "{{service["mountpoints"]}}",
+        "mounthomefolder" : "{{service["mounthomefolder"]}}",
+        "deploymounts" : "{{service["deploymounts"]}}"
+        {% if service["proxy"] is defined %}
+        , "proxy": "{{service["proxy"]}}"
+        {% endif %}
+        {% if service["network"]["domain"] is defined %}
+        , "domain": "{{service["network"]["domain"]}}"
+        {% endif %}
+    },
+  },
+
+  "MasterTemplates" :
+  {
+    "SQLHostname": "",
+    "SQLUsername": "",
+    "SQLPassword": "",
+    "SQLDatabaseForTemplates": "Templates-master", 
+    "MySQLHostname": {{service["mysql"]["host"]}},
+    "MySQLPort": {{service["mysql"]["port"]}},
+    "MySQLUsername": {{service["mysql"]["username"]}},
+    "MySQLPassword": {{service["mysql"]["password"]}},
+    "datasource": {{service["datasource"]}},
+  },
+
+
+}

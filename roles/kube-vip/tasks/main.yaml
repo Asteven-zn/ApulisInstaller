@@ -1,3 +1,9 @@
+- name: 准备{{manifest_dest}}/network目录
+  file:
+    path: "{{manifest_dest}}/network/"
+    state: directory
+    mode: 0755
+
 - name: Create kube-vip config directory
   file:
     path: /etc/kube-vip
@@ -9,14 +15,8 @@
     src: config.yaml.j2
     dest: /etc/kube-vip/config.yaml
 
-- name: Create kubelet static pod manifest directory
-  file:
-    path: /etc/kubernetes/manifests
-    state: directory
-    mode: 0700
-
 - name: Write static pod manifest
   template:
     src: kube-vip.yaml.j2
-    dest: /etc/kubernetes/manifests/kube-vip.yaml
+    dest: "{{manifest_dest}}/network/10-kube-vip.yaml"
     mode: 0600

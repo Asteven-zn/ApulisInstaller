@@ -1,6 +1,4 @@
 service:
-  clusterId: ""
-  k8sAPIport: 6443
   nvidia-driver-path: "/opt/nvidia-driver/current"
   per_user_gpu_limit: "-1"
 

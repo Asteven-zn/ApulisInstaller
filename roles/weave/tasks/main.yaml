@@ -1,21 +1,67 @@
+- name: 准备{{manifest_dest}}/network目录
+  file:
+    path: "{{manifest_dest}}/network/"
+    state: directory
+    mode: 0755
+
 - name: 下发weave-role.yaml文件
   copy:
-    src: weavenet-role.yaml
-    dest: /tmp/weave-role.yaml
-
-- name: 初始化weave net role信息
-  k8s:
-    state: present
-    src: /tmp/weave-role.yaml
-  run_once: true
+    src: weave-role.yaml
+    dest: "{{manifest_dest}}/network/01-weave-role.yaml"
 
 - name: Render weave.yaml文件
   template:
-    dest: /tmp/weave.yaml
+    dest: "{{manifest_dest}}/network/02-weave.yaml"
     src: weave.yaml.j2
 
-- name: 初始化weave net
-  k8s:
-    state: present
-    src: /tmp/weave.yaml
-  run_once: true
+# 只需单节点执行一次
+- name: 运行 weave 网络
+  shell: "{{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/01-weave-role.yaml | \
+    {{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/02-weave.yaml"
+
+# 删除原有cni配置
+- name: 删除默认cni配置
+  file: path=/etc/cni/net.d/10-default.conf state=absent
+
+- name: 获取是否存在cni默认网卡mynet0
+  shell: echo $(ip a | grep -o "mynet0:")
+  register: _cni_mynet0
+
+- block:
+    - name: 删除cni默认网卡mynet0
+      shell: |
+        ip link set mynet0 down
+        ip link del mynet0
+
+    - name: 重新启动node服务
+      systemd:
+        name: "{{ item }}"
+        daemon_reload: yes
+        state: restarted
+        enabled: yes
+      with_items:
+        - docker
+        - kubelet
+        - kube-proxy
+
+    - name: 获取服务状态
+      service_facts:
+
+    - name: 验证服务已经启动
+      assert:
+        that:
+          - ansible_facts.services['{{ item }}.service'].state == "running"
+      with_items:
+        - docker
+        - kubelet
+        - kube-proxy
+  when: _cni_mynet0.stdout
+
+# 等待网络插件部署成功
+- name: 轮询等待weave 运行
+  shell: "{{ bin_dir }}/kubectl get pod -n kube-system -o wide|grep 'weave'|grep ' {{ inventory_hostname }} '|awk '{print $3}'"
+  register: pod_status
+  until: pod_status.stdout == "Running"
+  retries: 15
+  delay: 8
+  ignore_errors: true

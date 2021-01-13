@@ -4,18 +4,38 @@ dnsPolicy: {{service['dnsPolicy']}}
 {% endif %}
 {%- endmacro -%}
 
-{% macro image_name(image, type='apulis') %}
-{% if ':' in image %}
-{{ image }}
-{% else %}
+{% macro image_fullname(image, type='apulis') -%}
 {% if type == 'apulis' %}
+{% if ':' in apulis_images[image]['name'] %}
+{{ apulis_images[image]['name'] }}:{{apulis_images[image]['tag'] if apulis_images[image]['tag'] is defined else image_tag}}
+{% else %}
 {{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images[image]['name']}}:{{apulis_images[image]['tag'] if apulis_images[image]['tag'] is defined else image_tag}}
+{% endif %}
+{% else %}
+{% if ':' in thirdparty_images[image]['name'] %}
+{{ apulis_images[image]['name'] }}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
 {% else %}
 {{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{thirdparty_images[image]['name']}}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
 {% endif %}
 {% endif %}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro api_servers() %}
+{% macro image_short(image, type='apulis') -%}
+{%- if type == 'apulis' -%}
+{%- if ':' in apulis_images[image]['name'] -%}
+{{ apulis_images[image]['name'] }}
+{%- else -%}
+{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{apulis_images[image]['name']}}
+{%- endif -%}
+{%- else -%}
+{%- if ':' in thirdparty_images[image]['name'] -%}
+{{ apulis_images[image]['name'] }}
+{%- else -%}
+{{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{thirdparty_images[image]['name']}}
+{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro api_servers() -%}
 {{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0] }}
-{% endmacro %}
+{%- endmacro %}

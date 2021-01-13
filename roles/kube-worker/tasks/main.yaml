@@ -5,18 +5,33 @@
     - /var/lib/kube-proxy
     - /etc/cni/net.d
 
-- name: 下载 kubelet,kube-proxy 二进制和基础 cni plugins
+- name: 下载 kubelet,kube-proxy,istio 二进制
   copy:
     src: "{{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }}"
     dest: "{{ bin_dir }}/{{ item }}"
-    mode: 0755
+    mode: '0777'
   with_items:
     - kubectl
     - kubelet
     - kube-proxy
+    - istioctl
+  tags: upgrade_k8s
+
+- name: Ensure directory {{default_cni_path }} structure exists
+  file:
+    path: "{{default_cni_path }}"
+    state: directory
+
+- name: 下载基础 cni plugins
+  copy:
+    src: "{{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }}"
+    dest: "{{ default_cni_path }}"
+    mode: '0777'
+  with_items:
     - bridge
     - host-local
     - loopback
+    - portmap
   tags: upgrade_k8s
 
 # 每个 node 节点运行 haproxy 连接到多个 apiserver
@@ -38,9 +53,8 @@
 
 # 判断 kubernetes 版本
 - name: 注册变量 TMP_VER
-  shell: "{{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/kube-apiserver --version|cut -d' ' -f2|cut -d'v' -f2"
+  shell: "{{ bin_dir }}/kubelet --version|cut -d' ' -f2|cut -d'v' -f2"
   register: TMP_VER
-  connection: local
   tags: upgrade_k8s, restart_node
 
 - name: 获取 kubernetes 主版本号

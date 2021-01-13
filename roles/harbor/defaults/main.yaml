@@ -7,6 +7,4 @@ HARBOR_VER_MAIN: "{{ HARBOR_VER.split('.')[0] }}.{{ HARBOR_VER.split('.')[1] }}"
 # HARBOR_HOSTNAME 值设置
 HARBOR_HOSTNAME: "{{ inventory_hostname if (HARBOR_DOMAIN == '') else HARBOR_DOMAIN }}"
 
-harbor_step: "init"
-
-HARBOR_LOCATION: "/data"
+HARBOR_HTTP_PORT: 8989

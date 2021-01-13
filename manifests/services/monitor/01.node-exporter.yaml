@@ -21,7 +21,7 @@ spec:
       nodeSelector:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
-      - image: {{ util.image_name('node-exporter', 'third') }}
+      - image: {{ util.image_fullname('node-exporter', 'third') }}
         imagePullPolicy: Always
         readinessProbe:
           tcpSocket:

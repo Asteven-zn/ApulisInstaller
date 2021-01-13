@@ -1,3 +1,0 @@
-- hosts: nfs-server
-  roles:
-    - { role: 'storage', nfs_mode: 'server' }

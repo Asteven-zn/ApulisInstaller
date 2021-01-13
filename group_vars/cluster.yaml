@@ -5,14 +5,101 @@ physical_mount_path: /mntdlws
 
 manifest_dest: "/root/build"
 
-# the name of cluster
-cluster_name: "DLWS"
+default_cni_path: /opt/cni/bin
 
 # kube vip address
 kube_vip_address: "192.168.1.154"
 
+# Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
+CLUSTER_NETWORK: "weavenet"
+
+# Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
+PROXY_MODE: "iptables"
+
+# K8S Service CIDR, not overlap with node(host) networking
+SERVICE_CIDR: "10.68.0.0/16"
+
+# Cluster CIDR (Pod CIDR), not overlap with node(host) networking
+CLUSTER_CIDR: "172.20.0.0/16"
+
+# NodePort Range
+NODE_PORT_RANGE: "20000-40000"
+
+# Cluster DNS Domain
+CLUSTER_DNS_DOMAIN: "cluster.local"
+
 # cluster api address
 cluster_api_address: "{{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0]}}"
+
+# 平台类型，决定了可以启动多少服务
+PLATFORM_MODE: "express"
+
+datasource: mysql
+
+modes:
+  preview:
+    - storage
+    - network
+    - mysql
+    - postgres
+    - restfulapi2
+    - custom-user-dashboard
+    - jobmanager2
+    - custommetrics
+    - monitor
+    - nginx
+    - openresty
+    - webui3
+    - aiarts-backend
+    - aiarts-frontend
+    - image-label
+    - data-platform
+    - volcanosh
+    - istio
+    - kfserving
+    - knative
+  express:
+    - storage
+    - network
+    - mysql
+    - postgres
+    - restfulapi2
+    - custom-user-dashboard
+    - jobmanager2
+    - custommetrics
+    - monitor
+    - nginx
+    - openresty
+    - webui3
+    - aiarts-backend
+    - aiarts-frontend
+    - image-label
+    - data-platform
+    - volcanosh
+    - istio
+    - kfserving
+    - knative
+  professional:
+    - storage
+    - network
+    - mysql
+    - postgres
+    - restfulapi2
+    - custom-user-dashboard
+    - jobmanager2
+    - custommetrics
+    - monitor
+    - nginx
+    - openresty
+    - webui3
+    - aiarts-backend
+    - aiarts-frontend
+    - image-label
+    - data-platform
+    - volcanosh
+    - istio
+    - kfserving
+    - knative
 
 # the unified image tag
 image_tag: "v1.2.0"

@@ -315,7 +315,7 @@ spec:
       - name: networking-istio
         # This is the Go import path for the binary that is containerized
         # and substituted here.
-        image: {{ util.image_name('knative-net-istio-controller') }}
+        image: {{ util.image_fullname('knative-net-istio-controller') }}
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -397,7 +397,7 @@ spec:
       - name: webhook
         # This is the Go import path for the binary that is containerized
         # and substituted here.
-        image: {{ util.image_name('knative-net-istio-webhook') }}
+        image: {{ util.image_fullname('knative-net-istio-webhook') }}
         imagePullPolicy: IfNotPresent
         resources:
           requests:

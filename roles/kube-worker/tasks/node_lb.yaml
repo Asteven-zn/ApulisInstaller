@@ -9,7 +9,7 @@
   when: 'INSTALL_SOURCE != "offline"'
 
 # 离线安装 haproxy
-- import_tasks: offline.yml
+- import_tasks: offline.yaml
   when: 'INSTALL_SOURCE == "offline"'
 
 - name: 创建haproxy配置目录

@@ -1,8 +1,10 @@
 /bin
-/download
 /.idea
 /.cluster
 /credentials
 /images/
 /target/
 /.vscode/
+*.tar
+*.deb
+*.tar.gz

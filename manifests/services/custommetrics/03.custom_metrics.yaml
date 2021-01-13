@@ -107,7 +107,7 @@ spec:
         archType: {{ arch_map[ansible_architecture] }}
       containers:
       - name: custom-metrics-server
-        image: {{ util.image_name('k8s-prometheus-adapter', 'third') }}
+        image: {{ util.image_fullname('k8s-prometheus-adapter', 'third') }}
         args:
         - --prometheus-url=http://metrics-prometheus.default.svc:9090
         - --metrics-relist-interval=30s

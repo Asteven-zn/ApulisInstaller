@@ -50,7 +50,7 @@ spec:
         - mountPath: /root/.kube/config 
           name: kubeconfig
           readOnly: true    
-        image: {{ util.image_name('watchdog') }}
+        image: {{ util.image_fullname('watchdog') }}
         imagePullPolicy: Always
         name: watchdog
         readinessProbe:
@@ -69,11 +69,10 @@ spec:
       volumes:
       - name: kubectl-binary
         hostPath:
-          path: /usr/bin/kubectl         
+          path: {{ bin_dir }}/kubectl
       - name: kubeconfig
         hostPath:
-          path: /etc/kubernetes/admin.conf
-
+          path: /root/.kube/config
       {% if service["private_docker_registry_username"] is defined %}
       - name: svccred
       {% endif %}

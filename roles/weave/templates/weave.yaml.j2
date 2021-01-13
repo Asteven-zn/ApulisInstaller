@@ -29,7 +29,7 @@ items:
             name: weave-net-{{ arch_map[ansible_architecture] }}
         spec:
           nodeSelector:
-              archType: {{ arch_map[ansible_architecture] }}
+            archType: {{ arch_map[ansible_architecture] }}
           containers:
             - name: weave
               command:
@@ -40,7 +40,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: {{ util.image_name('weave-kube') }}
+              image: {{ util.image_fullname('weave-kube', 'third') }}
               readinessProbe:
                 httpGet:
                   host: 127.0.0.1
@@ -73,7 +73,7 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
-              image: {{ util.image_name('weave-npc') }}
+              image: {{ util.image_fullname('weave-npc', 'third') }}
               resources:
                 requests:
                   cpu: 10m

@@ -1,25 +1,13 @@
-# 平台类型，决定了可以启动多少服务
-PLATFORM_MODE: "express"
-
-modes:
-  preview:
-    - storage mysql
-  express:
-    - storage mysql
-  professional:
-    - storage mysql
-
 step: "render"
+service_name: ""
 
 service:
-  clusterId: ""
+  datasource: "{{ datasource }}"
+  clusterId: "{{ lookup('file', '{{ base_dir }}/credentials/cluster-id') }}"
   kube_vip_address: "{{kube_vip_address}}"
   k8sAPIport: 6443
   defalt_virtual_cluster_name: platform
   master_token:
   nccl_ib_disable:
   vc_node_hard_assignment:
-  UserGroups:
-    DLWSAdmins:
-      Allowed:
-        - admin
+  use_service: istio
