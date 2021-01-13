@@ -32,6 +32,7 @@ pip config set install.trusted-host mirrors.aliyun.com
 
 # netcore 2.0
 RUN pip install --upgrade pip \
+        && apt-get install -y python-setuptools \
         && pip install setuptools flask flask.restful \
         && apt-get update -y && apt-get install -y certbot inotify-tools python-certbot-nginx # -t stretch-backports \
         && apt-get update -y && apt-get install -y --no-install-recommends python python-dev virtualenv python-virtualenv gcc libaugeas0 augeas-lenses libssl-dev openssl libffi-dev ca-certificates
