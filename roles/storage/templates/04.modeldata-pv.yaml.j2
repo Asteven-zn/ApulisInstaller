@@ -10,7 +10,7 @@ spec:
   storageClassName: manual
   mountOptions:
   {% for option in default_mount_opts %}
-    - '{{ option }}'
+    - {{ option }}
   {% endfor %}
   nfs:
     server: {{groups['nfs-server'][0]}}

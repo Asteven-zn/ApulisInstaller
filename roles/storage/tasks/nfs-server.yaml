@@ -32,6 +32,8 @@
 
 - name: generate pvc and pv service yaml files
   template:
+    lstrip_blocks: yes
+    trim_blocks: yes
     dest: "{{ manifest_dest }}/storage/{{item}}"
     src: "{{item}}.j2"
   with_items:
