@@ -8,7 +8,10 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: manual
-  mountOptions: {{ default_mount_opts }}
+  mountOptions:
+  {% for option in default_mount_opts %}
+    - '{{ option }}'
+  {% endfor %}
   nfs:
     server: {{groups['nfs-server'][0]}}
     path: {{ nfs_pv_pvc_mounts["label-data"]["nfs_path"] }}
