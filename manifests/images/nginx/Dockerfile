@@ -27,6 +27,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #RUN apt-get update
 #RUN apt-get install -y dotnet-dev-1.0.4
 
+RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple && \
+pip config set install.trusted-host mirrors.aliyun.com
+
 # netcore 2.0
 RUN pip install --upgrade pip \
         && pip install setuptools flask flask.restful \
