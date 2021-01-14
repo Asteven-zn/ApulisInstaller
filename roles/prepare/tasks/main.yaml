@@ -1,8 +1,7 @@
-
-- import_tasks: python.yaml
-
 - import_tasks: ubuntu.yaml
   when: 'ansible_distribution in ["Ubuntu","Debian"]'
+
+- import_tasks: python.yaml
 
 # 公共系统参数设置
 - import_tasks: common.yaml
