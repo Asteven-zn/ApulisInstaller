@@ -1,5 +1,5 @@
 # 离线安装系统软件包 (offline|online)
-INSTALL_SOURCE: "offline"
+INSTALL_SOURCE: "online"
 
 user_name: dlwsadmin
 

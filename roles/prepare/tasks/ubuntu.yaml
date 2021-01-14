@@ -1,6 +1,18 @@
 - name: 获得系统完整的版本号，例如 18.04.1
   set_fact: UBUNTU_VERSION={{ansible_lsb['description'].split(' ')[1]}}
 
+- name: 安装pip3 版本
+  package: name=python3-pip state=present
+  when:
+    - '"python3" in ansible_facts["discovered_interpreter_python"]'
+    - 'INSTALL_SOURCE == "online"'
+
+- name: 安装pip版本
+  package: name=python-pip state=present
+  when:
+    - '"python3" not in ansible_facts["discovered_interpreter_python"]'
+    - 'INSTALL_SOURCE == "online"'
+
 - name: 下发Ubuntu-{{UBUNTU_VERSION}}系统的依赖包
   copy:
     src: "{{ item }}"
@@ -13,4 +25,5 @@
 
 - name: 安装系统依赖包
   command: "dpkg -i -R /tmp/apt"
+  when: 'INSTALL_SOURCE == "offline"'
   ignore_errors: true

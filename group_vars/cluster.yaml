@@ -4,7 +4,7 @@ container_mount_path: /dlwsdata
 physical_mount_path: /mntdlws
 
 manifest_dest: "/root/build"
-
+user_name: dlwsadmin
 default_cni_path: /opt/cni/bin
 
 # kube vip address
