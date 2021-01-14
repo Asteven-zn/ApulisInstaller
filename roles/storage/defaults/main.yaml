@@ -17,16 +17,16 @@ default_mount_opts:
 nfs_pv_pvc_mounts:
   app-data:
     name: aiplatform-app-data
-    nfs_path: /mnt/local/aiplatform-app-data
+    nfs_path: /mnt/local/pvc/aiplatform-app-data
   component-data:
     name: aiplatform-component-data
-    nfs_path: /mnt/local/aiplatform-app-data
+    nfs_path: /mnt/local/pvc/aiplatform-app-data
   label-data:
     name: aiplatform-label-data
-    nfs_path: /mnt/local/aiplatform-label-data
+    nfs_path: /mnt/local/pvc/aiplatform-label-data
   model-data:
     name: aiplatform-model-data
-    nfs_path: /mnt/local/aiplatform-model-data
+    nfs_path: /mnt/local/pvc/aiplatform-model-data
   kfserving-pod-model-data:
     name: aiplatform-model-data
-    nfs_path: /mnt/local/aiplatform-model-data
+    nfs_path: /mnt/local/pvc/aiplatform-model-data
