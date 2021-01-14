@@ -1,5 +1,5 @@
 - name: update repositories cache and install NFS
-  apt: name=nfs-common update_cache=yes cache_valid_time=3600
+  shell: "apt update && apt install nfs-common"
   when: "ansible_os_family == 'Debian'"
 
 - name: Ensure rpcbind is running
