@@ -2,4 +2,5 @@
   pip:
     name: ['netaddr']
     extra_args: -i https://mirrors.aliyun.com/pypi/simple/
+    executable: '{{ "pip3" if "python3" in ansible_facts["discovered_interpreter_python"] else "pip" }}'
   ignore_errors: true
