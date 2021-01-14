@@ -31,7 +31,7 @@
 
 - name: Master label for Huawei NPU GPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}', 'archType={{arch_map[ansible_architecture]}}' ] }}"
+    role_node_labels: "{{ role_node_labels + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}', 'archType={{arch_map[ansible_architecture]}}', 'node-role.kubernetes.io/master=' ] }}"
   when:
     - MASTER_AS_WORKER
     - NPU_VAR.rc == 0
@@ -46,7 +46,7 @@
 
 - name: Worker label for huawei NPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}', 'archType={{arch_map[ansible_architecture]}}' ] }}"
+    role_node_labels: "{{ role_node_labels + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}', 'archType={{arch_map[ansible_architecture]}}', 'node-role.kubernetes.io/master=' ] }}"
   when:
     - NPU_VAR.rc == 0
     - inventory_hostname in groups['kube-worker']
