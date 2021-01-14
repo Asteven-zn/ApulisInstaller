@@ -34,13 +34,14 @@ cluster_api_address: "{{ kube_vip_address if kube_vip_address is defined else gr
 # 平台类型，决定了可以启动多少服务
 PLATFORM_MODE: "express"
 
-datasource: mysql
+datasource: postgres
 
 modes:
   preview:
     - storage
     - network
-    - mysql
+    - a910-device-plugin
+    - nvidia-device-plugin
     - postgres
     - restfulapi2
     - custom-user-dashboard
@@ -52,6 +53,7 @@ modes:
     - webui3
     - aiarts-backend
     - aiarts-frontend
+    - mlflow
     - image-label
     - data-platform
     - volcanosh
@@ -61,7 +63,8 @@ modes:
   express:
     - storage
     - network
-    - mysql
+    - a910-device-plugin
+    - nvidia-device-plugin
     - postgres
     - restfulapi2
     - custom-user-dashboard
@@ -73,6 +76,7 @@ modes:
     - webui3
     - aiarts-backend
     - aiarts-frontend
+    - mlflow
     - image-label
     - data-platform
     - volcanosh
@@ -82,7 +86,8 @@ modes:
   professional:
     - storage
     - network
-    - mysql
+    - a910-device-plugin
+    - nvidia-device-plugin
     - postgres
     - restfulapi2
     - custom-user-dashboard
@@ -94,6 +99,7 @@ modes:
     - webui3
     - aiarts-backend
     - aiarts-frontend
+    - mlflow
     - image-label
     - data-platform
     - volcanosh
