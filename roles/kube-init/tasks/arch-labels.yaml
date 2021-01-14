@@ -16,7 +16,7 @@
 
 - name: Master labels
   set_fact:
-    role_node_labels: "{{ role_node_labels + [ 'archType={{arch_map[ansible_architecture]}}', , 'node-role.kubernetes.io/master=' ] }}"
+    role_node_labels: "{{ role_node_labels + [ 'archType={{arch_map[ansible_architecture]}}', 'node-role.kubernetes.io/master=' ] }}"
   when:
     - MASTER_AS_WORKER
     - inventory_hostname in groups['kube-master']
