@@ -14,6 +14,13 @@
   register: NPU_VAR
   ignore_errors: true
 
+- name: Master labels
+  set_fact:
+    role_node_labels: "{{ role_node_labels + [ 'archType={{arch_map[ansible_architecture]}}' ] }}"
+  when:
+    - MASTER_AS_WORKER
+    - inventory_hostname in groups['kube-master']
+
 - name: Master label for nvidia GPU nodes
   set_fact:
     role_node_labels: "{{ role_node_labels + [ 'gpuType=nvidia_gpu_{{arch_map[ansible_architecture]}}', 'archType={{arch_map[ansible_architecture]}}', 'gpu=active' ] }}"
