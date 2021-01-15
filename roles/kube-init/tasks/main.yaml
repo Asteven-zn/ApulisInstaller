@@ -1,5 +1,7 @@
 - include_tasks: arch-labels.yaml
 
+- include_tasks: npu_node.yaml
+
 - name: 设置Master可以被调度
   command: >-
         {{ bin_dir }}/kubectl uncordon {{ inventory_hostname }}
