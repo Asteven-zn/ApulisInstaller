@@ -5,12 +5,17 @@
   ignore_errors: true
 
 - block:
+    - name: Ensure the directory exist
+      file:
+        path: /etc/npu/
+        state: directory
+
     - name: 下发npu_info_gen.py脚本文件
       copy:
         src: npu_info_gen.py
-        dest: /tmp/npu_info_gen.py
+        dest: /etc/npu/npu_info_gen.py
 
     - name: 执行npu_info_gen.py 文件
-      script: /tmp/npu_info_gen.py
+      shell: "sh /etc/npu/npu_info_gen.py >/dev/null 2>&1 &"
   when:
     - NPU_VAR.rc == 0
