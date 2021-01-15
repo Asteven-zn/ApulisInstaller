@@ -50,7 +50,7 @@ spec:
         args: [ "./build/build_in_docker.sh;ascendplugin  --useAscendDocker=${USE_ASCEND_DOCKER} --volcanoType=true" ]
         securityContext:
           privileged: true
-        imagePullPolicy: Never
+        imagePullPolicy: Always
         volumeMounts:
           - name: device-plugin
             mountPath: /var/lib/kubelet/device-plugins
