@@ -76,12 +76,16 @@ jwt:
   token_ttl: {{service["jwt"]["token_ttl"]}}
 
 Authentication:
+{% if service["Authentications"]["Wechat"] defined %}
   WeChat:
     AppId: "{{service["Authentications"]["Wechat"]["AppId"]}}"
     AppSecret: "{{service["Authentications"]["Wechat"]["AppSecret"]}}"
+{% endif %}
+{% if service["Authentications"]["Microsoft"] defined %}
   Microsoft:
     ClientId: "{{service["Authentications"]["Microsoft"]["ClientId"]}}"
     ClientSecret: "{{service["Authentications"]["Microsoft"]["ClientSecret"]}}"
+{% endif %}
 
 administrators:
 {% for admin in service["UserGroups"]["DLWSAdmins"]["Allowed"] %}

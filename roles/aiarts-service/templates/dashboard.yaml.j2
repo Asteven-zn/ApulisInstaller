@@ -7,11 +7,15 @@ JWT_SECRET_KEY={{service["jwt"]["secret_key"]}}
 SECRET_KEY={{service["secret_key_for_password"]}}
 
 # OAuth
+{% if service["Authentications"]["Microsoft"] defined %}
 MS_CLIENT_ID="{{service["Authentications"]["Microsoft"]["ClientId"]}}"
 MS_CLIENT_SECRET="{{service["Authentications"]["Microsoft"]["ClientSecret"]}}"
+{% endif %}
 
+{% if service["Authentications"]["Wechat"] defined %}
 WX_APP_ID="{{service["Authentications"]["Wechat"]["AppId"]}}"
 WX_SECRET="{{service["Authentications"]["Wechat"]["AppSecret"]}}"
+{% endif %}
 
 # Server
 APP_HOST=127.0.0.1
