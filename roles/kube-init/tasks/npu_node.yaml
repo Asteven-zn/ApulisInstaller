@@ -16,12 +16,12 @@
         dest: /etc/npu/npu_info_gen.py
 
     - name: 执行npu_info_gen.py 文件
-      shell: "(cd /; python3 /etc/npu/npu_info_gen.py >/dev/null 2>&1 &)"
+      shell: "(cd /; nohup python3 /etc/npu/npu_info_gen.py >/dev/null 2>&1 &)"
       when:
         - '"python3" in ansible_facts["discovered_interpreter_python"]'
 
     - name: 执行npu_info_gen.py 文件
-      shell: "python /etc/npu/npu_info_gen.py >/dev/null 2>&1 &"
+      shell: "(cd /; nohup python /etc/npu/npu_info_gen.py >/dev/null 2>&1 &)"
       when:
         - '"python3" not in ansible_facts["discovered_interpreter_python"]'
   when:
