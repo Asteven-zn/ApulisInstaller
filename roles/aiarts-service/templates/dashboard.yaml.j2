@@ -48,7 +48,7 @@ DB_PASSWORD="{{service["postgres"]["password"]}}"
 {% endif %}
 
 ADMINISTRATOR_USER_NAME="[{% for admin in service["UserGroups"]["DLWSAdmins"]["Allowed"] %}"{{admin.split("@")[0]}}"{% if loop.index != loop.length %},{% else %} {% endif %}{% endfor %}]"
-ADMINISTRATOR_PASSWORD=123456
+ADMINISTRATOR_PASSWORD="{{service["admin_password"]}}"
 
 # Cluster
 RESTFULAPI=http://{{kube_vip_address}}:80/apis

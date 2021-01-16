@@ -3,6 +3,7 @@ service_name: ""
 
 service:
   datasource: "{{ datasource }}"
+  admin_password: "{{ lookup('file', '{{ base_dir }}/credentials/admin.pwd') }}"
   clusterId: "{{ lookup('file', '{{ base_dir }}/credentials/cluster-id') }}"
   kube_vip_address: "{{kube_vip_address}}"
   k8sAPIport: 6443
