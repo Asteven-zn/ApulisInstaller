@@ -39,8 +39,22 @@
         - /etc/docker
         - /root/.docker
 
-    - name: 下载 docker 二进制文件(>= 18.09.x)
+    - name: 下载 docker 二进制文件到{{ bin_dir }}(>= 18.09.x)
       copy: src={{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
+      with_items:
+        - containerd
+        - containerd-shim
+        - docker-init
+        - runc
+        - docker
+        - ctr
+        - dockerd
+        - docker-proxy
+      tags: upgrade_docker, download_docker
+      when: "DOCKER_VER|float >= 18.09"
+
+    - name: 下载 docker 二进制文件到/usr/bin (>= 18.09.x)
+      copy: src={{ base_dir }}/bin/{{ arch_map[ansible_architecture] }}/{{ item }} dest=/usr/bin/{{ item }} mode=0755
       with_items:
         - containerd
         - containerd-shim

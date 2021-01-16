@@ -45,7 +45,11 @@ clusters:
     title: Grafana-endpoint-of-the-cluster
     workStorage: {{service["container-mount-path"]}}/work
     dataStorage: {{service["container-mount-path"]}}/storage
+  {% if i18n == "zh-CN" %}
+    grafana: "{{service['extranet_protocol']}}://{{service['webportal_node']}}{% if 'extranet_port' in service and service['extranet_port'] %}:{{service['extranet_port']}}{%endif%}/endpoints/grafana_zh/"
+  {% else %}
     grafana: "{{service['extranet_protocol']}}://{{service['webportal_node']}}{% if 'extranet_port' in service and service['extranet_port'] %}:{{service['extranet_port']}}{%endif%}/endpoints/grafana/"
+  {% endif %}
     prometheus: http://{{service["restfulapi_node"]}}:9091
 userGroup:
   type: custom
