@@ -559,7 +559,7 @@ def need_create_hccl():
     
 
     if "DLWS_ROLE_NAME" in os.environ:
-        dlws_role_name = string.lower(os.environ["DLWS_ROLE_NAME"].strip())
+        dlws_role_name = os.environ["DLWS_ROLE_NAME"].strip().lower()
 
         ## master表示单机POD
         ## Ps表示多机多卡ps pod
@@ -579,7 +579,7 @@ if __name__ == "__main__":
     #    仅在JOB为单机节点或者 分布式任务的PS节点被执行
     if "aiframework" in os.environ:
 
-        framework = string.lower(os.environ["aiframework"].strip())
+        framework = os.environ["aiframework"].strip().lower()
 
         if framework == "tensorflow":
             handle_tensorflow()
