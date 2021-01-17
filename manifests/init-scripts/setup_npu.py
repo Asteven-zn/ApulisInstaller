@@ -10,6 +10,11 @@ import string
 import random
 
 
+# 此脚本与create_script.sh由算法同事
+# 帮忙维护，当代码变更时需更新此版本号
+code_version="1.0"
+
+
 def create_hccl_mindspore():
 
     done = 0
