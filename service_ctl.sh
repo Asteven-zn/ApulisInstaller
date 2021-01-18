@@ -10,7 +10,7 @@ services=(a910-device-plugin aiarts-backend aiarts-frontend custommetrics custom
 # if specific service name then check
 if [ -n "$2" ]; then
   if [[ " ${services[*]} " != *" $2 "* ]]; then
-    echo "\"$2\" service not support, plz check again"
+    echo "\"$2\" service not support, should be in (${services[*]})"
     exit 1
   fi
 fi
