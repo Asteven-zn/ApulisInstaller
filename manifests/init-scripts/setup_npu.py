@@ -396,24 +396,21 @@ def handle_mindspore():
     envs["osflag"] = get_os_flag()
     envs["gnu_arch"] = get_gnu_arch_flag()
 
-    # tensorflow环境变量模板
-    tensorflow_envs = [
-
-        "PYTHONPATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:${PYTHONPATH}",
-        "LD_LIBRARY_PATH=/usr/lib/${gnu_arch}-linux-gnu/hdf5/serial:/usr/local/Ascend/add-ons:/home/HwHiAiUser/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/atc/lib64:$LD_LIBRARY_PATH",
-        "TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe",
-        "PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/",
-        "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp",
-
-        "SOC_VERSION=Ascend910",
-        "RANK_SIZE=1",
-        "POD_NAME=${DLWS_JOB_ID}",
-        "JOB_ID=${RANDOM}"
+    # mindspore环境变量模板
+    mindspore_envs = [
+      "PYTHONPATH=/usr/local/lib/python3.7/site-packages/mindspore/lib:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:${PYTHONPATH}",
+      "LD_LIBRARY_PATH=/usr/lib/${gnu_arch}-linux-gnu/hdf5/serial:/usr/local/Ascend/add-ons/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/add-ons:/home/HwHiAiUser/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe/op_tiling:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/atc/lib64:/usr/local/Ascend/fwkacllib/lib64/:/usr/local/lib/python3.7/site-packages/mindspore/lib/:/usr/local/lib:$LD_LIBRARY_PATH",
+      "TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe",
+      "PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/ccec_compiler/bin/",
+      "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp",
+      "SOC_VERSION=Ascend910",
+      "POD_NAME=${DLWS_JOB_ID}",
+      "JOB_ID=${RANDOM}"
+      "RANK_SIZE=1",
     ]
 
-
     # 模板渲染
-    for item in tensorflow_envs:
+    for item in mindspore_envs:
 
         tpl = string.Template(item)
         new_item = tpl.safe_substitute(envs)
@@ -504,16 +501,15 @@ def handle_tensorflow():
 
     # 模板配置
     tensorflow_envs = [
-        "PYTHONPATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:${PYTHONPATH}",
-        "LD_LIBRARY_PATH=/usr/lib/${gnu_arch}-linux-gnu/hdf5/serial:/usr/local/Ascend/add-ons:/home/HwHiAiUser/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/atc/lib64:$LD_LIBRARY_PATH",
-        "TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe",
-        "PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/",
-        "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp",
-
-        "SOC_VERSION=Ascend910",
-        "RANK_SIZE=1",
-        "POD_NAME=${DLWS_JOB_ID}",
-        "JOB_ID=${RANDOM}"
+      "PYTHONPATH=/usr/local/lib/python3.7/site-packages/mindspore/lib:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:${PYTHONPATH}",
+      "LD_LIBRARY_PATH=/usr/lib/${gnu_arch}-linux-gnu/hdf5/serial:/usr/local/Ascend/add-ons/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/add-ons:/home/HwHiAiUser/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe/op_tiling:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/atc/lib64:/usr/local/Ascend/fwkacllib/lib64/:/usr/local/lib/python3.7/site-packages/mindspore/lib/:/usr/local/lib:$LD_LIBRARY_PATH",
+      "TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe",
+      "PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/ccec_compiler/bin/",
+      "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp",
+      "SOC_VERSION=Ascend910",
+      "POD_NAME=${DLWS_JOB_ID}",
+      "JOB_ID=${RANDOM}"
+      "RANK_SIZE=1",
     ]
 
     envs_to_add["DEVICE_ID"] = device_id
