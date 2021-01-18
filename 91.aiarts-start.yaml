@@ -15,4 +15,4 @@
   - kube-worker
   roles:
     - { role: aiarts-service, step: "render", service_name: '{{sn if sn is defined else ""}}'}
-    - { role: aiarts-service, step: "start_service", service_name: '{{sn if sn is defined else ""}}'}
+    - { role: aiarts-service, step: "start-service", service_name: '{{sn if sn is defined else ""}}'}
