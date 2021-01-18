@@ -406,7 +406,7 @@ def handle_mindspore():
       "LLVM_CONFIG=/home/clang+llvm/bin/llvm-config"
       "SOC_VERSION=Ascend910",
       "POD_NAME=${DLWS_JOB_ID}",
-      "JOB_ID=${RANDOM}"
+      "JOB_ID=${RANDOM}",
       "RANK_SIZE=1",
       "ASCEND_GLOBAL_LOG_LEVEL=3",
       "ASCEND_GLOBAL_EVENT_ENABLE=0"
@@ -512,9 +512,9 @@ def handle_tensorflow():
       "LLVM_CONFIG=/home/clang+llvm/bin/llvm-config"
       "SOC_VERSION=Ascend910",
       "POD_NAME=${DLWS_JOB_ID}",
-      "JOB_ID=${RANDOM}"
+      "JOB_ID=${RANDOM}",
       "RANK_SIZE=1",
-       "ASCEND_GLOBAL_LOG_LEVEL=3",
+      "ASCEND_GLOBAL_LOG_LEVEL=3",
       "ASCEND_GLOBAL_EVENT_ENABLE=0"
     ]
 
