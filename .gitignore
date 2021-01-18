@@ -9,3 +9,6 @@
 *.deb
 *.tar.gz
 *.tgz
+*.retry
+download/ca.pem
+
