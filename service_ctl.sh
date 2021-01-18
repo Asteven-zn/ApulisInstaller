@@ -3,6 +3,18 @@
 name=`basename $0`
 dir=`dirname $0`
 
+services=(a910-device-plugin aiarts-backend aiarts-frontend custommetrics custom-user-dashboard data-platform \
+  image-label jobmanager2 kfserving knative mlflow monitor nginx node-cleaner nvidia-device-plugin openresty \
+  postgres restfulapi2 volcanosh webui3)
+
+# if specific service name then check
+if [ -n "$2" ]; then
+  if [[ " ${services[*]} " != *" $2 "* ]]; then
+    echo "\"$2\" service not support, plz check again"
+    exit 1
+  fi
+fi
+
 case $1 in
 start)
   if [ -z "$2" ]; then
