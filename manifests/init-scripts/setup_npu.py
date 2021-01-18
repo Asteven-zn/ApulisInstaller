@@ -408,6 +408,8 @@ def handle_mindspore():
       "POD_NAME=${DLWS_JOB_ID}",
       "JOB_ID=${RANDOM}"
       "RANK_SIZE=1",
+      "ASCEND_GLOBAL_LOG_LEVEL=3",
+      "ASCEND_GLOBAL_EVENT_ENABLE=0"
     ]
 
     # 模板渲染
@@ -512,6 +514,8 @@ def handle_tensorflow():
       "POD_NAME=${DLWS_JOB_ID}",
       "JOB_ID=${RANDOM}"
       "RANK_SIZE=1",
+       "ASCEND_GLOBAL_LOG_LEVEL=3",
+      "ASCEND_GLOBAL_EVENT_ENABLE=0"
     ]
 
     envs_to_add["DEVICE_ID"] = device_id
