@@ -403,7 +403,7 @@ def handle_mindspore():
       "TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe",
       "PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/ccec_compiler/bin/:/home/clang+llvm/bin/",
       "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp",
-      "LLVM_CONFIG=/home/clang+llvm/bin/llvm-config"
+      "LLVM_CONFIG=/home/clang+llvm/bin/llvm-config",
       "SOC_VERSION=Ascend910",
       "POD_NAME=${DLWS_JOB_ID}",
       "JOB_ID=${RANDOM}",
@@ -509,7 +509,7 @@ def handle_tensorflow():
       "TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe",
       "PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/ccec_compiler/bin/:/home/clang+llvm/bin/",
       "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp",
-      "LLVM_CONFIG=/home/clang+llvm/bin/llvm-config"
+      "LLVM_CONFIG=/home/clang+llvm/bin/llvm-config",
       "SOC_VERSION=Ascend910",
       "POD_NAME=${DLWS_JOB_ID}",
       "JOB_ID=${RANDOM}",
