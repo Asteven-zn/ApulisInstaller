@@ -63,4 +63,5 @@
   with_filetree: '{{ base_dir}}/manifests/services/{{service_name}}'
   when:
     - "{{item.path|basename == 'pre-render.sh'}}"
+  ignore_errors: true
   tags: upgrade_service
