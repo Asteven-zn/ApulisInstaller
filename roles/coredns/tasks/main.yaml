@@ -11,3 +11,11 @@
     - coredns
   when:
     - 'dns_install == "yes"'
+
+# 只需单节点执行一次
+- name: 运行 weave 网络
+  shell: "{{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/20-{{ item }}.yaml"
+  with_items:
+    - coredns
+  when:
+    - 'dns_install == "yes"'
