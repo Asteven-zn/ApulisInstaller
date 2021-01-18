@@ -25,3 +25,6 @@
 - name: "集群network init"
   import_playbook: '09.network.yaml'
 
+- name: "开启所有的AIArts服务"
+  import_playbook: '10.aiarts-service.yaml'
+

@@ -37,4 +37,4 @@
   roles:
     - { role: "aiarts-service", step: "render"}
     - { role: "aiarts-service", step: "nginx" }
-#    - { role: "aiarts-service", step: "start_service"}
+    - { role: "aiarts-service", step: "start_service"}
