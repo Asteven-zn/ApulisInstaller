@@ -402,7 +402,7 @@ def handle_mindspore():
       "LD_LIBRARY_PATH=/usr/lib/${gnu_arch}-linux-gnu/hdf5/serial:/usr/local/Ascend/add-ons/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/add-ons:/home/HwHiAiUser/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe/op_tiling:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/atc/lib64:/usr/local/Ascend/fwkacllib/lib64/:/usr/local/lib/python3.7/site-packages/mindspore/lib/:/usr/local/lib:$LD_LIBRARY_PATH",
       "TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe",
       "PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/ccec_compiler/bin/",
-      "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp",
+      "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp",
       "SOC_VERSION=Ascend910",
       "POD_NAME=${DLWS_JOB_ID}",
       "JOB_ID=${RANDOM}"
@@ -505,7 +505,7 @@ def handle_tensorflow():
       "LD_LIBRARY_PATH=/usr/lib/${gnu_arch}-linux-gnu/hdf5/serial:/usr/local/Ascend/add-ons/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/add-ons:/home/HwHiAiUser/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe/op_tiling:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/atc/lib64:/usr/local/Ascend/fwkacllib/lib64/:/usr/local/lib/python3.7/site-packages/mindspore/lib/:/usr/local/lib:$LD_LIBRARY_PATH",
       "TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe",
       "PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/ccec_compiler/bin/",
-      "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp",
+      "ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp",
       "SOC_VERSION=Ascend910",
       "POD_NAME=${DLWS_JOB_ID}",
       "JOB_ID=${RANDOM}"
