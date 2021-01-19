@@ -2,6 +2,7 @@
 # read the doc: 'doc/harbor.md'
 
 - hosts: harbor
+  any_errors_fatal: yes
   vars_prompt:
     name: "confirmation"
     prompt: "Do you want to reset harbor data(yes/no)?"
@@ -13,6 +14,10 @@
         path: "{{HARBOR_LOCATION}}"
         state: absent
       when: confirmation | bool
+
+    - name: First Check Confirmation
+      fail: msg='Reset harbor action canceled'
+      when: not (confirmation | bool)
 
 - hosts: harbor
   roles:
