@@ -60,6 +60,10 @@
         export PATH={{ bin_dir }}:$PATH && \
         ./install.sh  --with-clair"
 
+    - name: Sleep for 100 seconds and wait for completion
+      wait_for:
+        timeout: 100
+
   when: '"registry" not in result.stdout'
 
 - name: Creating cert dir for the docker daemon
