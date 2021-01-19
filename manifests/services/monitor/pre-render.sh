@@ -4,9 +4,12 @@ dir=`dirname $0`
 
 kill_idle_rule=${dir}/alerting/kill-idle.rules
 
-grafana_file_name=${dir}/07.grafana-config.yaml
-{% if i18n == "zh-CN" or i18n == True %}
+{% if i18n == "zh-CN" %}
 grafana_zh_file_name=${dir}/07.grafana-zh-config.yaml
+rm -rf ${dir}/08.grafana.yaml
+{% else %}
+grafana_file_name=${dir}/07.grafana-config.yaml
+rm -rf ${dir}/08.grafana-zh.yaml
 {% endif %}
 alert_tmpl_file_name=${dir}/09.alert-templates.yaml
 prometheus_file_name=${dir}/04.prometheus-alerting.yaml
@@ -23,13 +26,7 @@ done
 
 mv ${dir}/email-notification.json ${dir}/grafana-config/
 
-# create configmap
-for i in `find ${dir}/grafana-config/ -type f -regex ".*json" ` ; do
-    echo --from-file=$i
-done | xargs {{ bin_dir }}/kubectl --namespace=kube-system create configmap grafana-configuration --dry-run=client -o yaml >> $grafana_file_name
-
 {{ bin_dir }}/kubectl --namespace=kube-system create configmap alert-templates --from-file=${dir}/alert-templates --dry-run=client -o yaml > $alert_tmpl_file_name
-
 {{ bin_dir }}/kubectl --namespace=kube-system create configmap prometheus-alert --from-file=${dir}/alerting --dry-run=client -o yaml > $prometheus_file_name
 
 ###### abandon! now frontend will handle the job
@@ -40,6 +37,12 @@ done | xargs {{ bin_dir }}/kubectl --namespace=kube-system create configmap graf
 #done
 
 # create configmap
+{% if i18n == "zh-CN" %}
 for i in `find ${dir}/grafana-zh-config/ -type f -regex ".*json" ` ; do
   echo --from-file=$i
 done | xargs {{ bin_dir }}/kubectl --namespace=kube-system create configmap grafana-zh-configuration --dry-run=client -o yaml >> $grafana_zh_file_name
+{% else %}
+for i in `find ${dir}/grafana-config/ -type f -regex ".*json" ` ; do
+    echo --from-file=$i
+done | xargs {{ bin_dir }}/kubectl --namespace=kube-system create configmap grafana-configuration --dry-run=client -o yaml >> $grafana_file_name
+{% endif %}

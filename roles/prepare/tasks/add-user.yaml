@@ -1,6 +1,6 @@
 - name: For each host, scan for its ssh public key
   shell: "ssh-keyscan {{ item }},`dig +short {{ item }}`"
-  with_items: "{{ groups['cluster'] }}"
+  with_items: "{{ groups['cluster'] + [ansible_env['SSH_CLIENT'].split()|first] }}"
   register: ssh_known_host_results
   run_once: true
   ignore_errors: yes
@@ -39,12 +39,14 @@
     path: "/home/{{user_name}}/.ssh/known_hosts"
   with_items: "{{ ssh_known_host_results.results }}"
 
-
 - name: Set authorized key in alternate location
   authorized_key:
     state: present
     user: "{{ user_name }}"
-    key: "{{ lookup('file', 'credentials/rsa/id_rsa.pub') }}"
+    key: "{{ lookup('file', item) }}"
+  with_items:
+    - 'credentials/rsa/id_rsa.pub'
+    - "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
 
 - name: copy id_ssh_rsa files to node
   copy:
