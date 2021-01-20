@@ -7,7 +7,7 @@ spec:
     storage: 300Mi
   accessModes:
     - ReadWriteMany
-  storageClassName: manual
+  storageClassName: {{ nfs_pv_pvc_mounts["component-data"]["storageClassName"] }}
   mountOptions:
   {% for option in default_mount_opts %}
     - {{ option }}
@@ -23,7 +23,7 @@ metadata:
   name: aiplatform-component-data-pvc
   namespace: kube-system
 spec:
-  storageClassName: manual
+  storageClassName: {{ nfs_pv_pvc_mounts["component-data"]["storageClassName"] }}
   accessModes:
     - ReadWriteMany
   resources:
