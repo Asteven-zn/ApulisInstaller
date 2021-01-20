@@ -22,7 +22,7 @@ nfs_pv_pvc_mounts:
   component-data:
     storageClassName: component-data
     name: aiplatform-component-data
-    nfs_path: /mnt/local/pvc/aiplatform-app-data
+    nfs_path: /mnt/local/pvc/aiplatform-component-data
   label-data:
     storageClassName: label-data
     name: aiplatform-label-data
