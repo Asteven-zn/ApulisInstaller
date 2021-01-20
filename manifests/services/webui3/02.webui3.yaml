@@ -10,13 +10,13 @@ spec:
   ports:
   - port: {{service["webuiport"]}}
   selector:
-    app: webui3
+    app: webui3-{{ arch_map[ansible_architecture] }}
 ---
 {% endif %}
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
-  name: webui3
+  name: webui3-{{ arch_map[ansible_architecture] }}
   namespace: default
 spec:
   selector:
@@ -26,7 +26,7 @@ spec:
     metadata:
       name: webui3
       labels:
-        app: webui3
+        app: webui3-{{ arch_map[ansible_architecture] }}
         webportal-node: pod
     spec:
       {{util.dns_policy()}}
