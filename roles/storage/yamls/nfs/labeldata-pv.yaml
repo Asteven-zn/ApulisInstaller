@@ -7,7 +7,7 @@ spec:
     storage: 300Mi
   accessModes:
     - ReadWriteMany
-  storageClassName: manual
+  storageClassName: label-data
   mountOptions:
     - rsize=8192
     - timeo=14
@@ -24,7 +24,7 @@ apiVersion: v1
 metadata:
   name: aiplatform-label-data-pvc
 spec:
-  storageClassName: manual
+  storageClassName: label-data
   accessModes:
     - ReadWriteMany
   resources:

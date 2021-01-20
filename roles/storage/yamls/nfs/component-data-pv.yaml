@@ -7,7 +7,7 @@ spec:
     storage: 300Mi
   accessModes:
     - ReadWriteMany
-  storageClassName: manual
+  storageClassName: component-data
   mountOptions:
     - rsize=8192
     - timeo=14
@@ -25,7 +25,7 @@ metadata:
   name: aiplatform-component-data-pvc
   namespace: kube-system
 spec:
-  storageClassName: manual
+  storageClassName: component-data
   accessModes:
     - ReadWriteMany
   resources:
