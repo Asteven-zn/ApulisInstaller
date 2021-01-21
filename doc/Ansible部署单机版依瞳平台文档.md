@@ -18,7 +18,6 @@
 
 图1 单机部署安装流程
 
-![image-20210118163842271](Ansible部署单机版依瞳平台文档.assets/image-20210118163842271.png)
 
 ## 安装前准备
 
@@ -42,7 +41,6 @@ Ansible管理节点、kubernetes集群的master、worker节点均部署在一台
 
 图2 单机部署方案1
 
-![image-20210121095523717](Ansible部署单机版依瞳平台文档.assets/image-20210121095523717.png)
 
 ### 组网方案2
 
@@ -50,7 +48,6 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
 
 图3 单机部署方案2
 
-![image-20210121095530585](Ansible部署单机版依瞳平台文档.assets/image-20210121095530585.png)
 
 :warning:须知：
 
@@ -162,7 +159,6 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
   ansbible --version
   ```
 
-  ![image-20210115111021774](Ansible部署单机版依瞳平台文档.assets/image-20210115111021774.png)
 
 **:warning:注意：**
 
@@ -191,7 +187,6 @@ cd InstallationYTung
 04.kube-master.yaml  08.harbor.yaml       91.aiarts-start.yaml    ansible.cfg             download            Jenkinsfile     README.md  service_ctl.sh
 ```
 
-![image-20210115110751474](Ansible部署单机版依瞳平台文档.assets/image-20210115110751474.png)
 
 
 
@@ -757,7 +752,6 @@ ansible all -i hosts -m ping
 
 成功的结果信息可类比下图，确保是**SUCCESS**状态：（警告信息可忽略）
 
-![image-20210118153236103](Ansible部署单机版依瞳平台文档.assets/image-20210118153236103.png)
 
 
 
@@ -765,7 +759,6 @@ ansible all -i hosts -m ping
 
 - 1、检查命令是否在InstallationYTung路径下执行，如果不是，会提示类似以下的信息：
 
-  ![image-20210118160701496](Ansible部署单机版依瞳平台文档.assets/image-20210118160701496.png)
 
 - 2、检查 InstallationYTung/hosts 文件是否编辑填写正确
 
@@ -823,11 +816,9 @@ ansible-playbook -i hosts 10.aiarts-service.yaml
 
 - 1、每一步的执行结果需要确保failed=0：
 
-  ![image-20210115145307007](Ansible部署单机版依瞳平台文档.assets/image-20210115145307007.png)
 
 - 2、被ignore掉的报错可以忽略：
 
-  ![image-20210115145359496](Ansible部署单机版依瞳平台文档.assets/image-20210115145359496.png)
 
 - 3、执行03.docker.yaml一步之后，需要检查docker有没有安装成功
 
@@ -835,7 +826,6 @@ ansible-playbook -i hosts 10.aiarts-service.yaml
   systemctl status docker
   ```
 
-  ![image-20210115145651613](Ansible部署单机版依瞳平台文档.assets/image-20210115145651613.png)
 
 - 4、执行06.kube-init.yaml一步之后，需要检查kubernetes集群包含的节点和状态（STATUS为Ready）：
 
@@ -883,7 +873,6 @@ ansible-playbook -i hosts 10.aiarts-service.yaml
 
       2. 镜像name和tag必须与all.yaml一致
 
-         ![image-20210115143527783](Ansible部署单机版依瞳平台文档.assets/image-20210115143527783-1610959786450.png)
 
 3. 执行`ansible-playbook -i hosts 08.harbor.yaml`（这个playbook会帮助我们推送新的镜像到集群harbor中）
 
@@ -927,9 +916,6 @@ drwxr-xr-x  2 root root 4096 1月  13 19:05 restfulapi2/
 drwxr-xr-x  2 root root 4096 1月  15 11:29 volcanosh/
 drwxr-xr-x  2 root root 4096 1月  16 15:00 webui3/
 ```
-
-![image-20210112184254409](Ansible部署单机版依瞳平台文档.assets/image-20210112184254409.png)
-
 
 
 # FAQ
