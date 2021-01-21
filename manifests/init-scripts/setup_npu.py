@@ -447,6 +447,16 @@ def handle_mindspore():
     else:
         pass
 
+    # 4) 分布式训练任务，环境配置同步
+    if is_distributed_job() is True and is_ps_pod() is True:
+        notify()
+
+    elif is_distributed_job() is True and is_worker_pod() is True:
+        wait()
+
+    else:
+        pass
+
     return
 
 
@@ -551,13 +561,101 @@ def handle_tensorflow():
     # 更新用户bash脚本
     set_bashrc("root")
 
-    ## 3) 生成hccl_tf.json
+    # 3) 生成hccl_tf.json
     if need_create_hccl() is True:
         create_hccl_tensorflow()
     else:
         pass
 
+    # 4) 分布式训练任务，环境配置同步
+    if is_distributed_job() is True and is_ps_pod() is True:
+        notify()
+
+    elif is_distributed_job() is True and is_worker_pod() is True:
+        wait()
+
+    else:
+        pass
+
+
     return
+
+# 是否分布式训练任务
+def is_distributed_job():
+
+    if "DLWS_NUM_PS" in os.environ:
+        dlws_num_ps = os.environ["DLWS_NUM_PS"].strip().lower()
+
+        if len(dlws_num_ps) > 0 and int(dlws_num_ps) >0:
+            print("is_distributed_job return true")
+            return True
+
+    return False
+
+# 是否master节点
+def is_ps_pod():
+
+    if "DLWS_ROLE_NAME" in os.environ:
+        dlws_role_name = os.environ["DLWS_ROLE_NAME"].strip().lower()
+
+        ## Ps表示多机多卡ps pod
+        if dlws_role_name == "ps":
+            return True
+
+    return False
+
+
+# 是否worker节点
+def is_worker_pod():
+
+    if "DLWS_ROLE_NAME" in os.environ:
+        dlws_role_name = os.environ["DLWS_ROLE_NAME"].strip().lower()
+
+        ## Ps表示多机多卡ps pod
+        if dlws_role_name == "worker":
+            return True
+
+    return False
+
+
+# 分布式训练任务 
+# ps节点在环境预备结束后，创建setup_environment_done文件
+# 用作环境准备完成的标识
+def notify():
+
+    # 单机训练任务，只有一个POD不需要做协同
+    if is_distributed_job() is False:
+        return
+
+    setup_environment_done = "/home/" + os.environ["DLWS_USER_NAME"] + "/.npu/" + os.environ["DLWS_JOB_ID"] + "/setup_environment_done"
+
+    # 多机多卡训练，ps节点预备环境
+    if not os.path.exists(setup_environment_done):
+        open(setup_environment_done, 'a').close()
+
+    return
+
+# 分布式训练任务 
+# worker节点通过检查setup_environment_done文件
+# 来判断环境准备是否结束
+def wait():
+
+    # 单机训练任务，只有一个POD不需要等待环境
+    if is_distributed_job() is False:
+        return
+
+    setup_environment_done = "/home/" + os.environ["DLWS_USER_NAME"] + "/.npu/" + os.environ["DLWS_JOB_ID"] + "/setup_environment_done"
+
+    # 多机多卡训练，ps节点预备环境
+    while True:
+        if not os.path.exists(setup_environment_done):
+            print("===========", setup_environment_done, " not found. wait")
+            time.sleep(1)
+        else:
+            break
+
+    return
+
 
 
 # 1) 单机训练中，需要创建hccl文件
