@@ -31,7 +31,7 @@
 | NPU驱动            | 20.0.1      |
 | 依瞳平台部署安装包 | v1.5.0      |
 
-:warning:须知：依瞳平台部署安装包可用于部署在不同架构类型的机器，ARM架构和x86架构可以使用同一个安装包。
+须知：依瞳平台部署安装包可用于部署在不同架构类型的机器，ARM架构和x86架构可以使用同一个安装包。
 
 ## 单机部署组网方案
 
@@ -49,7 +49,7 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
 图3 单机部署方案2
 
 
-:warning:须知：
+须知：
 
 - 使用第二种方案进行部署时，需确保Ansible管理节点所在机器能够访问训练服务器。
 - **本文使用第一种组网方案来进行部署**，即将Atlas训练服务器作为Ansible的管理节点。
@@ -96,7 +96,7 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
   ssh root@192.168.3.9
   ```
 
-:warning:注意：**如果没有特别标注，本文中的所有执行命令都默认使用root用户执行。**
+注意：**如果没有特别标注，本文中的所有执行命令都默认使用root用户执行。**
 
 ### 安装pip
 
@@ -160,7 +160,7 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
   ```
 
 
-**:warning:注意：**
+**注意：**
 
 1. 使用上面的apt方式安装Ansible的时候，需要注意apt的源，测试过程中发现使用华为apt源安装Ansible可能会有点问题。
 2. 安装好Ansible后，需要特别注意Ansible的版本，由于Ansible版本更新升级很快，使用旧的版本Ansible会导致有些模块功能用不了。**最好是2.9或者2.10等以上的版本。**
@@ -202,7 +202,7 @@ hosts文件的路径是：InstallationYTung/hosts
 - 4、在 [nfs-server] 下填写nfs安装节点（ip）
 - 5、在 [harbor] 下填写harbor的安装节点（ip)
 
-:warning:注意：单机部署时，直接将对应的ip改成被管理节点的ip即可。
+注意：单机部署时，直接将对应的ip改成被管理节点的ip即可。
 
 下面是hosts文件的内容：
 
@@ -246,7 +246,7 @@ kube-worker
 
 
 
-:warning:备注：如果被管理节点想使用python3和pip3，可以在InstallationYTung/hosts文件中指定python3的解释器路径。
+备注：如果被管理节点想使用python3和pip3，可以在InstallationYTung/hosts文件中指定python3的解释器路径。
 
 - 1、查看python3路径
 
@@ -812,7 +812,7 @@ ansible-playbook -i hosts 09.network.yaml
 ansible-playbook -i hosts 10.aiarts-service.yaml
 ```
 
-:warning:注意：
+注意：
 
 - 1、每一步的执行结果需要确保failed=0：
 
