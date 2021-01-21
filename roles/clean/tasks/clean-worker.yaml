@@ -1,0 +1,106 @@
+# to clean 'kube-worker' nodes
+- block:
+    - name: stop and disable kube-worker service
+      service: name={{ item }} state=stopped enabled=no
+      with_items:
+        - kubelet
+        - kube-proxy
+      ignore_errors: true
+
+    - name: umount kubelet filesystems
+      shell: "mount | grep '/var/lib/kubelet'| awk '{print $3}'|xargs umount || exit 0"
+      args:
+        warn: false
+      ignore_errors: true
+
+    - name: remove files and dirs of 'kube-worker' nodes
+      file: name={{ item }} state=absent
+      with_items:
+        - "/var/lib/kubelet/"
+        - "/var/lib/kube-proxy/"
+        - "/etc/systemd/system/kubelet.service"
+        - "/etc/systemd/system/kube-proxy.service"
+        - "/opt/kube/kube-system/"
+        - "/etc/kubernetes/"
+        - "/root/.kube/config"
+        - "/home/{{user_name}}/.kube/config"
+
+    # to clean container runtime and networking
+    - block:
+        - name: "to check if container {{PROJECT_NAME}} is running"
+          shell: "docker ps|grep {{PROJECT_NAME}} || echo 'NOT FOUND'"
+          register: install_info
+
+        - block:
+            - name: stop and disable docker service
+              service:
+                name: docker
+                state: stopped
+                enabled: no
+              ignore_errors: true
+
+            # as k8s-network-plugins use host-network, '/var/run/docker/netns/default' must be umounted
+            - name: umount docker filesystem-1
+              mount: path=/var/run/docker/netns/default state=unmounted
+
+            - name: umount docker filesystem-2
+              mount: path=/var/lib/docker/overlay state=unmounted
+
+            - name: umount docker filesystem-3
+              shell: "echo /var/lib/docker/overlay2/*/merged|xargs umount || exit 0"
+              args:
+                warn: false
+              ignore_errors: true
+
+            - name: umount docker filesystem-4
+              shell: "echo /var/lib/docker/containers/*/mounts/shm|xargs umount || exit 0"
+              args:
+                warn: false
+              ignore_errors: true
+
+            - name: umount docker filesystem-5
+              shell: "echo /var/run/docker/netns/*|xargs umount || exit 0"
+              args:
+                warn: false
+              ignore_errors: true
+
+            - name: remove files and dirs
+              file: name={{ item }} state=absent
+              with_items:
+                - "/var/lib/docker/"
+                - "/var/lib/dockershim/"
+                - "/var/run/docker/"
+                - "/etc/docker/"
+                - "/etc/systemd/system/docker.service"
+                - "/etc/systemd/system/docker.service.requires/"
+                - "/etc/systemd/system/docker.service.d/"
+                - "/etc/bash_completion.d/docker"
+                - "/usr/bin/docker"
+          when: "{{PROJECT_NAME}} not in install_info.stdout"
+      ignore_errors: true
+      when: CONTAINER_RUNTIME == 'docker'
+
+    - name: remove files and dirs2
+      file: name={{ item }} state=absent
+      with_items:
+        - "/etc/cni/"
+        - "/sys/fs/bpf/tc/"
+        - "/var/lib/cni/"
+        - "/opt/kube/kube-system/"
+
+    - name: cleanup networks1
+      shell: " ip link del mynet0;"
+      ignore_errors: true
+
+    - name: cleanup networks2
+      shell: "systemctl restart networking; \
+          systemctl restart network"
+      ignore_errors: true
+
+    - name: cleanup iptables
+      shell: "iptables -F && iptables -X \
+          && iptables -F -t nat && iptables -X -t nat \
+          && iptables -F -t raw && iptables -X -t raw \
+          && iptables -F -t mangle && iptables -X -t mangle"
+
+  when: "inventory_hostname in groups['kube-master'] or inventory_hostname in groups['kube-worker']"

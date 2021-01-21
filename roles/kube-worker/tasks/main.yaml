@@ -1,4 +1,4 @@
-- name: 创建kube-node 相关目录
+- name: 创建kube-worker 相关目录
   file: name={{ item }} state=directory
   with_items:
     - /var/lib/kubelet

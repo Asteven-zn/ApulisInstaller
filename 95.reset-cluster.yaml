@@ -1,0 +1,6 @@
+- hosts:
+    - kube-master
+    - kube-worker
+    - etcd
+  roles:
+    - clean
