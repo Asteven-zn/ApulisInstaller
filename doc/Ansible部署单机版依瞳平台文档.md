@@ -897,6 +897,37 @@ service_ctl.sh restart ${serviceName}
 
 - `serviceName`指的是服务的名称，可在`InstallationYTung/manifests/services`目录下查看：
 
+```sh
+root@master:~/test/InstallationYTung/manifests/services# ll
+总用量 104
+drwxr-xr-x 26 root root 4096 1月  13 19:05 ./
+drwxr-xr-x  5 root root 4096 1月  13 19:05 ../
+drwxr-xr-x  2 root root 4096 1月  16 15:00 a910-device-plugin/
+drwxr-xr-x  2 root root 4096 1月  18 15:48 aiarts-backend/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 aiarts-frontend/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 cAdvisor/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 custommetrics/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 custom-user-dashboard/
+drwxr-xr-x  2 root root 4096 1月  16 15:00 data-platform/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 device-plugin/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 image-label/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 istio/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 jobmanager2/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 kfserving/
+drwxr-xr-x  2 root root 4096 1月  16 15:00 knative/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 mlflow/
+drwxr-xr-x  8 root root 4096 1月  19 17:31 monitor/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 mysql/
+drwxr-xr-x  3 root root 4096 1月  13 19:05 nginx/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 node-cleaner/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 nvidia-device-plugin/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 openresty/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 postgres/
+drwxr-xr-x  2 root root 4096 1月  13 19:05 restfulapi2/
+drwxr-xr-x  2 root root 4096 1月  15 11:29 volcanosh/
+drwxr-xr-x  2 root root 4096 1月  16 15:00 webui3/
+```
+
 ![image-20210112184254409](Ansible部署单机版依瞳平台文档.assets/image-20210112184254409.png)
 
 
