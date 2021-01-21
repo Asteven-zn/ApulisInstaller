@@ -20,3 +20,27 @@
     src: kube-vip.yaml.j2
     dest: "{{manifest_dest}}/network/10-kube-vip.yaml"
     mode: 0600
+
+# 只需单节点执行一次
+- name: 运行 weave 网络
+  shell: "{{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/10-kube-vip.yaml"
+
+- block:
+    - name: 替换 kubeconfig 的 apiserver 地址
+      lineinfile:
+        dest: "{{ item }}"
+        regexp: "^    server"
+        line: "    server: https://{{ kube_vip_address }}:6443"
+      with_items:
+        - "/root/.kube/config"
+        - "/home/{{user_name}}/.kube/config"
+        - "/etc/kubernetes/kubelet.kubeconfig"
+        - "/etc/kubernetes/kube-proxy.kubeconfig"
+
+    - name: restart kube-worker service
+      service: name={{ item }} state=restarted
+      with_items:
+        - kubelet
+        - kube-proxy
+      ignore_errors: true
+  when: "inventory_hostname in groups['kube-worker']"

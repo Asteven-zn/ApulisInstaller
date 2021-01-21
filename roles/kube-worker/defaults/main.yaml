@@ -22,7 +22,7 @@ KUBE_APISERVER: "{%- if inventory_hostname in groups['kube-master'] -%} \
                      https://{{ inventory_hostname }}:6443 \
                  {%- else -%} \
                      {%- if groups['kube-master']|length > 1 -%} \
-                         https://127.0.0.1:6443 \
+                         https://{{ groups['kube-master'][0] }}:6443 \
                      {%- else -%} \
                          https://{{ groups['kube-master'][0] }}:6443 \
                      {%- endif -%} \
