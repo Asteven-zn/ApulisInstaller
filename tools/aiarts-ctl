@@ -1,14 +1,12 @@
 #!/bin/bash
 # 
-# This script aims to manage k8s clusters created by 'kubeasz'. (developing)
-
 set -o nounset
 set -o errexit
 #set -o xtrace
 
 function usage() {
     cat <<EOF
-Usage: aiarts COMMAND [args]
+Usage: aiarts-ctl COMMAND [args]
 
 Cluster-wide operation:
     checkout		To switch to context <clustername>, or create it if not existed
@@ -36,25 +34,25 @@ EOF
 function help-info() {
     case "$1" in
         (add-etcd)
-            echo -e "Usage: aiarts add-etcd <new_etcd_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-etcd.md'"
+            echo -e "Usage: aiarts-ctl add-etcd <new_etcd_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-etcd.md'"
             ;;
         (add-master)
-            echo -e "Usage: aiarts add-master <new_master_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-master.md'"
+            echo -e "Usage: aiarts-ctl add-master <new_master_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-master.md'"
             ;;
         (add-node)
-            echo -e "Usage: aiarts add-node <new_node_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-node.md'"
+            echo -e "Usage: aiarts-ctl add-node <new_node_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-node.md'"
             ;;
         (del-etcd)
-            echo -e "Usage: aiarts del-etcd <etcd_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-etcd.md'"
+            echo -e "Usage: aiarts-ctl del-etcd <etcd_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-etcd.md'"
             ;;
         (del-master)
-            echo -e "Usage: aiarts del-master <master_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-master.md'"
+            echo -e "Usage: aiarts-ctl del-master <master_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-master.md'"
             ;;
         (del-node)
-            echo -e "Usage: aiarts del-node <node_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-node.md'"
+            echo -e "Usage: aiarts-ctl del-node <node_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-node.md'"
             ;;
         (basic-auth)
-            echo -e "Usage: aiarts basic-auth <options>\nOption:\t -s enable basic-auth\n\t -S disable basic-auth\n\t -u <user> set username\n\t -p <pass> set password"
+            echo -e "Usage: aiarts-ctl basic-auth <options>\nOption:\t -s enable basic-auth\n\t -S disable basic-auth\n\t -u <user> set username\n\t -p <pass> set password"
             ;;
         (*)
             usage
