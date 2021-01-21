@@ -184,6 +184,13 @@ cd InstallationYTung
 
 安装包存在以下内容：
 
+```
+01.prepare.yaml      05.kube-worker.yaml  09.network.yaml         92.aiarts-stop.yaml     compress_harbor.sh  group_vars      LICENSE    resources       tools
+02.etcd.yaml         06.kube-init.yaml    10.aiarts-service.yaml  93.aiarts-restart.yaml  config              hosts           macros     roles           upgrade_doc.md
+03.docker.yaml       07.storage.yaml      90.setup.yaml           94.reset-harbor.yaml    doc                 install_pan.sh  manifests  scripts
+04.kube-master.yaml  08.harbor.yaml       91.aiarts-start.yaml    ansible.cfg             download            Jenkinsfile     README.md  service_ctl.sh
+```
+
 ![image-20210115110751474](Ansible部署单机版依瞳平台文档.assets/image-20210115110751474.png)
 
 
