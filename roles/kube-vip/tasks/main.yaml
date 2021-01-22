@@ -33,7 +33,6 @@
         line: "    server: https://{{ kube_vip_address }}:6443"
       with_items:
         - "/root/.kube/config"
-        - "/home/{{user_name}}/.kube/config"
         - "/etc/kubernetes/kubelet.kubeconfig"
         - "/etc/kubernetes/kube-proxy.kubeconfig"
 

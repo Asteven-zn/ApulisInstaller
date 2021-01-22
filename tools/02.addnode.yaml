@@ -1,0 +1,42 @@
+# Note: this playbook can not run independently
+# Usage: aiarts add-node 1.1.1.1
+
+- hosts: "{{ NODE_TO_ADD }}"
+  roles:
+    - { role: chrony, when: "groups['chrony']|length > 0" }
+    - prepare
+    - { role: docker, when: "CONTAINER_RUNTIME == 'docker'" }
+    - kube-worker
+    - { role: "storage", nfs_mode: 'client' }
+    - kube-init
+  tasks:
+    - block:
+      - block:
+        - name: Creating cert dir for the docker daemon
+          file: name=/etc/docker/certs.d/{{ HARBOR_DOMAIN }}:{{HARBOR_HTTPS_PORT}} state=directory
+
+        - name: Installing the HARBOR SERVER's CA cert for docker
+          copy:
+            src: "{{ base_dir }}/download/ca.pem"
+            dest: "/etc/docker/certs.d/{{ HARBOR_DOMAIN }}:{{HARBOR_HTTPS_PORT}}/ca.crt"
+        when: "CONTAINER_RUNTIME == 'docker'"
+      when: hostvars[groups.harbor[0]]['SELF_SIGNED_CERT'] == 'yes'
+
+    # [optional] if you have a DNS server, add an 'A record' instead
+    - name: Adding an '/etc/hosts' entry for the HARBOR DOMAIN
+      lineinfile:
+        dest: /etc/hosts
+        state: present
+        regexp: '{{ HARBOR_DOMAIN }}'
+        line: "{{ groups['harbor'][0] }} {{ HARBOR_DOMAIN }}"
+      when: "HARBOR_DOMAIN != ''"
+
+    - name: "{{ user_name }} Docker登录harbor - {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}}"
+      remote_user: "{{ user_name }}"
+      shell:
+        "{{bin_dir}}/docker login {{HARBOR_DOMAIN}}:{{ HARBOR_HTTPS_PORT}} \
+          -u admin -p {{ lookup('file', '{{ base_dir }}/credentials/harbor.pwd') }}"
+
+- hosts: "{{ NODE_TO_ADD }}"
+  roles:
+    - { role: weave, when: "CLUSTER_NETWORK == 'weavenet'" }

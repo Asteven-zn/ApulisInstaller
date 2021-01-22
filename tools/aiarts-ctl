@@ -74,7 +74,7 @@ function add-node() {
     sed -i "/\[kube-worker/a $1 NEW_NODE=yes ${@:2}" $BASEPATH/hosts
 
     # check if playbook runs successfully
-    ansible-playbook $BASEPATH/tools/02.addnode.yml -e NODE_TO_ADD=$1 || { sed -i "/$1 NEW_NODE=yes/d" $BASEPATH/hosts; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/tools/02.addnode.yaml -e NODE_TO_ADD=$1 || { sed -i "/$1 NEW_NODE=yes/d" $BASEPATH/hosts; return 2; }
 
     # save current cluster context if needed
     [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
@@ -92,10 +92,10 @@ function add-master() {
     sed -i "/\[kube-master/a $1 NEW_MASTER=yes ${@:2}" $BASEPATH/hosts
 
     # check if playbook runs successfully
-    ansible-playbook $BASEPATH/tools/03.addmaster.yml -e NODE_TO_ADD=$1 || { sed -i "/$1 NEW_MASTER=yes/d" $BASEPATH/hosts; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/tools/03.addmaster.yaml -e NODE_TO_ADD=$1 || { sed -i "/$1 NEW_MASTER=yes/d" $BASEPATH/hosts; return 2; }
 
     # reconfigure and restart the haproxy service on 'kube-worker' nodes
-    ansible-playbook $BASEPATH/05.kube-worker.yml -t restart_lb -e MASTER_CHG=yes || { echo "[ERROR] Failed to restart the haproxy service on 'kube-worker' nodes!"; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/05.kube-worker.yaml -t restart_lb -e MASTER_CHG=yes || { echo "[ERROR] Failed to restart the haproxy service on 'kube-worker' nodes!"; return 2; }
 
     # save current cluster context if needed
     [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
@@ -118,10 +118,10 @@ function add-etcd() {
     sed -i "/\[etcd/a $1 NODE_NAME=$NAME" $BASEPATH/hosts
 
     # check if playbook runs successfully
-    ansible-playbook $BASEPATH/tools/01.addetcd.yml -e NODE_TO_ADD=$1 || { sed -i "/$1 NODE_NAME=$NAME/d" $BASEPATH/hosts; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/tools/01.addetcd.yaml -e NODE_TO_ADD=$1 || { sed -i "/$1 NODE_NAME=$NAME/d" $BASEPATH/hosts; return 2; }
 
     # restart apiservers to use the new etcd cluster
-    ansible-playbook $BASEPATH/04.kube-master.yml -t restart_master || { echo "[ERROR] Unexpected failures in master nodes!"; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/04.kube-master.yaml -t restart_master || { echo "[ERROR] Unexpected failures in master nodes!"; return 2; }
 
     # save current cluster context if needed
     [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
@@ -133,10 +133,10 @@ function del-etcd() {
     [[ $1 =~ ^(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})(\.(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})){3}$ ]] || { echo "[ERROR] Invalid ip address!"; return 2; }
 
     # 
-    ansible-playbook $BASEPATH/tools/11.deletcd.yml -e ETCD_TO_DEL=$1 || { echo "[ERROR] Failed to delete etcd node: $1!"; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/tools/11.deletcd.yaml -e ETCD_TO_DEL=$1 || { echo "[ERROR] Failed to delete etcd node: $1!"; return 2; }
 
     # restart apiservers to use the new etcd cluster
-    ansible-playbook $BASEPATH/04.kube-master.yml -t restart_master || { echo "[ERROR] Unexpected failures in master nodes!"; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/04.kube-master.yaml -t restart_master || { echo "[ERROR] Unexpected failures in master nodes!"; return 2; }
 
     # save current cluster context if needed
     [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
@@ -148,7 +148,7 @@ function del-node() {
     [[ $1 =~ ^(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})(\.(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})){3}$ ]] || { echo "[ERROR] Invalid ip address!"; return 2; }
 
     # 
-    ansible-playbook $BASEPATH/tools/12.delnode.yml -e NODE_TO_DEL=$1 || { echo "[ERROR] Failed to delete 'kube-worker': $1!"; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/tools/12.delnode.yaml -e NODE_TO_DEL=$1 || { echo "[ERROR] Failed to delete 'kube-worker': $1!"; return 2; }
 
     # save current cluster context if needed
     [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
@@ -160,13 +160,13 @@ function del-master() {
     [[ $1 =~ ^(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})(\.(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})){3}$ ]] || { echo "[ERROR] Invalid ip address!"; return 2; }
 
     # 
-    ansible-playbook $BASEPATH/tools/13.delmaster.yml -e NODE_TO_DEL=$1 || { echo "[ERROR] Failed to delete 'kube-master': $1!"; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/tools/13.delmaster.yaml -e NODE_TO_DEL=$1 || { echo "[ERROR] Failed to delete 'kube-master': $1!"; return 2; }
 
     # reconfig kubeconfig in ansible manage node
-    ansible-playbook $BASEPATH/roles/deploy/deploy.yml -t create_kctl_cfg
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/roles/deploy/deploy.yaml -t create_kctl_cfg
 
     # reconfigure and restart the haproxy service on 'kube-worker' nodes
-    ansible-playbook $BASEPATH/05.kube-worker.yml -t restart_lb -e MASTER_CHG=yes || { echo "[ERROR] Failed to restart the haproxy service on 'kube-worker' nodes!"; return 2; }
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/05.kube-worker.yaml -t restart_lb -e MASTER_CHG=yes || { echo "[ERROR] Failed to restart the haproxy service on 'kube-worker' nodes!"; return 2; }
 
     # save current cluster context if needed
     [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
@@ -177,7 +177,7 @@ function upgrade() {
     echo -e "[INFO] prepare the new binaries in advance"
     echo -e "[INFO] upgrade begin in 5s, press any key to abort\n:"
     ! (read -t5 -n1 ANS) || { echo "[WARN] upgrade aborted"; return 1; }
-    ansible-playbook -t upgrade_k8s $BASEPATH/22.upgrade.yml || return 1
+    ansible-playbook -i $BASEPATH/hosts -t upgrade_k8s $BASEPATH/22.upgrade.yaml || return 1
     [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
     return 0
 }
@@ -284,7 +284,7 @@ function setup() {
     echo -e "\n[INFO] setup cluster with context: $CLUSTER"
     echo -e "[INFO] setup begin in 5s, press any key to abort\n:"
     ! (read -t5 -n1 ANS) || { echo "[WARN] setup aborted"; return 1; }
-    ansible-playbook $BASEPATH/90.setup.yml || return 1
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/90.setup.yaml || return 1
     save_context
 }
 
@@ -317,7 +317,7 @@ function destroy() {
     if [[ -n $ANS && $ANS == y ]];then
         echo -e "\n[INFO] clean all nodes of cluster in 5s"
         sleep 5
-        ansible-playbook $BASEPATH/99.clean.yml
+        ansible-playbook -i $BASEPATH/hosts $BASEPATH/95.reset-cluster.yaml
         rm -f $BASEPATH/.cluster/$CLUSTER/config
         [ "$#" -gt 0 ] || { return 0; }
         if [[ -n $1 && $1 == --purge ]];then
