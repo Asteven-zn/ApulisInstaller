@@ -11,10 +11,9 @@
       ignore_errors: true
 
     - name: clean node {{ NODE_TO_DEL }} if possible
-      shell: "ansible-playbook {{ base_dir }}/roles/clean/clean_node.yml \
+      shell: "ansible-playbook {{ base_dir }}/roles/clean/clean-node.yml \
         -e NODE_TO_CLEAN={{ NODE_TO_DEL }} \
-        -e DEL_WORKER=yes \
-        -e DEL_LB=yes >> /tmp/ansible-`date +'%Y%m%d%H%M%S'`.log 2>&1 \
+        -e DEL_WORKER=yes >> /tmp/ansible-`date +'%Y%m%d%H%M%S'`.log 2>&1 \
         || echo 'data not cleaned on {{ NODE_TO_DEL }}'"
       register: CLEAN_STATUS
 

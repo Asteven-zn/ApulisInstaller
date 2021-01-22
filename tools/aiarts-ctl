@@ -24,9 +24,6 @@ In-cluster operation:
     del-node		To delete a kube-worker from the k8s cluster
     upgrade		To upgrade the k8s cluster
 
-Extra operation:
-    basic-auth   	To enable/disable basic-auth for apiserver
-
 Use "aiarts help <command>" for more information about a given command.
 EOF
 }
@@ -34,25 +31,22 @@ EOF
 function help-info() {
     case "$1" in
         (add-etcd)
-            echo -e "Usage: aiarts-ctl add-etcd <new_etcd_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-etcd.md'"
+            echo -e "Usage: aiarts-ctl add-etcd <new_etcd_ip>\n\n"
             ;;
         (add-master)
-            echo -e "Usage: aiarts-ctl add-master <new_master_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-master.md'"
+            echo -e "Usage: aiarts-ctl add-master <new_master_ip>\n\n"
             ;;
         (add-node)
-            echo -e "Usage: aiarts-ctl add-node <new_node_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-node.md'"
+            echo -e "Usage: aiarts-ctl add-node <new_node_ip>\n\n"
             ;;
         (del-etcd)
-            echo -e "Usage: aiarts-ctl del-etcd <etcd_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-etcd.md'"
+            echo -e "Usage: aiarts-ctl del-etcd <etcd_ip>\n\n"
             ;;
         (del-master)
-            echo -e "Usage: aiarts-ctl del-master <master_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-master.md'"
+            echo -e "Usage: aiarts-ctl del-master <master_ip>\n\n"
             ;;
         (del-node)
-            echo -e "Usage: aiarts-ctl del-node <node_ip>\n\nread 'https://github.com/easzlab/kubeasz/blob/master/docs/op/op-node.md'"
-            ;;
-        (basic-auth)
-            echo -e "Usage: aiarts-ctl basic-auth <options>\nOption:\t -s enable basic-auth\n\t -S disable basic-auth\n\t -u <user> set username\n\t -p <pass> set password"
+            echo -e "Usage: aiarts-ctl del-node <node_ip>\n\n"
             ;;
         (*)
             usage
@@ -354,56 +348,9 @@ function start-aio(){
     setup
 }
 
-### extra operation functions ###################################
-
-function basic-auth(){
-    OPTIND=2
-    CONFIG=$BASEPATH/roles/kube-master/defaults/main.yml
-    EX_VARS=""
-    while getopts "sSu:p:" OPTION; do
-        case $OPTION in
-          s)
-            EX_VARS="BASIC_AUTH_ENABLE=yes $EX_VARS"
-            ENABLED=yes
-            ;;
-          S)
-            grep BASIC_AUTH_ENABLE $CONFIG|grep no > /dev/null && \
-            { echo -e "\n[WARN]basic-auth already disabled!\n"; return 1; }
-            EX_VARS="BASIC_AUTH_ENABLE=no $EX_VARS"
-            ENABLED=no
-            ;;
-          u)
-            EX_VARS="BASIC_AUTH_USER=$OPTARG $EX_VARS"
-            sed -i "s/BASIC_AUTH_USER.*$/BASIC_AUTH_USER: '$OPTARG'/g" $CONFIG
-            ;;
-          p)
-            EX_VARS="BASIC_AUTH_PASS=$OPTARG $EX_VARS"
-            sed -i "s/BASIC_AUTH_PASS.*$/BASIC_AUTH_PASS: '$OPTARG'/g" $CONFIG
-            ;;
-          ?)
-            help-info basic-auth
-            return 1
-            ;;
-        esac
-    done
-    
-    ansible-playbook $BASEPATH/04.kube-master.yml -t restart_master -e "$EX_VARS" || { return 1; } 
-    sed -i "s/BASIC_AUTH_ENABLE.*$/BASIC_AUTH_ENABLE: '$ENABLED'/g" $CONFIG 
-    if [[ $ENABLED == yes ]];then
-        echo -e "\n[INFO]basic-auth for apiserver is enabled!"
-        sed -n '/BASIC_AUTH_USER/p' $CONFIG
-        sed -n '/BASIC_AUTH_PASS/p' $CONFIG
-    elif [[ $ENABLED == no ]];then
-        echo -e "\n[INFO]basic-auth for apiserver is disabled!\n"
-    fi
-    # save current cluster context if needed
-    [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
-    return 0
-}
-
 ### Main Lines ##################################################
 
-BASEPATH=/etc/ansible
+BASEPATH=$(dirname $(readlink -f "$0"))/../
 
 [ "$#" -gt 0 ] || { usage >&2; exit 2; }
 
@@ -473,12 +420,6 @@ case "$1" in
         [ "$#" -gt 1 ] || { usage >&2; exit 2; }
         help-info $2
         exit 0
-        ;;
-    ### extra operations ##############################
-    (basic-auth)
-        [ "$#" -gt 1 ] || { help-info $1; exit 2; }
-        ACTION="Action: enable/disable apiserver's basic-auth"
-        CMD="basic-auth $*"
         ;;
     (*)
         usage

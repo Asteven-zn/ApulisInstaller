@@ -10,6 +10,8 @@ default_cni_path: /opt/cni/bin
 # kube vip address
 kube_vip_address: "192.168.1.154"
 
+CONTAINER_RUNTIME: "docker"
+
 # Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
 CLUSTER_NETWORK: "weavenet"
 
