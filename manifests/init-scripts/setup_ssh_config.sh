@@ -19,6 +19,38 @@ function can_write_shared_file() {
     fi
 }
 
+# judge if config file has been created
+function prepare_ssh_config_file_done() {
+
+    CONFIG_FILE=/home/${DLWS_USER_NAME}/.ssh/config
+    if test -f "$CONFIG_FILE"; then
+  
+	# true
+        return 0
+    else
+
+	# false
+        return 1
+    fi
+}
+
+
+# judge if it is worker pod
+function is_worker_pod() {
+
+    if [ "$DLWS_ROLE_NAME" = "worker"]; then
+
+        # true
+        return 0
+    else
+
+        # false
+        return 1
+    fi
+}
+
+
+
 # generate ps host list
 function prepare_host_list() {
 
@@ -158,10 +190,47 @@ chown ${DLWS_USER_NAME} ${SSH_ENVIRONMENT_FILE}
 chmod 600 ${SSH_ENVIRONMENT_FILE}
 }
 
+
 function setup_root_ssh() {
-    
+  
+    # if this is worker pod, we need to wait for 
+    # ps pod to setup ssh config file
+
+    # there are 3 types of pods: 
+    # 1) master - single machine job
+    # 2) ps     - admin pod of distributed job
+    # 3) worker - worker pod of distributed job
+    if is_worker_pod ; then
+
+        succ=false
+        SSH_CONFIG_FILE=/home/${DLWS_USER_NAME}/.ssh/config
+        
+        # wait for 3600 seconds
+        for i in `seq 1 3600` ; do
+
+            echo "checking $SSH_CONFIG_FILE "
+
+            if test -f "$SSH_CONFIG_FILE"; then
+                succ=true
+                echo "$SSH_CONFIG_FILE has been created "
+                break
+            else
+                echo "$SSH_CONFIG_FILE not found. wait 1 second"
+                sleep 1
+            fi
+        done
+
+        if [ "$succ" = "false" ] ; then
+            echo "$SSH_CONFIG_FILE not found. exit"
+            exit 1
+        fi
+        
+    fi
+
+    # set up ssh config for root user
     mkdir -p /root/.ssh && cp /home/${DLWS_USER_NAME}/.ssh/* /root/.ssh/ && chown root /root/.ssh/* && chmod 600 /root/.ssh/*
 }
+
 
 function prepare_hostfile() {
 # generate /job/hostfile
