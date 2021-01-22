@@ -5,11 +5,11 @@
 
 # master node(s)
 [kube-master]
-192.168.1.154
+192.168.1.154 RENDER_SERVICE=yes
 
 # work node(s)
 [kube-worker]
-192.168.1.154
+192.168.1.154 RENDER_SERVICE=yes
 
 [cluster:children]
 kube-master

@@ -35,6 +35,6 @@
   - kube-master
   - kube-worker
   roles:
-    - { role: "aiarts-service", step: "render"}
+    - { role: "aiarts-service", step: "render", when: "RENDER_SERVICE == 'yes'" }
     - { role: "aiarts-service", step: "nginx" }
-    - { role: "aiarts-service", step: "start-service"}
+    - { role: "aiarts-service", step: "start-service", when: "RENDER_SERVICE == 'yes'" }
