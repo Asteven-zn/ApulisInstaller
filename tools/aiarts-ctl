@@ -74,8 +74,11 @@ function add-node() {
     sed -i "/\[kube-worker/a $1 NEW_NODE=yes ${@:2}" $BASEPATH/hosts
 
     # check if playbook runs successfully
-    ansible-playbook -i $BASEPATH/hosts $BASEPATH/tools/02.addnode.yaml -e NODE_TO_ADD=$1 || { sed -i "/$1 NEW_NODE=yes/d" $BASEPATH/hosts; return 2; }
+    cp $BASEPATH/tools/02.addnode.yaml $BASEPATH/02.addnode.yaml
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/02.addnode.yaml -e NODE_TO_ADD=$1 || \
+      { rm $BASEPATH/02.addnode.yaml; sed -i "/$1 NEW_NODE=yes/d" $BASEPATH/hosts; return 2; }
 
+    rm $BASEPATH/02.addnode.yaml
     # save current cluster context if needed
     [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
     return 0

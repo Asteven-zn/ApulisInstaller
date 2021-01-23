@@ -13,7 +13,7 @@ dnsPolicy: {{service['dnsPolicy']}}
 {% endif %}
 {% else %}
 {% if ':' in thirdparty_images[image]['name'] %}
-{{ apulis_images[image]['name'] }}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
+{{ thirdparty_images[image]['name'] }}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
 {% else %}
 {{HARBOR_DOMAIN}}:{{HARBOR_HTTPS_PORT}}/{{PROJECT_NAME}}/{{thirdparty_images[image]['name']}}:{{thirdparty_images[image]['tag'] if thirdparty_images[image]['tag'] is defined else image_tag}}
 {% endif %}
