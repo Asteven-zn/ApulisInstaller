@@ -38,7 +38,7 @@ function prepare_ssh_config_file_done() {
 # judge if it is worker pod
 function is_worker_pod() {
 
-    if [ "$DLWS_ROLE_NAME" = "worker"]; then
+    if [ "$DLWS_ROLE_NAME" = "worker" ]; then
 
         # true
         return 0
@@ -87,8 +87,14 @@ function create_shared_ssh_file() {
     
     # for distributed job, we only create file from ps pod
     if can_write_shared_file ; then
-        >${SSH_CONFIG_FILE}
-        >${NPU_CONFIG_FILE}
+
+        if [ ! -f ${SSH_CONFIG_FILE} ] ; then
+            >${SSH_CONFIG_FILE}
+        fi
+
+        if [ ! -f ${NPU_CONFIG_FILE} ] ; then
+            >${NPU_CONFIG_FILE}
+        fi
     
         chown ${DLWS_USER_NAME} ${SSH_CONFIG_FILE}
         chmod 600 ${SSH_CONFIG_FILE}
@@ -190,6 +196,42 @@ chown ${DLWS_USER_NAME} ${SSH_ENVIRONMENT_FILE}
 chmod 600 ${SSH_ENVIRONMENT_FILE}
 }
 
+# for distributing job,
+# worker pods must wait for ps pod to setup ssh config
+# wait for ssh config
+function wait_signal() {
+
+   succ=false
+   signal_file=/home/${DLWS_USER_NAME}/.ssh/setup_ssh_done
+   
+   # wait for 3600 seconds
+   for i in `seq 1 3600` ; do
+
+       echo "checking $signal_file"
+
+       if test -f "$signal_file"; then
+           succ=true
+           echo "$signal_file has been created "
+           break
+       else
+           echo "$signal_file not found. wait 1 second"
+           sleep 1
+       fi
+   done
+
+   if [ "$succ" = "false" ] ; then
+       echo "$signal_file not found. exit"
+       exit 1
+   fi
+}
+
+
+# notify worker pods setting ssh config complete
+function notify() {
+
+   signal_file=/home/${DLWS_USER_NAME}/.ssh/setup_ssh_done
+   touch $signal_file
+}
 
 function setup_root_ssh() {
   
@@ -201,30 +243,10 @@ function setup_root_ssh() {
     # 2) ps     - admin pod of distributed job
     # 3) worker - worker pod of distributed job
     if is_worker_pod ; then
+        wait_signal 
 
-        succ=false
-        SSH_CONFIG_FILE=/home/${DLWS_USER_NAME}/.ssh/config
-        
-        # wait for 3600 seconds
-        for i in `seq 1 3600` ; do
-
-            echo "checking $SSH_CONFIG_FILE "
-
-            if test -f "$SSH_CONFIG_FILE"; then
-                succ=true
-                echo "$SSH_CONFIG_FILE has been created "
-                break
-            else
-                echo "$SSH_CONFIG_FILE not found. wait 1 second"
-                sleep 1
-            fi
-        done
-
-        if [ "$succ" = "false" ] ; then
-            echo "$SSH_CONFIG_FILE not found. exit"
-            exit 1
-        fi
-        
+    else
+	notify
     fi
 
     # set up ssh config for root user
