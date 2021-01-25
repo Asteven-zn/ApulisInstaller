@@ -3,4 +3,40 @@
     name: ['netaddr']
     extra_args: -i https://mirrors.aliyun.com/pypi/simple/
     executable: '{{ "pip3" if "python3" in ansible_facts["discovered_interpreter_python"] else "pip" }}'
+  when:
+    - 'INSTALL_SOURCE == "online"'
+  ignore_errors: true
+
+- name: 下发python2的依赖包
+  copy:
+    src: "{{ item }}"
+    dest: "/tmp/python2/"
+  with_fileglob:
+    - "{{resource_dir}}/python2/*"
+  when:
+    - '"python3" not in ansible_facts["discovered_interpreter_python"]'
+    - 'INSTALL_SOURCE == "offline"'
+
+- name: 下发python3的依赖包
+  copy:
+    src: "{{ item }}"
+    dest: "/tmp/python3/"
+  with_fileglob:
+    - "{{resource_dir}}/python3/*"
+  when:
+    - '"python3" in ansible_facts["discovered_interpreter_python"]'
+    - 'INSTALL_SOURCE == "offline"'
+
+- name: 安装python2依赖包
+  shell: "pip install /tmp/python2/*"
+  when:
+    - 'INSTALL_SOURCE == "offline"'
+    - '"python3" not in ansible_facts["discovered_interpreter_python"]'
+  ignore_errors: true
+
+- name: 安装python3依赖包
+  shell: "pip3 install /tmp/python3/*"
+  when:
+    - 'INSTALL_SOURCE == "offline"'
+    - '"python3" in ansible_facts["discovered_interpreter_python"]'
   ignore_errors: true
