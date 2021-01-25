@@ -68,7 +68,7 @@ function add-node() {
     [[ $1 =~ ^(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})(\.(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})){3}$ ]] || { echo "[ERROR] Invalid ip address!"; return 1; }
 
     # check if the new node already exsited
-    sed -n '/^\[kube-master/,/^\[harbor/p' $BASEPATH/hosts|grep "^$1[^0-9]*$" && { echo "[ERROR] node $1 already existed!"; return 2; }
+    sed -n '/^\[kube-master/,/^\[harbor/p' $BASEPATH/hosts|grep "^$1[^0-9].*$" && { echo "[ERROR] node $1 already existed!"; return 2; }
 
     # add a node into 'kube-worker' group
     sed -i "/\[kube-worker/a $1 NEW_NODE=yes ${@:2} #ADD `date "+%Y/%m/%d %H:%M:%S"`" $BASEPATH/hosts
