@@ -6,7 +6,9 @@
       - nfs-common
       - nfs-kernel-server
     state: present
-  when: ansible_os_family == "Debian"
+  when:
+    - 'INSTALL_SOURCE == "online"'
+    - "ansible_os_family == 'Debian'"
 
 - name: Ensure directories to export exist
   file:  # noqa 208
@@ -42,8 +44,6 @@
     - 03.labeldata-pv.yaml
     - 04.modeldata-pv.yaml
 
-- include: "nfs-server-{{ansible_os_family}}.yaml"
-
 - name: Ensure rpcbind is running
   service: name=rpcbind state=started enabled=yes
   when: not nfs_only_v4
@@ -58,8 +58,3 @@
 - name: Ensure rpcbind is stopped
   service: name=rpcbind state=stopped enabled=no
   when: nfs_only_v4
-
-- name: Ensure rpcbind.socket is stopped
-  service: name=rpcbind.socket state=stopped enabled=no
-  when: ansible_os_family == "RedHat" and nfs_only_v4
-

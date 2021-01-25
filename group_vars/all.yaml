@@ -6,6 +6,9 @@ PLATFORM_NAME: "Apulis"
 # the name of cluster
 CLUSTER_NAME: "DLWS"
 
+# 离线安装系统软件包 (offline|online)
+INSTALL_SOURCE: "online"
+
 # -------- Additional Variables (don't change the default value right now)---
 # Binaries Directory
 i18n: "zh-CN"
@@ -20,27 +23,6 @@ base_dir: "{{ lookup('env', 'PWD') }}"
 
 # resource directory (include apt, images, dlws code and other package)
 resource_dir: "{{base_dir}}/resources"
-
-# --------- Main Variables ---------------
-CONTAINER_RUNTIME: "docker"
-
-# Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
-CLUSTER_NETWORK: "weavenet"
-
-# Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
-PROXY_MODE: "iptables"
-
-# K8S Service CIDR, not overlap with node(host) networking
-SERVICE_CIDR: "10.68.0.0/16"
-
-# Cluster CIDR (Pod CIDR), not overlap with node(host) networking
-CLUSTER_CIDR: "172.20.0.0/16"
-
-# NodePort Range
-NODE_PORT_RANGE: "20000-40000"
-
-# Cluster DNS Domain
-CLUSTER_DNS_DOMAIN: "cluster.local"
 
 # harbor domain value
 HARBOR_DOMAIN: "harbor.atlas.cn"
@@ -111,7 +93,7 @@ thirdparty_images:
     name: "jessestuart/prometheus-operator"
     tag: "v0.38.0"
   coredns:
-    name: "k8s.gcr.io/coredns"
+    name: "harbor.apulis.cn:8443/release/k8s.gcr.io/coredns"
     tag: "1.6.7"
   etcd:
     name: "k8s.gcr.io/etcd"
@@ -129,7 +111,7 @@ thirdparty_images:
     name: "k8s.gcr.io/kube-scheduler"
     tag: "v1.18.2"
   pause:
-    name: "k8s.gcr.io/pause"
+    name: "harbor.apulis.cn:8443/release/k8s.gcr.io/pause"
     tag: "3.2"
   mysql-server:
     name: "mysql/mysql-server"
@@ -156,11 +138,11 @@ thirdparty_images:
     name: "redis"
     tag: "5.0.6-alpine"
   weave-kube:
-    name: "weaveworks/weave-kube"
-    tag: "2.7.0"
+    name: "harbor.apulis.cn:8443/release/weaveworks/weave-kube"
+    tag: "2.6.5"
   weave-npc:
-    name: "weaveworks/weave-npc"
-    tag: "2.7.0"
+    name: "harbor.apulis.cn:8443/release/weaveworks/weave-npc"
+    tag: "2.6.5"
   xgbserver:
     name: ""
   sklearnserver:
