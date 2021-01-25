@@ -1,7 +1,7 @@
 # WARNNING:  this playbook will clean the node {{ NODE_TO_DEL }}
 # USAGE:     aiarts del-node 1.1.1.1
 
-- hosts: localhost
+- hosts: kube-master
   tasks:
     - fail: msg="you CAN NOT delete the last member of kube-master!"
       when: "groups['kube-master']|length < 2 and NODE_TO_DEL in groups['kube-master']"
@@ -27,6 +27,7 @@
 
     # lineinfile is inadequate to delete lines between some specific line range
     - name: remove the node's entry in hosts
-      shell: 'sed -i "/^\[kube-worker/,/^\[harbor/ {/^{{ NODE_TO_DEL }}[^0-9]*$/d}" {{ base_dir }}/hosts'
+      shell: 'sed -i "/^\[kube-worker/,/^\[harbor/ {/^{{ NODE_TO_DEL }}[^0-9].*$/d}" {{ base_dir }}/hosts'
       args:
         warn: false
+  run_once: true

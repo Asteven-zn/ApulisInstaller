@@ -71,7 +71,7 @@ function add-node() {
     sed -n '/^\[kube-master/,/^\[harbor/p' $BASEPATH/hosts|grep "^$1[^0-9]*$" && { echo "[ERROR] node $1 already existed!"; return 2; }
 
     # add a node into 'kube-worker' group
-    sed -i "/\[kube-worker/a $1 NEW_NODE=yes ${@:2}" $BASEPATH/hosts
+    sed -i "/\[kube-worker/a $1 NEW_NODE=yes ${@:2} #ADD `date "+%Y/%m/%d %H:%M:%S"`" $BASEPATH/hosts
 
     # check if playbook runs successfully
     cp $BASEPATH/tools/02.addnode.yaml $BASEPATH/02.addnode.yaml
@@ -150,10 +150,13 @@ function del-node() {
     # check node's address regexp
     [[ $1 =~ ^(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})(\.(2(5[0-5]{1}|[0-4][0-9]{1})|[0-1]?[0-9]{1,2})){3}$ ]] || { echo "[ERROR] Invalid ip address!"; return 2; }
 
-    # 
-    ansible-playbook -i $BASEPATH/hosts $BASEPATH/tools/12.delnode.yaml -e NODE_TO_DEL=$1 || { echo "[ERROR] Failed to delete 'kube-worker': $1!"; return 2; }
+    #
+    cp $BASEPATH/tools/12.delnode.yaml $BASEPATH/12.delnode.yaml
+    ansible-playbook -i $BASEPATH/hosts $BASEPATH/12.delnode.yaml -e NODE_TO_DEL=$1 || \
+      { rm $BASEPATH/12.delnode.yaml; echo "[ERROR] Failed to delete 'kube-worker': $1!"; return 2; }
 
     # save current cluster context if needed
+    rm $BASEPATH/12.delnode.yaml
     [ -f "$BASEPATH/.cluster/current_cluster" ] && save_context
     return 0
 }
