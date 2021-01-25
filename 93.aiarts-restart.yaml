@@ -14,6 +14,6 @@
     - kube-master
     - kube-worker
   roles:
-    - { role: aiarts-service, step: "stop-service", service_name: '{{sn if sn is defined else ""}}'}
-    - { role: aiarts-service, step: "render", service_name: '{{sn if sn is defined else ""}}'}
-    - { role: aiarts-service, step: "start-service", service_name: '{{sn if sn is defined else ""}}'}
+    - { role: aiarts-service, step: "stop-service", when: "RENDER_SERVICE == 'yes'" , service_name: '{{sn if sn is defined else ""}}'}
+    - { role: aiarts-service, step: "render", when: "RENDER_SERVICE == 'yes'" , service_name: '{{sn if sn is defined else ""}}'}
+    - { role: aiarts-service, step: "start-service", when: "RENDER_SERVICE == 'yes'" , service_name: '{{sn if sn is defined else ""}}'}
