@@ -7,7 +7,7 @@ mysql :
   username: {{service["mysql"]["username"]}}
   password: "{{service["mysql"]["password"]}}"
 postgresql:
-  hostname: {{service["kube_vip_address"]}}
+  hostname: {{groups["kube-master"][0]}}
   port: {{service["postgres"]["port"]}}
   username: {{service["postgres"]["username"]}}
   password: {{service["postgres"]["password"]}}
