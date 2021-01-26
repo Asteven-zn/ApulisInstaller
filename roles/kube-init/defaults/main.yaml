@@ -7,6 +7,11 @@ user_name: dlwsadmin
 
 group_labels:
   - group: kube-master
+    single: true
+    labels:
+      - mysql
+      - postgres
+  - group: kube-master
     labels:
       - aiarts-backend
       - aiarts-frontend
@@ -17,8 +22,6 @@ group_labels:
       - jobmanager
       - restfulapi
       - webui
-      - mysql
-      - postgres
       - nginx
       - watchdog
       - webportal
