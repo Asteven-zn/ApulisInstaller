@@ -12,4 +12,4 @@
 
 - hosts: cluster
   roles:
-    - { role: aiarts-service, step: "stop-service", when: "RENDER_SERVICE == 'yes'" , service_name: '{{sn if sn is defined else ""}}'}
+    - { role: aiarts-service, step: "stop-service", when: "hostvars[inventory_hostname]['RENDER_SERVICE'] is defined", service_name: '{{sn if sn is defined else ""}}'}

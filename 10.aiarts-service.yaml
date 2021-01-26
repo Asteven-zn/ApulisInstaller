@@ -30,11 +30,12 @@
   - kube-master
   roles:
     - { role: "aiarts-service", step: "saml" }
+  run_once: true
 
 - hosts:
   - kube-master
   - kube-worker
   roles:
-    - { role: "aiarts-service", step: "render", when: "RENDER_SERVICE == 'yes'" }
+    - { role: "aiarts-service", step: "render", when: "hostvars[inventory_hostname]['RENDER_SERVICE'] is defined" }
     - { role: "aiarts-service", step: "nginx" }
-    - { role: "aiarts-service", step: "start-service", when: "RENDER_SERVICE == 'yes'" }
+    - { role: "aiarts-service", step: "start-service", when: "hostvars[inventory_hostname]['RENDER_SERVICE'] is defined" }
