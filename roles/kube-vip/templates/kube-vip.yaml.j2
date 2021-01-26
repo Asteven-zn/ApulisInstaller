@@ -1,30 +1,38 @@
 {% import 'macros/common.j2' as util with context %}
 apiVersion: v1
-kind: Pod
+kind: DaemonSet
 metadata:
-  name: kube-vip
+  name: kube-vip-ds
   namespace: kube-system
 spec:
-  containers:
-  - args:
-    - start
-    - -c
-    - /etc/kube-vip/config.yaml
-    image: {{ util.image_fullname('kube-vip', 'third') }}
-    name: kube-vip
-    securityContext:
-      capabilities:
-        add:
-        - NET_ADMIN
-        - SYS_TIME
-    volumeMounts:
-    - mountPath: /etc/kube-vip/
-      name: config
-  hostNetwork: true
-  nodeSelector:
-    kubernetes.io/role: master
-  priorityClassName: system-node-critical
-  volumes:
-  - hostPath:
-      path: /etc/kube-vip/
-    name: config
+  selector:
+    matchLabels:
+      name: kube-vip-ds
+  template:
+    metadata:
+      labels:
+        name: kube-vip-ds
+    spec:
+      containers:
+      - args:
+        - start
+        - -c
+        - /etc/kube-vip/config.yaml
+        image: {{ util.image_fullname('kube-vip', 'third') }}
+        name: kube-vip
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - SYS_TIME
+        volumeMounts:
+        - mountPath: /etc/kube-vip/
+          name: config
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/role: master
+      priorityClassName: system-node-critical
+      volumes:
+      - hostPath:
+          path: /etc/kube-vip/
+        name: config

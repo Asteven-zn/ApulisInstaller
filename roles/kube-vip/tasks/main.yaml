@@ -25,6 +25,13 @@
 - name: 运行 weave 网络
   shell: "{{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/10-kube-vip.yaml"
 
+- name: waiting for kube-vip port 6443
+  wait_for:
+    host: "{{ kube_vip_address }}"
+    port: 6443
+    delay: 60
+    state: started
+
 - block:
     - name: 替换 kubeconfig 的 apiserver 地址
       lineinfile:
