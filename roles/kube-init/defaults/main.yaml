@@ -11,13 +11,13 @@ group_labels:
     labels:
       - mysql
       - postgres
+      - grafana
+      - prometheus
   - group: kube-master
     labels:
       - aiarts-backend
       - aiarts-frontend
       - alert-manager
-      - grafana
-      - prometheus
       - image-label
       - jobmanager
       - restfulapi
