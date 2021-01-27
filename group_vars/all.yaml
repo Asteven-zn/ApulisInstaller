@@ -93,7 +93,7 @@ thirdparty_images:
     name: "jessestuart/prometheus-operator"
     tag: "v0.38.0"
   coredns:
-    name: "harbor.apulis.cn:8443/release/k8s.gcr.io/coredns"
+    name: "k8s.gcr.io/coredns"
     tag: "1.6.7"
   etcd:
     name: "k8s.gcr.io/etcd"
@@ -111,7 +111,7 @@ thirdparty_images:
     name: "k8s.gcr.io/kube-scheduler"
     tag: "v1.18.2"
   pause:
-    name: "harbor.apulis.cn:8443/release/k8s.gcr.io/pause"
+    name: "k8s.gcr.io/pause"
     tag: "3.2"
   mysql-server:
     name: "mysql/mysql-server"
@@ -138,10 +138,10 @@ thirdparty_images:
     name: "redis"
     tag: "5.0.6-alpine"
   weave-kube:
-    name: "harbor.apulis.cn:8443/release/weaveworks/weave-kube"
+    name: "weaveworks/weave-kube"
     tag: "2.6.5"
   weave-npc:
-    name: "harbor.apulis.cn:8443/release/weaveworks/weave-npc"
+    name: "weaveworks/weave-npc"
     tag: "2.6.5"
   xgbserver:
     name: ""
