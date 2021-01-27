@@ -1,5 +1,5 @@
 - name: For each host, scan for its ssh public key
-  shell: "ssh-keyscan {{ item }},`dig +short {{ item }}`"
+  shell: "ssh-keyscan {{ item }}"
   with_items: "{{ groups['cluster'] + [ansible_env['SSH_CLIENT'].split()|first] }}"
   register: ssh_known_host_results
   run_once: true
