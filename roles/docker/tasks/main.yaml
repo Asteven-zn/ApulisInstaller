@@ -72,6 +72,20 @@
       template: src=docker.service.j2 dest=/etc/systemd/system/docker.service
       tags: upgrade_docker, download_docker
 
+    # 判断nvidia显卡是否存在
+    - name: 判断nvidia显卡是否存在
+      shell: "nvidia-smi"
+      register: NVIDIA_VAR
+      ignore_errors: true
+
+    - name: docker国内镜像加速
+      template: src=daemon.json.j2 dest=/etc/docker/daemon.json
+      when: NVIDIA_VAR.rc != 0
+
+    - name: docker国内镜像加速
+      template: src=gpu.daemon.json.j2 dest=/etc/docker/daemon.json
+      when: NVIDIA_VAR.rc == 0
+
     - name: docker的experimental 配置
       copy: src=config.json dest=/root/.docker/config.json
 
@@ -91,17 +105,3 @@
       delay: 2
       tags: upgrade_docker
   when: "'running' not in docker_svc.stdout"
-
-# 判断nvidia显卡是否存在
-- name: 判断nvidia显卡是否存在
-  shell: "nvidia-smi"
-  register: NVIDIA_VAR
-  ignore_errors: true
-
-- name: docker国内镜像加速
-  template: src=daemon.json.j2 dest=/etc/docker/daemon.json
-  when: NVIDIA_VAR.rc != 0
-
-- name: docker国内镜像加速
-  template: src=gpu.daemon.json.j2 dest=/etc/docker/daemon.json
-  when: NVIDIA_VAR.rc == 0
