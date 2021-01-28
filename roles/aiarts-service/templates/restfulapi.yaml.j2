@@ -133,3 +133,8 @@ endpoint_use_short_domain: {{service["endpoint_use_short_domian"]}}
 {% if "fake_device" in service and service["fake_device"] %}
 fake_device: {{service["fake_device"]}}
 {% endif %}
+
+
+{% if resource_limit is defined %}
+resource_limit: {{ resource_limit }}
+{% endif %}

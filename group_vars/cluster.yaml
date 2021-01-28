@@ -36,6 +36,18 @@ cluster_api_address: "{{ kube_vip_address if kube_vip_address is defined else gr
 # 平台类型，决定了可以启动多少服务
 PLATFORM_MODE: "express"
 
+# params:
+#   device_type: huawei_npu_arm64, huawei_npu_amd64
+#   memory: Ki, Mi, Gi, Ti
+#   cpu: integer 
+# 
+# brief: uncomment below code to limit pod resouces
+#
+# resource_limit:
+#   huawei_npu_arm64:  # device_type
+#     cpu:    2
+#     memory: 400Mi
+
 datasource: postgres
 
 modes:
