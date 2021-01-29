@@ -1,6 +1,6 @@
 - name: "关闭{{ PLATFORM_MODE}}类型服务列表"
   include: stop-k8s.yaml service={{item | trim}}
-  with_items: "{{modes[PLATFORM_MODE] | reverse }}"
+  with_items: "{{modes[PLATFORM_MODE] | reverse | list}}"
   when: "{{ service_name == '' }}"
   tags: aiarts_stop
 
