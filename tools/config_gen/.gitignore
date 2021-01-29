@@ -1,0 +1,4 @@
+.idea
+config_gen_amd64
+config_gen_arm64
+go.sum
