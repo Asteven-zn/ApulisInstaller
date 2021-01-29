@@ -106,10 +106,10 @@ usermanagerapitoken: {{service["usermanagerapitoken"]}}
 
 enable_jobmanager_debug_mode: {{service["enable_jobmanager_debug_mode"]}}
 
-{% if service["kube_vip_address"] is defined %}
-extranet_port: 80
-{% else %}
+{% if service["extranet_port"] is defined %}
 extranet_port: {{service["extranet_port"]}}
+{% elif service["kube_vip_address"] is defined %}
+extranet_port: 80
 {% endif %}
 extranet_protocol: {{service["extranet_protocol"]}}
 
@@ -118,12 +118,12 @@ defalt_virtual_cluster_device_type_list:
   - {{ one }}
 {% endfor %}
 
-{% if service["kube_vip_address"] is defined %}
-master_private_ip: {{service["kube_vip_address"]}}
+{% if service["master_private_ip"] is defined %}
+master_private_ip: {{service["master_private_ip"]}}
+{% elif service["kube_vip_address"] is defined %}
+master_private_ip:  {{ service["kube_vip_address"] }}
 {% elif service["endpoint_use_private_ip"] is defined %}
 master_private_ip:  {{service["etcd_private_ip"]}}
-{% elif service["master_private_ip"] is defined %}
-master_private_ip:  {{ service["master_private_ip"] }}
 {% endif %}
 
 data_platform_path: {{service["data_platform_path"]}}
