@@ -5,30 +5,29 @@ kind: Service
 metadata:
   name: postgres
   namespace: kube-system
-  labels:
-    app: postgres
 spec:
   ports:
   - port: {{service["postgres"]["port"]}}
     protocol: TCP
   selector:
-    app: postgres-{{ arch_map[ansible_architecture] }}
+    app: postgres
 ---
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
-  name: postgres-{{ arch_map[ansible_architecture] }}
+  name: postgres
   namespace: kube-system
   labels:
     app: postgres
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: postgres-{{ arch_map[ansible_architecture] }}
+      app: postgres
   template:
     metadata:
       labels:
-        app: postgres-{{ arch_map[ansible_architecture] }}
+        app: postgres
     spec:
       nodeSelector:
         archType: {{ arch_map[ ansible_architecture ] }}
