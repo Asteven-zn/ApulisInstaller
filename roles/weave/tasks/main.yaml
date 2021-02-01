@@ -18,6 +18,7 @@
 - name: 运行 weave 网络
   shell: "{{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/01-weave-role.yaml | \
     {{ bin_dir }}/kubectl apply -f {{manifest_dest}}/network/02-weave.yaml"
+  ignore_errors: true
 
 # 删除原有cni配置
 - name: 删除默认cni配置
