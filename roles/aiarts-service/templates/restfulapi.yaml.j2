@@ -118,8 +118,8 @@ defalt_virtual_cluster_device_type_list:
   - {{ one }}
 {% endfor %}
 
-{% if service["master_private_ip"] is defined %}
-master_private_ip: {{service["master_private_ip"]}}
+{% if service["extranet_ip"] is defined %}
+master_private_ip: {{service["extranet_ip"]}}
 {% elif service["kube_vip_address"] is defined %}
 master_private_ip:  {{ service["kube_vip_address"] }}
 {% elif service["endpoint_use_private_ip"] is defined %}
