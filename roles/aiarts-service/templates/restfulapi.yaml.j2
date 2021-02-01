@@ -136,5 +136,5 @@ fake_device: {{service["fake_device"]}}
 
 
 {% if resource_limit is defined %}
-resource_limit: {{ resource_limit }}
+resource_limit: {{ resource_limit | to_json }}
 {% endif %}
