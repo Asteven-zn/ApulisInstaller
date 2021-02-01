@@ -23,7 +23,6 @@
   command: >-
         {{ bin_dir }}/kubectl label node {{ inventory_hostname }} {{ item.1 }}=active --overwrite=true
   when:
-    - "{{ groups[item.0.group] | length > 1 }}"
     - "{{ inventory_hostname == groups[item.0.group][0] }}"
     - "{{ item.0.single is defined }}"
   with_subelements:
