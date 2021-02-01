@@ -6,6 +6,14 @@ buildPlugin ( {
         [
             'compileContainer': '',
             'preBuild':[],
+            'imageName': 'apulistech/job-exporter',
+            'directory': 'manifests/images/job-exporter',
+            'dockerfilePath': '',
+            'arch': ['arm64']
+        ],
+        [
+            'compileContainer': '',
+            'preBuild':[],
             'imageName': 'apulistech/dlworkspace_a910-device-plugin',
             'directory': 'manifests/images/a910-device-plugin',
             'dockerfilePath': '',
