@@ -3,12 +3,12 @@
 dir=`dirname $0`
 
 kill_idle_rule=${dir}/alerting/kill-idle.rules
+grafana_zh_file_name=${dir}/07.grafana-zh-config.yaml
+grafana_file_name=${dir}/07.grafana-config.yaml
 
 {% if i18n == "zh-CN" %}
-grafana_zh_file_name=${dir}/07.grafana-zh-config.yaml
 rm -rf ${dir}/08.grafana.yaml
-{% else %}
-grafana_file_name=${dir}/07.grafana-config.yaml
+{% elif i18n == "en-US" %}
 rm -rf ${dir}/08.grafana-zh.yaml
 {% endif %}
 alert_tmpl_file_name=${dir}/09.alert-templates.yaml
@@ -36,13 +36,17 @@ mv ${dir}/email-notification.json ${dir}/grafana-config/
 #  ${dir}/gen_grafana-config.py ${i} ${dir}/grafana-zh-config
 #done
 
-# create configmap
-{% if i18n == "zh-CN" %}
+# create zh configmap
 for i in `find ${dir}/grafana-zh-config/ -type f -regex ".*json" ` ; do
   echo --from-file=$i
 done | xargs {{ bin_dir }}/kubectl --namespace=kube-system create configmap grafana-zh-configuration --dry-run=client -o yaml >> $grafana_zh_file_name
-{% else %}
+# create en configmap
 for i in `find ${dir}/grafana-config/ -type f -regex ".*json" ` ; do
     echo --from-file=$i
 done | xargs {{ bin_dir }}/kubectl --namespace=kube-system create configmap grafana-configuration --dry-run=client -o yaml >> $grafana_file_name
+
+{% if i18n == "zh-CN" %}
+rm -rf $grafana_file_name
+{% elif i18n == "en-US" %}
+rm -rf $grafana_zh_file_name
 {% endif %}
