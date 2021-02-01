@@ -8,7 +8,7 @@ buildPlugin ( {
             'preBuild':[],
             'imageName': 'apulistech/job-exporter',
             'directory': 'manifests/images/job-exporter',
-            'dockerfilePath': 'manifests/images/job-exporter/Dockerfile-arm64',
+            'dockerfilePath': 'Dockerfile-arm64',
             'arch': ['arm64']
         ],
         [
