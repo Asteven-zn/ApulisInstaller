@@ -39,3 +39,19 @@ dnsPolicy: {{service['dnsPolicy']}}
 {% macro api_servers() -%}
 {{ kube_vip_address if kube_vip_address is defined else groups['kube-master'][0] }}
 {%- endmacro %}
+
+{% macro extranet_url() -%}
+{% set protocol = "http" %}
+{% set ip = kube_vip_address %}
+{% set port = "80" %}
+{% if service['extranet_protocol'] is defined %}
+{% set protocol = service['extranet_protocol'] %}
+{% endif %}
+{% if service['extranet_ip'] is defined %}
+{% set ip = service['extranet_ip'] %}
+{% endif %}
+{% if service['extranet_port'] is defined %}
+{% set port = service['extranet_port'] %}
+{% endif %}
+{{ protocol }}://{{ ip }}:{{ port }}
+{%- endmacro %}
