@@ -64,6 +64,18 @@
       wait_for:
         timeout: 100
 
+    - name: 创建docker的systemd unit文件
+      template: src=harbor.service.j2 dest=/etc/systemd/system/harbor.service
+      tags: upgrade_harbor, download_harbor
+
+    - name: 开机启用harbor 服务
+      shell: systemctl enable harbor
+      ignore_errors: true
+
+    - name: 开启harbor 服务
+      shell: systemctl daemon-reload && systemctl start harbor
+      tags: upgrade_harbor
+
   when: '"registry" not in result.stdout'
 
 - name: Creating cert dir for the docker daemon

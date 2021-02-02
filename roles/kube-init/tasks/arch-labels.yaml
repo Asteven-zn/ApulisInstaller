@@ -14,16 +14,15 @@
   register: NPU_VAR
   ignore_errors: true
 
-- name: Master labels
+- name: Common Master labels
   set_fact:
     role_node_labels: "{{ role_node_labels }} + [ 'archType={{arch_map[ansible_architecture]}}', 'node-role.kubernetes.io/master=' ]"
   when:
-    - MASTER_AS_WORKER
     - inventory_hostname in groups['kube-master']
 
 - name: Master label for nvidia GPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=nvidia_gpu_{{arch_map[ansible_architecture]}}', 'archType={{arch_map[ansible_architecture]}}', 'gpu=active' ]"
+    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=nvidia_gpu_{{arch_map[ansible_architecture]}}', 'gpu=active', 'worker=active' ]"
   when:
     - MASTER_AS_WORKER
     - NVIDIA_VAR.rc == 0
@@ -31,7 +30,7 @@
 
 - name: Master label for Huawei NPU GPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}', 'archType={{arch_map[ansible_architecture]}}' ]"
+    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}', 'worker=active' ]"
   when:
     - MASTER_AS_WORKER
     - NPU_VAR.rc == 0

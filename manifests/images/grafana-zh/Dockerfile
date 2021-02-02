@@ -41,6 +41,7 @@ RUN \
 
 
 COPY src/run-grafana.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/run-grafana.sh
 COPY src/dashboards/* /usr/local/grafana/dashboards/
 
 RUN git clone https://github.com/tghfly/grafana-chinese.git /tmp/grafana-chinese

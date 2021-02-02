@@ -33,7 +33,8 @@ RUN curl -SL https://download.docker.com/linux/static/stable/$(uname -m)/docker-
     mkdir -p /job_exporter && \
     rm -rf /var/lib/apt/lists/*
 
-
+RUN pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/ \
+    && pip3 config set install.trusted-host mirrors.aliyun.com 
 RUN pip3 install prometheus_client twisted
 
 RUN wget https://developer.download.nvidia.com/compute/redist/dcgm/${DCGM_VERSION}/DEBS/datacenter-gpu-manager_${DCGM_VERSION}_amd64.deb && \

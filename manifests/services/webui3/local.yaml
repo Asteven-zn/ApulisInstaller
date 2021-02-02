@@ -1,3 +1,4 @@
+{% import 'macros/common.j2' as util with context %}
 sign: {{service["jwt"]["secret_key"]}}
 winbind: "Will call /domaininfo/GetUserId with userName query to get the user's id info"
 masterToken: "Access token of all users"
@@ -46,9 +47,9 @@ clusters:
     workStorage: {{service["container-mount-path"]}}/work
     dataStorage: {{service["container-mount-path"]}}/storage
   {% if i18n == "zh-CN" %}
-    grafana: "{{service['extranet_protocol']}}://{{service['webportal_node']}}{% if 'extranet_port' in service and service['extranet_port'] %}:{{service['extranet_port']}}{%endif%}/endpoints/grafana_zh/"
+    grafana: "{{ util.extranet_url() }}/endpoints/grafana_zh/"
   {% else %}
-    grafana: "{{service['extranet_protocol']}}://{{service['webportal_node']}}{% if 'extranet_port' in service and service['extranet_port'] %}:{{service['extranet_port']}}{%endif%}/endpoints/grafana/"
+    grafana: "{{ util.extranet_url() }}/endpoints/grafana/"
   {% endif %}
     prometheus: http://{{service["restfulapi_node"]}}:9091
 userGroup:

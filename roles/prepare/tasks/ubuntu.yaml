@@ -13,6 +13,13 @@
     - '"python3" not in ansible_facts["discovered_interpreter_python"]'
     - 'INSTALL_SOURCE == "online"'
 
+- name: 安装其他依赖包
+  shell: "apt install -y {{ item }}"
+  with_items:
+    - acct
+  when:
+    - 'INSTALL_SOURCE == "online"'
+
 - name: 下发Ubuntu-{{UBUNTU_VERSION}}系统的依赖包
   copy:
     src: "{{ item }}"
