@@ -8,6 +8,7 @@ import sys
 import threading
 import signal
 import gc
+import re
 import datetime
 
 import time
@@ -55,7 +56,7 @@ def parse_npu_number_smi_output(npu_number_smi_output):
     lines = npu_number_smi_output.split("\n\t")[1:]
     numbers = []
     for one_line in lines:
-        NPU_ID,Chip_ID,Chip_Logic_ID,Chip_Name =  filter(lambda x:x!="" and x!="\n",one_line.split("  "))
+        NPU_ID,Chip_ID,Chip_Logic_ID,Chip_Name =  filter(lambda x:x!="" and x!="\n", re.split(r"[\s]+", one_line))
         numbers.append(NPU_ID)
     return numbers
 
