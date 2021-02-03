@@ -23,6 +23,12 @@ spec:
       nodeSelector:
         jobmanager: active
         archType: {{ arch_map[ansible_architecture] }}
+      initContainers:
+      #During this Pod's initialization, check that postgres service is up and running before starting this pod
+      - name: check-postgres-ready
+        image: {{ util.image_fullname('busybox', 'third') }}
+        command: ['sh', '-c', "until nc -vz {{groups['kube-master'][0]}} {{service['postgres']['port']}}; do echo 'Waiting for postgres service'; sleep 2; done;" ]
+
       containers:
       - name: jobmanager
         image: {{ util.image_fullname('restfulapi2') }}
