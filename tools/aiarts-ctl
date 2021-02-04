@@ -305,7 +305,7 @@ function save_context() {
     cp -rfp $BASEPATH/.cluster/ssl $BASEPATH/.cluster/$CLUSTER/ssl
   fi
 
-  (cd $BASEPATH/.cluster/; tar -cvzf backup/$CLUSTER.tar.gz $CLUSTER/)
+  (cd $BASEPATH/.cluster/; tar -czf backup/$CLUSTER.tar.gz $CLUSTER/)
 
   echo -e "[INFO] \033[0;31m$CLUSTER has been saved as $BASEPATH.cluster/backup/$CLUSTER.tar.gz\033[0m"
   echo -e "[INFO] \033[0;31m!!!Please backup it by yourself!!!\033[0m "
