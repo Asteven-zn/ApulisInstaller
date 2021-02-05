@@ -163,6 +163,9 @@ thirdparty_images:
     tag: "v0.0.1"
   reaper:
     name: ""
+  busybox:
+    name: "busybox"
+    tag: "1.28"
 
 apulis_images:
   apulisvision:
