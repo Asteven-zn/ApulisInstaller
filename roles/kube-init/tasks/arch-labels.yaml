@@ -38,14 +38,20 @@
 
 - name: Worker label for nvidia GPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=nvidia_gpu_{{arch_map[ansible_architecture]}}', 'archType={{arch_map[ansible_architecture]}}', 'gpu=active' ]"
+    role_node_labels: "{{ role_node_labels }} + [ 'archType={{arch_map[ansible_architecture]}}' ]"
+  when:
+    - inventory_hostname in groups['kube-worker']
+
+- name: Worker label for nvidia GPU nodes
+  set_fact:
+    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=nvidia_gpu_{{arch_map[ansible_architecture]}}', 'gpu=active' ]"
   when:
     - NVIDIA_VAR.rc == 0
     - inventory_hostname in groups['kube-worker']
 
 - name: Worker label for huawei NPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}', 'archType={{arch_map[ansible_architecture]}}' ]"
+    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}' ]"
   when:
     - NPU_VAR.rc == 0
     - inventory_hostname in groups['kube-worker']
