@@ -1,0 +1,26 @@
+- name: Ensure rook directories to exist
+  file:  # noqa 208
+    path: "{{ manifest_dest }}/rook-ceph/"
+    state: directory
+
+- name: copy rook yamls to destination
+  copy:
+    dest: "{{ manifest_dest }}/rook-ceph/{{item}}"
+    src: "{{ item }}"
+  with_items:
+    - 01.crds.yaml
+    - 02.common.yaml
+    - 05.filesystem.yaml
+    - 06.toolbox.yaml
+
+- name: generate rook template files
+  template:
+    lstrip_blocks: yes
+    trim_blocks: yes
+    dest: "{{ manifest_dest }}/rook-ceph/{{item}}"
+    src: "{{item}}.j2"
+  with_items:
+    - 03.operator.yaml
+    - 04.cluster.yaml
+    - 07.dashboard-external-https.yaml
+

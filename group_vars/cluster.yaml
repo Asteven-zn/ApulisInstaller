@@ -12,7 +12,10 @@ kube_vip_address: "192.168.1.154"
 
 CONTAINER_RUNTIME: "docker"
 
-# Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
+# Storage plugins supported: ceph, nfs
+CLUSTER_STORAGE: "ceph"
+
+# Network plugins supported: calico, weavenet
 CLUSTER_NETWORK: "weavenet"
 
 # Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
