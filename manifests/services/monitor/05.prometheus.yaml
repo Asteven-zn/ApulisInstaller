@@ -93,11 +93,12 @@ spec:
         podAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-                - grafana
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - grafana
+                  - grafana-zh
             topologyKey: grafana
       nodeSelector:
         prometheus: active
