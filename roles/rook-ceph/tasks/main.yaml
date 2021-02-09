@@ -8,8 +8,8 @@
       {{ bin_dir }}/kubectl label node {{ inventory_hostname }} ceph-mon=active --overwrite=true
   delegate_to: "{{ groups['kube-master'][0] }}"
   when:
-    - {{ hostvars[inventory_hostname]['mon'] is defined }}
-    - {{ hostvars[inventory_hostname]['mon'] == 'yes' }}
+    - "{{ hostvars[inventory_hostname]['mon'] is defined }}"
+    - "{{ hostvars[inventory_hostname]['mon'] == 'yes' }}"
 
 - name: Ensure rook directories to exist
   file:  # noqa 208
