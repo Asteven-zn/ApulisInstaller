@@ -89,6 +89,17 @@ spec:
         prometheus.io/path: "/metrics"
         prometheus.io/port: '{{service["prometheus"]["reporter"]["port"]}}'
     spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - grafana
+                  - grafana-zh
+            topologyKey: grafana
       nodeSelector:
         prometheus: active
         archType: {{ arch_map[ansible_architecture] }}

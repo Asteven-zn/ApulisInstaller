@@ -16,14 +16,14 @@
 - name: "集群其他初始化"
   import_playbook: '06.kube-init.yaml'
 
-- name: "cluster storage init"
-  import_playbook: '07.storage.yaml'
-
 - name: "配置harbor"
-  import_playbook: "08.harbor.yaml"
-  
+  import_playbook: "07.harbor.yaml"
+
 - name: "集群network init"
-  import_playbook: '09.network.yaml'
+  import_playbook: '08.network.yaml'
+
+- name: "cluster storage init"
+  import_playbook: '09.storage.yaml'
 
 - name: "开启所有的AIArts服务"
   import_playbook: '10.aiarts-service.yaml'

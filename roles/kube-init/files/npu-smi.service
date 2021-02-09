@@ -1,0 +1,15 @@
+[Unit]
+Description=collect npu device info
+After=network.target
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c '$$(which python) /etc/npu/npu_info_gen.py'
+Restart=always
+RestartSec=15
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

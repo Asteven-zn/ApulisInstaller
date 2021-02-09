@@ -17,6 +17,7 @@ spec:
     spec:
       nodeSelector:
         archType: {{ arch_map[ansible_architecture] }}
+        nginx: active
       {{ util.dns_policy() }}
       {% if true %}  
       hostNetwork: true

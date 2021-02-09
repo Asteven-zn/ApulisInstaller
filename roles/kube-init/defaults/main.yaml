@@ -7,26 +7,23 @@ user_name: dlwsadmin
 
 group_labels:
   - group: kube-master
-    single: true
     labels:
-      - mysql
-      - postgres
-      - grafana
-      - prometheus
-  - group: kube-master
-    labels:
-      - aiarts-backend
-      - aiarts-frontend
-      - alert-manager
-      - image-label
-      - jobmanager
-      - restfulapi
-      - webui
-      - nginx
-      - watchdog
-      - webportal
-      - mlflow
+      - mysql=active
+      - postgres=active
+      - grafana=active
+      - prometheus=active
+      - aiarts-backend=active
+      - aiarts-frontend=active
+      - alert-manager=active
+      - image-label=active
+      - jobmanager=active
+      - restfulapi=active
+      - webui=active
+      - nginx=active
+      - watchdog=active
+      - webportal=active
+      - mlflow=active
   - group: kube-worker
     labels:
-      - worker
-      - FragmentGPUJob
+      - worker=active
+      - FragmentGPUJob=active

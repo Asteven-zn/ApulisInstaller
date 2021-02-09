@@ -1,0 +1,13 @@
+- hosts: nfs-server
+  roles:
+    - { role: 'nfs', nfs_mode: 'server', when: "CLUSTER_STORAGE == 'nfs'" }
+
+- hosts:
+    - kube-master
+    - kube-worker
+  roles:
+    - { role: "nfs", nfs_mode: 'client', when: "CLUSTER_STORAGE == 'nfs'" }
+
+- hosts: ceph-server
+  roles:
+    - { role: "rook-ceph", when: "CLUSTER_STORAGE == 'ceph'" }

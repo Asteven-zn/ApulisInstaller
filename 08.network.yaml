@@ -2,6 +2,7 @@
 - hosts:
     - kube-master
     - kube-worker
+    - ceph-server
   roles:
     - { role: weave, when: "CLUSTER_NETWORK == 'weavenet'" }
     - kube-vip

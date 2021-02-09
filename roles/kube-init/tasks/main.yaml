@@ -10,20 +10,9 @@
 
 - name: 设置组内节点的标签
   command: >-
-        {{ bin_dir }}/kubectl label node {{ inventory_hostname }} {{ item.1 }}=active --overwrite=true
+        {{ bin_dir }}/kubectl label node {{ inventory_hostname }} {{ item.1 }} --overwrite=true
   when:
     - "{{ inventory_hostname in groups[item.0.group] }}"
-    - "{{ item.0.single is not defined }}"
-  with_subelements:
-    - "{{ group_labels }}"
-    - labels
-
-- name: only set one node to label
-  command: >-
-        {{ bin_dir }}/kubectl label node {{ inventory_hostname }} {{ item.1 }}=active --overwrite=true
-  when:
-    - "{{ inventory_hostname == groups[item.0.group][0] }}"
-    - "{{ item.0.single is defined }}"
   with_subelements:
     - "{{ group_labels }}"
     - labels

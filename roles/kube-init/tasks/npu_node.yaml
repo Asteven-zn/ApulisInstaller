@@ -14,15 +14,22 @@
       copy:
         src: npu_info_gen.py
         dest: /etc/npu/npu_info_gen.py
+      tags: upgrade_smi
 
-    - name: 执行npu_info_gen.py 文件
-      shell: "(cd /; nohup python3 /etc/npu/npu_info_gen.py >/dev/null 2>&1 &)"
-      when:
-        - '"python3" in ansible_facts["discovered_interpreter_python"]'
+    - name: 下发unit service
+      copy:
+        src: npu-smi.service
+        dest: /etc/systemd/system/npu-smi.service
+      tags: upgrade_smi
 
-    - name: 执行npu_info_gen.py 文件
-      shell: "(cd /; nohup python /etc/npu/npu_info_gen.py >/dev/null 2>&1 &)"
-      when:
-        - '"python3" not in ansible_facts["discovered_interpreter_python"]'
+    - name: 开机启用npu-smi服务
+      shell: systemctl enable npu-smi
+      ignore_errors: true
+
+    - name: 开启npu-smi服务
+      shell: systemctl daemon-reload && systemctl restart npu-smi
+      ignore_errors: true
+      tags: upgrade_smi
+
   when:
     - NPU_VAR.rc == 0

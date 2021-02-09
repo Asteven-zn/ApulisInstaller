@@ -21,6 +21,12 @@ spec:
       nodeSelector:
         aiarts-backend: active
         archType: {{ arch_map[ansible_architecture] }}
+      initContainers:
+      #During this Pod's initialization, check that postgres service is up and running before starting this pod
+      - name: check-postgres-ready
+        image: {{ util.image_fullname('busybox', 'third') }}
+        command: ['sh', '-c', "until nc -vz {{service['postgres']['host']}} {{service['postgres']['port']}}; do echo 'Waiting for postgres service'; sleep 2; done;"]
+
       containers:
       - name: aiarts-backend
         image: {{util.image_fullname('aiarts-backend')}}
