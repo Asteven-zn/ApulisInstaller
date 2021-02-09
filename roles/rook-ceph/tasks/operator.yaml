@@ -1,0 +1,25 @@
+- name: deploy rook/operator.yaml
+  run_once: true
+  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/03.operator.yaml"
+
+- name: pause 5sec
+  run_once: true
+  pause:
+    seconds: "5"
+
+- name: waiting for start rook-ceph-operator pod...
+  run_once: true
+  shell: |
+    STATUS="ok"
+    NAME_SPACE="rook-ceph"
+    POD_LABEL="app=rook-ceph-operator"
+    POD_NAME=`kubectl get po -n $NAME_SPACE -l $POD_LABEL \
+                    --field-selector status.phase!=Running -o jsonpath='{.items[*].metadata.name}'`
+    if [ -n "$POD_NAME" ];then
+      STATUS="bad"
+    fi
+    echo $STATUS
+  register: operator_status
+  retries: 10
+  delay: 5
+  until: "operator_status.stdout_lines[0]=='ok'"
