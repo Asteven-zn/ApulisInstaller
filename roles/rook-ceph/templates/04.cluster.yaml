@@ -77,7 +77,7 @@ spec:
     rulesNamespace: rook-ceph
   network:
     # enable host networking
-    #provider: host
+    provider: host
     # EXPERIMENTAL: enable the Multus network provider
     #provider: multus
     #selectors:
@@ -143,7 +143,15 @@ spec:
 #      - key: storage-node
 #        operator: Exists
 # The above placement information can also be specified for mon, osd, and mgr components
-#    mon:
+    mon:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: ceph-mon
+              operator: In
+              values:
+                - active
 # Monitor deployments may contain an anti-affinity rule for avoiding monitor
 # collocation on the same node. This is a required rule when host network is used
 # or when AllowMultiplePerNode is false. Otherwise this anti-affinity rule is a

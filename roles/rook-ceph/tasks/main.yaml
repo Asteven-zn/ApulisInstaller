@@ -1,3 +1,16 @@
+- name: 给ceph集群节点打rook标签
+  command: >-
+      {{ bin_dir }}/kubectl label node {{ inventory_hostname }} rook-node=active --overwrite=true
+  delegate_to: "{{ groups['kube-master'][0] }}"
+
+- name: 给ceph集群节点打mon标签
+  command: >-
+      {{ bin_dir }}/kubectl label node {{ inventory_hostname }} ceph-mon=active --overwrite=true
+  delegate_to: "{{ groups['kube-master'][0] }}"
+  when:
+    - {{ hostvars[inventory_hostname]['mon'] is defined }}
+    - {{ hostvars[inventory_hostname]['mon'] == 'yes' }}
+
 - name: Ensure rook directories to exist
   file:  # noqa 208
     path: "{{ manifest_dest }}/{{ item }}/"
@@ -50,3 +63,15 @@
 - name: deploy rook/dashboard.yaml
   run_once: true
   shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/07.dashboard-external-https.yaml"
+
+- name: generate pvc and pv service yaml files
+  template:
+    lstrip_blocks: yes
+    trim_blocks: yes
+    dest: "{{ manifest_dest }}/storage/{{item}}"
+    src: "pvc/{{item}}.j2"
+  with_items:
+    - 01.appdata-pv.yaml
+    - 02.component-data-pv.yaml
+    - 03.labeldata-pv.yaml
+    - 04.modeldata-pv.yaml

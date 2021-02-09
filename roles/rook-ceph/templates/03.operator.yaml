@@ -476,7 +476,7 @@ spec:
         #  value: "5"
 
       # Uncomment it to run rook operator on the host network
-      #hostNetwork: true
+      hostNetwork: true
       volumes:
       - name: rook-config
         emptyDir: {}

@@ -27,6 +27,3 @@ group_labels:
     labels:
       - worker=active
       - FragmentGPUJob=active
-  - group: ceph-server
-    labels:
-      - rook-node=active
