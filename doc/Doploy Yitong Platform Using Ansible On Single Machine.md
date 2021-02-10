@@ -1,6 +1,6 @@
-# 系统安装与驱动安装
+# System and driver installation
 
-参考链接：
+Reference Link：
 
 - https://support.huawei.com/enterprise/zh/doc/EDOC1100136592/426cffd9
 - https://support.huaweicloud.com/instg-cli-cann/atlascli_03_0001.html
@@ -8,13 +8,13 @@
 
 
 
-# 安装部署
+# Installation & Deployment
 
 
 
-## 安装流程
+## Installation process
 
-单机场景下的安装流程如图1所示。
+Installation process on single machine, as shown in figure 1.
 
 图1 单机部署安装流程
 
