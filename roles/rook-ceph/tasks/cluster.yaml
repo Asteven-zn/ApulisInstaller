@@ -1,4 +1,4 @@
-- name: deploy rook/operator.yaml
+- name: deploy rook/cluster.yaml
   run_once: true
   shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/04.cluster.yaml"
 
