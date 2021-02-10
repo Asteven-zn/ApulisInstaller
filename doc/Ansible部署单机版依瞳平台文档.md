@@ -798,15 +798,15 @@ ansible-playbook -i hosts 06.kube-init.yaml
 ```
 
 ```sh
-ansible-playbook -i hosts 07.storage.yaml
+ansible-playbook -i hosts 07.harbor.yaml
 ```
 
 ```sh
-ansible-playbook -i hosts 08.harbor.yaml
+ansible-playbook -i hosts 08.network.yaml
 ```
 
 ```sh
-ansible-playbook -i hosts 09.network.yaml
+ansible-playbook -i hosts 09.storage.yaml
 ```
 
 ```sh
@@ -848,7 +848,7 @@ ansible-playbook -i hosts 10.aiarts-service.yaml
 
 ## 部署后检查
 
-1、检查平台能否正常登录：192.168.1.172（直接使用kube-vip进行登录）
+1、检查平台能否正常登录：192.168.3.9（直接使用kube-vip进行登录）
 
 2、检查平台页面是否正常
 
