@@ -37,71 +37,71 @@ Note: The installation package of Yitong platform can be used to deploy on machi
 
 ### Networking Solution 1
 
-Ansible management node, master node and worker node of kubernetes cluster deploy on a single Atlas 800 training server to do networking as shown in figure 2.
+Ansible management node, master node and worker node of kubernetes cluster deploy on a single Atlas 800 training server to conduct networking as shown in figure 2.
 
 Figure 2, single-machine deployment solution 1
 
 ### Networking solution 2
 
-Ansible management node deploys on general server, while master node and work node of kubernetes deploy on a Atlas 800 training server to do networking, as shown in Figure 3.
+Ansible management node deploys on a general server, while master node and work node of kubernetes deploy on a Atlas 800 training server to conduct networking, as shown in Figure 3.
 
 Figure 3, single-machine deployment solution 2
 
 
 Note：
 
-- 使用第二种方案进行部署时，需确保Ansible管理节点所在机器能够访问训练服务器。
-- **本文使用第一种组网方案来进行部署**，即将Atlas训练服务器作为Ansible的管理节点。
+- make sure the machine that Ansible management node is on could access training server, while deploying using the second solution.
+- **This article use the first networking solution to conduct deployment**, which is using Atlas training server as management node of Ansible.
 
 
 
 
+## Configure environment dependency
 
-## 配置环境依赖
+**Precondition：**
 
-**前提条件：**
+- Installation of operating system
+- Installation of NPU driver
 
-- 已完成操作系统的安装。
-- 已完成NPU驱动的安装。
+Accroding to Networking solution 1, Ansible management node, master node and worker node of kubernetes cluster deploy on a single Atlas 800 training server
 
-本文按照组网方案1，Ansible管理节点、kubernetes集群的master、worker节点均部署在一台Atlas 800 训练服务器上。
+**Information for node deployment:**
 
-**部署节点的相关信息如下：**
+- Management Node：192.168.3.9(Intranet) (Using cluster master as Ansible management node)
+- Cluster Node（managed nodes）：
+  - 192.168.3.9(Intranet)（master）
+  - 192.168.3.9(Intranet)（worker01）
 
-- 管理节点：192.168.3.9（内网）（将集群的master作为Ansible的管理节点）
-- 集群节点（被管理节点）：
-  - 192.168.3.9（内网）（master）
-  - 192.168.3.9（内网）（worker01）
+### Configure passwordless login
 
-### 配置免密登录
+- 1、use**root user**to log in to management node （192.168.3.9）
 
-- 1、使用**root用户**登录管理节点（192.168.3.9）
+- 2、gernerate ssh-key in management node
 
-- 2、在管理节点生成ssh-key
 
   ```
-  ssh-keygen -t rsa -b 2048 -N（一直回车即可）
+  ssh-keygen -t rsa -b 2048 -N（press "Enter" all the way）
   ```
 
-- 3、将管理节点的公钥拷贝到所有被管理节点的机器上：
+- 3、copy public key of management node to all managed nodes：
 
   ```
   ssh-copy-id -i ~/.ssh/id_rsa.pub root@192.168.3.9
   ```
 
-- 4、检查管理节点能否ssh免密登录到被管理节点：
+- 4、check if management node could log in to managed nodes passwordlessly by using ssh：
 
   ```
   ssh root@192.168.3.9
   ```
 
-注意：**如果没有特别标注，本文中的所有执行命令都默认使用root用户执行。**
+Note：**if there is no special notation，all commands are executed under root user**
 
-### 安装pip
+### Install pip
 
-- 1、以**root用户**登录所有被管理节点（192.168.3.9）
+- 1、use **root user** to log in to all managed nodes（192.168.3.9）
 
-- 2、部署过程中可能需要通过pip下载package。ubuntu 18.04系统默认自带python2，不再需要手动安装，但需要确保pip能用。查看系统默认的python和pip版本：
+- 2、users might need to download package through pip while deploying. ubuntu 18.04 has default python2, there is no need to install mannually, but make sure pip is usable. plase checkt default python and pip version：
 
   ```sh
   python --version
@@ -111,29 +111,30 @@ Note：
   # pip 9.0.1 from /usr/lib/python2.7/dist-packages (python 2.7)
   ```
 
-- 2、如果pip不能使用，需要安装一下：
+- 2、if "pip" is not found, please install it：
 
   ```
   apt install python-pip
   ```
 
-### 安装netaddr
+### Install netaddr
 
-在被管理节点（192.168.1.172）安装netaddr，有下列两种安装方式：
+There are two ways to install netaddr on managed nodes（192.168.1.172）：
 
 ```
-使用pip安装：pip install netaddr
+install through pip：pip install netaddr
 
-使用pip3安装：pip3 install netaddr
+install through pip3：pip3 install netaddr
 ```
 
 
 
-## 安装Ansible
+## Install Ansible
 
-- 1、使用**root用户**登录管理节点（192.168.3.9）
+- 1、use **root user** to log in to management nodes（192.168.3.9）
 
 - 2、安装ansible的方式有多种，下面为常用的两种方式：
+- 2、there are many ways to install ansible, the following are the two most common method：
 
   - 2.1、第一种方式：apt安装
 
