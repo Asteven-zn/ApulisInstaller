@@ -246,69 +246,6 @@ kube-worker
 ```
 
 
-
-备注：如果被管理节点想使用python3和pip3，可以在InstallationYTung/hosts文件中指定python3的解释器路径。
-
-- 1、查看python3路径
-
-  ```
-  which python3
-  ```
-
-- 2、在hosts文件中指定python3解释器路径（在ip后面指定输入空格，然后指定即可）
-
-  ```sh
-  # 'etcd' cluster should have odd member(s) (1,3,5,...)
-  # variable 'NODE_NAME' is the distinct name of a member in 'etcd' cluster
-  [etcd] 
-  192.168.3.9 NODE_NAME=etcd1 ansible_python_interpreter=/usr/bin/python3 
-  
-  # master node(s)
-  [kube-master]
-  192.168.3.9 ansible_python_interpreter=/usr/bin/python3
-  
-  # work node(s)
-  [kube-worker]
-  192.168.3.9 ansible_python_interpreter=/usr/bin/python3
-  
-  [cluster:children]
-  kube-master
-  kube-worker
-  
-  [nfs-server]
-  192.168.3.9 ansible_python_interpreter=/usr/bin/python3
-  
-  # [optional] harbor server, a private docker registry
-  # 'NEW_INSTALL': 'yes' to install a harbor server; 'no' to integrate with existed one
-  # 'SELF_SIGNED_CERT': 'no' you need put files of certificates named harbor.pem and harbor-key.pem in directory 'down'
-  [harbor]
-  192.168.3.9 NEW_INSTALL=yes SELF_SIGNED_CERT=yes
-  
-  # [optional] loadbalance for accessing k8s from outside
-  [ex-lb]
-  #192.168.1.6 LB_ROLE=backup EX_APISERVER_VIP=192.168.1.250 EX_APISERVER_PORT=8443
-  #192.168.1.7 LB_ROLE=master EX_APISERVER_VIP=192.168.1.250 EX_APISERVER_PORT=8443
-  
-  # [optional] ntp server for the cluster
-  [chrony]
-  #192.168.1.1
-  
-  ```
-
-- 3、检查pip3是否已安装：
-
-  ```
-  pip3 --version
-  ```
-
-  如果未安装，需安装pip3
-
-  ```
-  apt install python3-pip
-  ```
-
-  
-
 ### 修改all.yaml文件
 
 all.yaml文件的路径：InstallationYTung/group_vars/all.yaml
