@@ -16,40 +16,39 @@ Reference Link：
 
 Installation process on single machine, as shown in figure 1.
 
-图1 单机部署安装流程
+Figure 1, single-machine deployment process
 
 
-## 安装前准备
+## Preparation before installation
 
-本文提供了**使用Ansible部署依瞳人工智能平台单机版**的方式，以Atlas 800训练服务器为例子，安装环境应满足以下要求：
+This article provides a way for ** to use Ansible to deploy Yitong AI Platform on ** single-machine. Taking Atlas 800 training server as an example, installation environment should meet the following requirments:
 
-表1 安装环境要求
+Figure 1, installation environment requirments
 
-| 软件名称           | 版本        |
-| ------------------ | ----------- |
-| 操作系统           | Ubuntu18.04.1 |
-| NPU驱动            | CANN 20.1      |
-| 依瞳平台部署安装包 | v1.5.0      |
+| Software Name                        | Version        |
+| ------------------                   | ----------- |
+| Operating System                     | Ubuntu18.04.1 |
+| NPU driver                           | CANN 20.1      |
+| Yitong platform installation package | v1.5.0      |
 
-须知：依瞳平台部署安装包可用于部署在不同架构类型的机器，ARM架构和x86架构可以使用同一个安装包。
+Note: The installation package of Yitong platform can be used to deploy on machines of different architecture types. ARM and X86 architecture can use the same installation package.
 
-## 单机部署组网方案
+## Singled-machine deployment and networking solution
 
-### 组网方案1
+### Networking Solution 1
 
-Ansible管理节点、kubernetes集群的master、worker节点均部署在一台Atlas 800 训练服务器上，按照图2所示进行逻辑组网。
+Ansible management node, master node and worker node of kubernetes cluster deploy on a single Atlas 800 training server to do networking as shown in figure 2.
 
-图2 单机部署方案1
+Figure 2, single-machine deployment solution 1
+
+### Networking solution 2
+
+Ansible management node deploys on general server, while master node and work node of kubernetes deploy on a Atlas 800 training server to do networking, as shown in Figure 3.
+
+Figure 3, single-machine deployment solution 2
 
 
-### 组网方案2
-
-Ansible管理节点部署在通用服务器上，kubernetes集群的master、worker节点均部署在一台Atlas 800 训练服务器上，按照图3所示进行逻辑组网。
-
-图3 单机部署方案2
-
-
-须知：
+Note：
 
 - 使用第二种方案进行部署时，需确保Ansible管理节点所在机器能够访问训练服务器。
 - **本文使用第一种组网方案来进行部署**，即将Atlas训练服务器作为Ansible的管理节点。
