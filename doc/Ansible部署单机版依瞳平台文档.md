@@ -120,7 +120,7 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
 
 ### 安装netaddr
 
-在被管理节点（192.168.1.172）安装netaddr，有下列两种安装方式：
+在被管理节点（192.168.3.9）安装netaddr，有下列两种安装方式：
 
 ```
 使用pip安装：pip install netaddr -i https://pypi.tuna.tsinghua.edu.cn/simple netaddr
