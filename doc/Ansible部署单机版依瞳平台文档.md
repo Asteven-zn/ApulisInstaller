@@ -81,7 +81,7 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
 - 2、在管理节点生成ssh-key
 
   ```
-  ssh-keygen -t rsa -b 2048 -N（一直回车即可）
+  ssh-keygen -t rsa -b 2048 -N ''（一直回车即可）
   ```
 
 - 3、将管理节点的公钥拷贝到所有被管理节点的机器上：
@@ -102,20 +102,20 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
 
 - 1、以**root用户**登录所有被管理节点（192.168.3.9）
 
-- 2、部署过程中可能需要通过pip下载package。ubuntu 18.04系统默认自带python2，不再需要手动安装，但需要确保pip能用。查看系统默认的python和pip版本：
+- 2、部署过程中可能需要通过pip下载package。ubuntu 18.04系统默认自带python3，不再需要手动安装，但需要确保pip3能用。查看系统默认的python和pip版本：
 
   ```sh
   python --version
-  # Python 2.7.17
+  # Python 3.7.5
   
   pip --version
-  # pip 9.0.1 from /usr/lib/python2.7/dist-packages (python 2.7)
+  # pip 20.2.2 from /usr/local/lib/python3.7/dist-packages/pip (python 3.7)
   ```
 
 - 2、如果pip不能使用，需要安装一下：
 
   ```
-  apt install python-pip
+  apt install python3-pip
   ```
 
 ### 安装netaddr
@@ -123,9 +123,9 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
 在被管理节点（192.168.1.172）安装netaddr，有下列两种安装方式：
 
 ```
-使用pip安装：pip install netaddr
+使用pip安装：pip install netaddr -i https://pypi.tuna.tsinghua.edu.cn/simple netaddr
 
-使用pip3安装：pip3 install netaddr
+使用pip3安装：pip3 install netaddr -i https://pypi.tuna.tsinghua.edu.cn/simple netaddr
 ```
 
 
@@ -181,10 +181,11 @@ cd InstallationYTung
 安装包存在以下内容：
 
 ```
-01.prepare.yaml      05.kube-worker.yaml  09.network.yaml         92.aiarts-stop.yaml     compress_harbor.sh  group_vars      LICENSE    resources       tools
-02.etcd.yaml         06.kube-init.yaml    10.aiarts-service.yaml  93.aiarts-restart.yaml  config              hosts           macros     roles           upgrade_doc.md
-03.docker.yaml       07.storage.yaml      90.setup.yaml           94.reset-harbor.yaml    doc                 install_pan.sh  manifests  scripts
-04.kube-master.yaml  08.harbor.yaml       91.aiarts-start.yaml    ansible.cfg             download            Jenkinsfile     README.md  service_ctl.sh
+01.prepare.yaml      06.kube-init.yaml       90.setup.yaml           95.reset-cluster.yaml  credentials  install_pan.sh  README.md       tools
+02.etcd.yaml         07.harbor.yaml          91.aiarts-start.yaml    ansible.cfg            doc          Jenkinsfile     resources       upgrade_doc.md
+03.docker.yaml       08.network.yaml         92.aiarts-stop.yaml     bin                    download     LICENSE         roles
+04.kube-master.yaml  09.storage.yaml         93.aiarts-restart.yaml  compress_harbor.sh     group_vars   macros          scripts
+05.kube-worker.yaml  10.aiarts-service.yaml  94.reset-harbor.yaml    config                 hosts        manifests       service_ctl.sh
 ```
 
 
