@@ -19,4 +19,4 @@
   register: operator_status
   retries: 20
   delay: 5
-  until: "operator_status.stdout_lines[0]!='0'"
+  until: "operator_status.stdout != 0"
