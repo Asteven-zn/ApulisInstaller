@@ -64,6 +64,21 @@
   run_once: true
   shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/07.dashboard-external-https.yaml"
 
+- name: extract ceph admin auth key
+  shell: "{{ bin_dir }}/kubectl exec -it -n rook-ceph deploy/rook-ceph-tools -- ceph auth get-key client.admin | base64"
+  register: ceph_key_output
+  delegate_to: "{{ groups['kube-master'][0] }}"
+
+- name: copy the output to a local file
+  template:
+    lstrip_blocks: yes
+    trim_blocks: yes
+    dest: "{{ manifest_dest }}/storage/01.client-secret.yaml"
+    src: pvc/01.client-secret.yaml.j2
+  vars:
+    - secret: "{{ ceph_key_output.stdout }}"
+  delegate_to: "{{ groups['kube-master'][0] }}"
+
 - name: generate pvc and pv service yaml files
   template:
     lstrip_blocks: yes

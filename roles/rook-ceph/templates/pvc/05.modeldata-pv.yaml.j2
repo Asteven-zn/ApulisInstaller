@@ -18,7 +18,7 @@ spec:
     path: {{ rook_pv_pvc_mounts["model-data"]["rootPath"] }}
     user: admin
     secretRef:
-      name: ceph-client-secret
+      name: ceph-secret
     readOnly: false
   persistentVolumeReclaimPolicy: Recycle
 
@@ -64,7 +64,7 @@ spec:
     path: {{ rook_pv_pvc_mounts["model-data"]["rootPath"] }}
     user: admin
     secretRef:
-      name: ceph-client-secret
+      name: ceph-secret
     readOnly: false
   persistentVolumeReclaimPolicy: Recycle
 
