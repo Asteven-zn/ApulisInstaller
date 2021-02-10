@@ -14,7 +14,7 @@
     NAME_SPACE="rook-ceph"
     POD_LABEL="app=rook-ceph-osd"
     POD_COUNT=`kubectl get pods --no-headers -n $NAME_SPACE -l $POD_LABEL \
-                    --field-selector status.phase!=Running | wc -l`
+                    --field-selector status.phase==Running | wc -l`
     echo $POD_COUNT
   register: operator_status
   retries: 20
