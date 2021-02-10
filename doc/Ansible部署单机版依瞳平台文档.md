@@ -1,9 +1,12 @@
-# 系统安装与驱动安装
+# 依赖准备
 
-参考链接：
+## 系统准备
+- 系统安装盘下载链接: http://old-releases.ubuntu.com/releases/18.04.1/
+- 系统安装链接: https://support.huawei.com/enterprise/zh/doc/EDOC1100136592/426cffd9
 
-- https://support.huawei.com/enterprise/zh/doc/EDOC1100136592/426cffd9
-- https://support.huaweicloud.com/instg-cli-cann/atlascli_03_0001.html
+## 驱动准备
+- 驱动下载链接：https://ascend.huawei.com/#/hardware/firmware-drivers
+- 驱动安装链接：https://support.huaweicloud.com/instg-msInstall-cann202/atlasms_03_0002.html
 
 
 
@@ -19,7 +22,7 @@
 图1 单机部署安装流程
 
 
-## 安装前准备
+## 环境说明
 
 本文提供了**使用Ansible部署依瞳人工智能平台单机版**的方式，以Atlas 800训练服务器为例子，安装环境应满足以下要求：
 
