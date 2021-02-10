@@ -77,7 +77,6 @@
     src: pvc/01.client-secret.yaml.j2
   vars:
     - secret: "{{ ceph_key_output.stdout }}"
-  delegate_to: "{{ groups['kube-master'][0] }}"
 
 - name: generate pvc and pv service yaml files
   template:
@@ -86,7 +85,7 @@
     dest: "{{ manifest_dest }}/storage/{{item}}"
     src: "pvc/{{item}}.j2"
   with_items:
-    - 01.appdata-pv.yaml
-    - 02.component-data-pv.yaml
-    - 03.labeldata-pv.yaml
-    - 04.modeldata-pv.yaml
+    - 02.appdata-pv.yaml
+    - 03.component-data-pv.yaml
+    - 04.labeldata-pv.yaml
+    - 05.modeldata-pv.yaml
