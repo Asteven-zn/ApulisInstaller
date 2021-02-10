@@ -10,16 +10,13 @@
 - name: waiting for start rook-ceph-osd pod...
   run_once: true
   shell: |
-    STATUS="ok"
+    STATUS=0
     NAME_SPACE="rook-ceph"
     POD_LABEL="app=rook-ceph-osd"
-    POD_NAME=`kubectl get po -n $NAME_SPACE -l $POD_LABEL \
-                    --field-selector status.phase!=Running -o jsonpath='{.items[*].metadata.name}'`
-    if [ -n "$POD_NAME" ];then
-      STATUS="bad"
-    fi
-    echo $STATUS
+    POD_COUNT=`kubectl get pods --no-headers -n $NAME_SPACE -l $POD_LABEL \
+                    --field-selector status.phase!=Running | wc -l`
+    echo $POD_COUNT
   register: operator_status
   retries: 20
   delay: 5
-  until: "operator_status.stdout_lines[0]=='ok'"
+  until: "operator_status.stdout_lines[0]!='0'"
