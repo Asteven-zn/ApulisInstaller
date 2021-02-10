@@ -20,7 +20,7 @@ spec:
     secretRef:
       name: ceph-secret
     readOnly: false
-  persistentVolumeReclaimPolicy: Recycle
+  persistentVolumeReclaimPolicy: Retain
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
