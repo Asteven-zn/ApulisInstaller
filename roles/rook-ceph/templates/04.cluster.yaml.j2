@@ -213,9 +213,10 @@ spec:
     nodes:
     {% for hostname in groups['ceph-server'] %}
     - name: {{ hostname }}
-      {% if hostvars[hostname]['devices'] is defined and hostvars[hostname]['devices']|length > 0 %}
+      {% if hostvars[hostname]['devices'] is defined %}
       devices:
-      {% for device in hostvars[hostname]['devices'] %}
+      {% set devices = hostvars[hostname]['devices'].split(';') %}
+      {% for device in devices %}
       - name: {{ device }}
       {% endfor %}
       {% endif %}

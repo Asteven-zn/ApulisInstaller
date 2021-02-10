@@ -10,7 +10,7 @@ rook_pv_pvc_mounts:
   label-data:
     storageClassName: label-data
     name: aiplatform-label-data
-    root_path: /pvc/aiplatform-label-data
+    rootPath: /pvc/aiplatform-label-data
   model-data:
     storageClassName: model-data
     name: aiplatform-model-data
