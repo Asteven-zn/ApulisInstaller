@@ -1,0 +1,20 @@
+- name: copy the output to a local file
+  template:
+    lstrip_blocks: yes
+    trim_blocks: yes
+    dest: "{{ manifest_dest }}/storage/01.client-secret.yaml"
+    src: pvc/01.client-secret.yaml.j2
+  vars:
+    - secret: "{{ lookup('file', '{{ base_dir }}/download/ceph-admin.txt') }}"
+
+- name: generate pvc and pv service yaml files
+  template:
+    lstrip_blocks: yes
+    trim_blocks: yes
+    dest: "{{ manifest_dest }}/storage/{{item}}"
+    src: "pvc/{{item}}.j2"
+  with_items:
+    - 02.appdata-pv.yaml
+    - 03.component-data-pv.yaml
+    - 04.labeldata-pv.yaml
+    - 05.modeldata-pv.yaml

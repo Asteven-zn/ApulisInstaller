@@ -1,3 +1,6 @@
+# server or client
+ceph_mode: server
+
 rook_pv_pvc_mounts:
   app-data:
     storageClassName: app-data
