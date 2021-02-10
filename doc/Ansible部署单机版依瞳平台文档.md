@@ -806,8 +806,9 @@ ansible-playbook -i hosts 10.aiarts-service.yaml
    2. tar包里面的镜像的名称有限制：
 
       1. 必须带有/amd64或者/arm64来表示镜像的架构类型，如：
-         harbor.sigsus.cn:8443/sz_gongdianju/apulistech/tensorflow-serving**/amd64**:1.15.0
-         harbor.atlas.cn:8443/sz_gongdianju/apulistech/tensorflow-npu**/arm64**:1.15-20.1.RC1
+         
+         harbor.sigsus.cn:8443/sz_gongdianju/apulistech/tensorflow-serving/amd64:1.15.0
+         harbor.atlas.cn:8443/sz_gongdianju/apulistech/tensorflow-npu/arm64:1.15-20.1.RC1
 
       2. 镜像name和tag必须与all.yaml一致
 
