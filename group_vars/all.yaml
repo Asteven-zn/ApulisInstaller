@@ -24,6 +24,8 @@ base_dir: "{{ lookup('env', 'PWD') }}"
 # resource directory (include apt, images, dlws code and other package)
 resource_dir: "{{base_dir}}/resources"
 
+HARBOR_LOCATION: "/data"
+
 # harbor domain value
 HARBOR_DOMAIN: "harbor.atlas.cn"
 
