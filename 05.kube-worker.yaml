@@ -4,5 +4,6 @@
   - { role: kube-worker, when: "inventory_hostname not in groups['kube-master']" }
 
 - hosts: ceph-server
+  roles:
   - { role: kube-worker, when: "CLUSTER_STORAGE=='ceph'" }
 
