@@ -6,6 +6,8 @@ PLATFORM_NAME: "Apulis"
 # the name of cluster
 CLUSTER_NAME: "DLWS"
 
+CLUSTER_STORAGE: "nfs"
+
 # 离线安装系统软件包 (offline|online)
 INSTALL_SOURCE: "online"
 
