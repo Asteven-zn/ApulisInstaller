@@ -6,7 +6,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash -c '$$(which python) /etc/npu/npu_info_gen.py'
+ExecStart=/bin/bash -c '$$(which python||which python3) /etc/npu/npu_info_gen.py'
 Restart=always
 RestartSec=15
 LimitNOFILE=65536
