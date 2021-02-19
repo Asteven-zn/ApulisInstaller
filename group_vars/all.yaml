@@ -6,8 +6,12 @@ PLATFORM_NAME: "Apulis"
 # the name of cluster
 CLUSTER_NAME: "DLWS"
 
+CLUSTER_STORAGE: "nfs"
+
 # 离线安装系统软件包 (offline|online)
 INSTALL_SOURCE: "online"
+
+kube_vip_address: ""
 
 # -------- Additional Variables (don't change the default value right now)---
 # Binaries Directory
@@ -23,6 +27,8 @@ base_dir: "{{ lookup('env', 'PWD') }}"
 
 # resource directory (include apt, images, dlws code and other package)
 resource_dir: "{{base_dir}}/resources"
+
+HARBOR_LOCATION: "/data"
 
 # harbor domain value
 HARBOR_DOMAIN: "harbor.atlas.cn"
