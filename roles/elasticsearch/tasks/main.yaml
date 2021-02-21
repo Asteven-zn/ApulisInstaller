@@ -1,0 +1,55 @@
+- name: 检查镜像是否存在
+  docker_image_info:
+    name:
+      - "{{thirdparty_images['elasticsearch']['name']}}:{{thirdparty_images['elasticsearch']['tag']}}"
+  register: result
+
+
+- block:
+
+  - name: 下发es镜像文件
+    copy:
+      src: "{{resource_dir}}/images/elasticsearch.tar"
+      dest: "/tmp/elasticsearch.tar"
+  
+  - name: 导入es镜像
+    docker_image:
+      name: "{{thirdparty_images['elasticsearch']['name']}}:{{thirdparty_images['elasticsearch']['tag']}}"
+      load_path: /tmp/elasticsearch.tar
+      source: load
+
+  when: result.images | length == 0
+
+    
+- name: 确保目录存在
+  file:
+    path: "{{ manifest_dest }}/elasticsearch"
+    state: directory
+
+- name: 渲染yaml文件
+  template:
+    src: templates/docker-compose.yaml.j2
+    dest: "{{ manifest_dest }}/elasticsearch/docker-compose.yaml"
+
+- name: 检查docker-compose是否安装
+  shell: command -v docker-compose >/dev/null 2>&1
+  register: is_docker_compose_install
+  ignore_errors: yes
+
+- name: 拷贝docker-compose安装包
+  copy:
+    src: "{{base_dir}}/bin/{{ arch_map[ansible_architecture] }}/docker-compose"
+    dest: "/usr/local/bin/docker-compose"
+    mode: '0777'
+  ignore_errors: yes
+  when: is_docker_compose_install.rc != 0
+
+- name: 创建es网络接口
+  docker_network:
+    name: "{{es_network}}"
+
+- name: 启动容器
+  become: True
+  shell:
+    cmd: "docker-compose -f docker-compose.yaml up -d"
+    chdir:  "{{ manifest_dest }}/elasticsearch"

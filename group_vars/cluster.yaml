@@ -1,9 +1,13 @@
+MASTER_AS_WORKER: true
+
 container_mount_path: /dlwsdata
 physical_mount_path: /mntdlws
 
-manifest_dest: "/root/build"
 user_name: dlwsadmin
 default_cni_path: /opt/cni/bin
+
+# kube vip address
+kube_vip_address: "192.168.1.200"
 
 CONTAINER_RUNTIME: "docker"
 
@@ -41,10 +45,13 @@ PLATFORM_MODE: "express"
 # 
 # brief: uncomment below code to limit pod resouces
 #
-#resource_limit:
-#  huawei_npu_arm64:  # device_type
-#    cpu:    2
-#    memory: 400Mi
+resource_limit:
+  huawei_npu_arm64:  # device_type
+    cpu:    1
+    memory: 100Mi
+  nvidia_gpu_amd64:  # device_type
+    cpu:    1
+    memory: 100Mi
 
 datasource: postgres
 
@@ -119,4 +126,6 @@ modes:
     - kfserving
     - knative
 
+# the unified image tag
+image_tag: "v1.2.0"
 
