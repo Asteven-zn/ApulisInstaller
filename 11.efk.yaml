@@ -1,0 +1,35 @@
+- name: 安装elasticsearch，并启动es和kibana容器
+  hosts: es-cluster
+  vars:
+    - log_driver: "json-file"
+    - log_max_size: "10m"
+    - log_max_file: "3"
+    - es_network: elastic
+  roles:
+    - docker
+    - elasticsearch
+    - kibana
+
+- name: 停止es容器
+  hosts: es-cluster
+  tags:
+    - never
+    - stopes
+    - stopall
+  tasks: 
+    - name: stop es container 
+      become: True
+      shell:
+        cmd: "docker-compose down"
+        chdir: "{{ manifest_dest }}/elasticsearch"
+
+- name: 停止kibana容器
+  hosts: es-cluster
+  tags:
+    - never
+    - stopkb
+    - stopall
+  tasks: 
+    - docker_container:
+        name: "kibana"
+        state: absent
