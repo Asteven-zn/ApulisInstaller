@@ -73,7 +73,7 @@ then
 	done
 fi
 ############ change kube-vip
-new_kube_vip=`cat config/install_config.json | grep kube_vip | sed "s?\"??g" | sed "s?.*\:??g"`
+new_kube_vip=`cat config/install_config.json | grep kube_vip | egrep -o "([0-9]{1,3}.){3}[0-9]{1,3}"`
 cd ${DLWS_CONFIG_DIR}
 sed "s|kube-vip:.*|kube-vip: ${new_kube_vip}|g" -i config.yaml
 
