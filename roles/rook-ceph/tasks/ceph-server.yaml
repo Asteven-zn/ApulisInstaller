@@ -26,8 +26,8 @@
   with_items:
     - 01.crds.yaml
     - 02.common.yaml
-    - 05.filesystem.yaml
-    - 06.toolbox.yaml
+    - 06.filesystem.yaml
+    - 07.toolbox.yaml
 
 - name: generate rook template files
   template:
@@ -38,7 +38,8 @@
   with_items:
     - 03.operator.yaml
     - 04.cluster.yaml
-    - 07.dashboard-external-https.yaml
+    - 05.config-override.yaml
+    - 08.dashboard-external-https.yaml
 
 - name: deploy rook/crds.yaml
   run_once: true
