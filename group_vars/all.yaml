@@ -13,6 +13,9 @@ INSTALL_SOURCE: "online"
 # Binaries Directory
 i18n: "zh-CN"
 
+# the prefix location of nfs
+nfs_path_prefix: "/mnt/nfs"
+
 bin_dir: "/opt/kube/bin"
 
 manifest_dest: "/root/build"
