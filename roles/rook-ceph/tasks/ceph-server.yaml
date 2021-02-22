@@ -55,15 +55,15 @@
 
 - name: deploy rook/filesystem.yaml
   run_once: true
-  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/05.filesystem.yaml"
+  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/06.filesystem.yaml"
 
 - name: deploy rook/toolbox.yaml
   run_once: true
-  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/06.toolbox.yaml"
+  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/07.toolbox.yaml"
 
 - name: deploy rook/dashboard.yaml
   run_once: true
-  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/07.dashboard-external-https.yaml"
+  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/08.dashboard-external-https.yaml"
 
 - name: extract ceph admin auth key
   shell: "{{ bin_dir }}/kubectl exec -it -n rook-ceph deploy/rook-ceph-tools -- ceph auth get-key client.admin | base64"

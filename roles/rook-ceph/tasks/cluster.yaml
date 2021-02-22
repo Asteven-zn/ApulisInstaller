@@ -1,6 +1,10 @@
+- name: deploy rook/config-override.yaml
+  run_once: true
+  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/04.config-override.yaml"
+
 - name: deploy rook/cluster.yaml
   run_once: true
-  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/04.cluster.yaml"
+  shell: "{{ bin_dir }}/kubectl apply -f {{ manifest_dest }}/rook-ceph/05.cluster.yaml"
 
 - name: pause 60 sec
   run_once: true
