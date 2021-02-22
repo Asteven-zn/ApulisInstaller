@@ -1,7 +1,8 @@
+{% import 'macros/common.j2' as util with context %}
 version: '2.2'
 services:
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    image: {{ util.image_fullname('elasticsearch', 'third') }}
     container_name: es01
     environment:
       - node.name=es01
@@ -21,7 +22,7 @@ services:
     networks:
       - "{{es_network}}"
   es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    image: {{ util.image_fullname('elasticsearch', 'third') }}
     container_name: es02
     environment:
       - node.name=es02
@@ -39,7 +40,7 @@ services:
     networks:
       - "{{es_network}}"
   es03:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    image: {{ util.image_fullname('elasticsearch', 'third') }}
     container_name: es03
     environment:
       - node.name=es03
