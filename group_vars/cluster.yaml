@@ -23,6 +23,12 @@ PROXY_MODE: "iptables"
 # K8S Service CIDR, not overlap with node(host) networking
 SERVICE_CIDR: "10.68.0.0/16"
 
+# 设置 k8s svc ip (这里选用 SERVICE_CIDR 中第1个IP)
+CLUSTER_KUBERNETES_SVC_IP: "{{ SERVICE_CIDR | ipaddr('net') | ipaddr(1) | ipaddr('address') }}"
+
+# 设置 dns svc ip (这里选用 SERVICE_CIDR 中第2个IP)
+CLUSTER_DNS_SVC_IP: "{{ SERVICE_CIDR | ipaddr('net') | ipaddr(2) | ipaddr('address') }}"
+
 # Cluster CIDR (Pod CIDR), not overlap with node(host) networking
 CLUSTER_CIDR: "172.20.0.0/16"
 

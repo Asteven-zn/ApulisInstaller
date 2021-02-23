@@ -1,4 +1,3 @@
 dns_install: "yes"
 dns_backend: "coredns"
 
-CLUSTER_DNS_SVC_IP: "{{ SERVICE_CIDR | ipaddr('net') | ipaddr(2) | ipaddr('address') }}"
