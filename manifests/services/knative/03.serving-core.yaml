@@ -425,6 +425,7 @@ data:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
   queueSidecarImage: {{ util.image_fullname('knative-serving-queue') }}
+  registriesSkippingTagResolving: {{ HARBOR_DOMAIN }}:{{ HARBOR_HTTPS_PORT }}
   _example: |
     ################################
     #                              #

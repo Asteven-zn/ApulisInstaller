@@ -21,4 +21,4 @@ rook_pv_pvc_mounts:
   kfserving-pod-model-data:
     storageClassName: model-data
     name: aiplatform-model-data
-    rootPath: /pvc/aiplatform-model-data
+    rootPath: /pvc

@@ -36,4 +36,4 @@ nfs_pv_pvc_mounts:
   kfserving-pod-model-data:
     storageClassName: model-data
     name: aiplatform-model-data
-    nfs_path: "{{nfs_path_prefix}}/pvc/aiplatform-model-data"
+    nfs_path: "{{nfs_path_prefix}}/pvc"
