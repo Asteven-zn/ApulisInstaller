@@ -6,18 +6,19 @@ PLATFORM_NAME: "Apulis"
 # the name of cluster
 CLUSTER_NAME: "DLWS"
 
-CLUSTER_STORAGE: "nfs"
-
 # 离线安装系统软件包 (offline|online)
 INSTALL_SOURCE: "online"
-
-kube_vip_address: ""
 
 # -------- Additional Variables (don't change the default value right now)---
 # Binaries Directory
 i18n: "zh-CN"
 
+# the prefix location of nfs
+nfs_path_prefix: "/mnt/nfs"
+
 bin_dir: "/opt/kube/bin"
+
+manifest_dest: "/root/build"
 
 # CA and other components cert/key Directory
 ca_dir: "/etc/kubernetes/ssl"
@@ -27,8 +28,6 @@ base_dir: "{{ lookup('env', 'PWD') }}"
 
 # resource directory (include apt, images, dlws code and other package)
 resource_dir: "{{base_dir}}/resources"
-
-HARBOR_LOCATION: "/data"
 
 # harbor domain value
 HARBOR_DOMAIN: "harbor.atlas.cn"
@@ -172,30 +171,15 @@ thirdparty_images:
   busybox:
     name: "busybox"
     tag: "1.28"
-  rook-ceph:
-    name: "rook/ceph"
-    tag: "v1.5.6"
-  ceph-ceph:
-    name: "ceph/ceph"
-    tag: "v15.2.8"
-  cephcsi:
-    name: "quay.io/cephcsi/cephcsi"
-    tag: "v3.2.0"
-  csi-snapshotter:
-    name: "k8s.gcr.io/sig-storage/csi-snapshotter"
-    tag: "v3.0.0"
-  csi-resizer:
-    name: "k8s.gcr.io/sig-storage/csi-resizer"
-    tag: "v1.0.0"
-  csi-node-driver-registrar:
-    name: "k8s.gcr.io/sig-storage/csi-node-driver-registrar"
-    tag: "v2.0.1"
-  csi-attacher:
-    name: "k8s.gcr.io/sig-storage/csi-attacher"
-    tag: "v3.0.0"
-  csi-provisioner:
-    name: "k8s.gcr.io/sig-storage/csi-provisioner"
-    tag: "v2.0.0"
+  elasticsearch:
+    name: "docker.elastic.co/elasticsearch/elasticsearch"
+    tag: "7.11.1"
+  kibana:
+    name: "docker.elastic.co/kibana/kibana"
+    tag: "7.11.1"
+  logstash:
+    name: "docker.elastic.co/logstash/logstash"
+    tag: "7.11.1"
 
 apulis_images:
   apulisvision:
@@ -208,11 +192,11 @@ apulis_images:
     name: "apulistech/aiarts-frontend"
     tag: "v1.5.0-rc3"
   custom-user-dashboard-backend:
-    name: "apulistech/custom-user-dashboard-backend"
-    tag: "v1.5.0-rc3"
+    name: "harbor.apulis.cn:8443/release/apulistech/user_backend"
+    tag: "v1.5.0"
   custom-user-dashboard-frontend:
-    name: "apulistech/custom-user-dashboard-frontend"
-    tag: "v1.5.0-rc3"
+    name: "harbor.apulis.cn:8443/release/apulistech/custom-user-dashboard-frontend"
+    tag: "v1.5.0"
   data-platform-backend:
     name: "apulistech/dlworkspace_data-platform-backend"
     tag: "latest"
@@ -232,8 +216,8 @@ apulis_images:
     name: "apulistech/repairmanager2"
     tag: "latest"
   restfulapi2:
-    name: "apulistech/dlworkspace_restfulapi2"
-    tag: "v1.5.0-rc3"
+    name: "harbor.apulis.cn:8443/release/apulistech/dlworkspace-restfulapi2"
+    tag: "v1.5.0"
   webui3:
     name: "apulistech/dlworkspace_webui3"
     tag: "v1.5.0-rc3"
