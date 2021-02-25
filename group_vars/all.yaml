@@ -9,6 +9,9 @@ CLUSTER_NAME: "DLWS"
 # 离线安装系统软件包 (offline|online)
 INSTALL_SOURCE: "online"
 
+# default harbor location
+HARBOR_LOCATION: "/data"
+
 # -------- Additional Variables (don't change the default value right now)---
 # Binaries Directory
 i18n: "zh-CN"

@@ -6,7 +6,7 @@
 - block:
     - name: 分发 chrony_xenial 离线包
       copy:
-        src: "{{ base_dir }}/download/packages/chrony_xenial.tar.gz"
+        src: "{{ base_dir }}/download/packages/{{ arch_map[ansible_architecture] }}/chrony_xenial.tar.gz"
         dest: "/opt/kube/packages/chrony/chrony_xenial.tar.gz"
 
     - name: 安装 chrony_xenial 离线包
@@ -19,7 +19,7 @@
 - block:
     - name: 分发 chrony_bionic 离线包
       copy:
-        src: "{{ base_dir }}/download/packages/chrony_bionic.tar.gz"
+        src: "{{ base_dir }}/download/packages/{{ arch_map[ansible_architecture] }}/chrony_bionic.tar.gz"
         dest: "/opt/kube/packages/chrony/chrony_bionic.tar.gz"
 
     - name: 安装 chrony_bionic 离线包
