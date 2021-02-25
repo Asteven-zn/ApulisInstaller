@@ -61,7 +61,7 @@ spec:
     - {{ hostname }}:6789
       {% endif %}
     {% endfor %}
-    path: {{ rook_pv_pvc_mounts["model-data"]["rootPath"] }}
+    path: {{ rook_pv_pvc_mounts["kfserving-pod-model-data"]["rootPath"] }}
     user: admin
     secretRef:
       name: ceph-secret
