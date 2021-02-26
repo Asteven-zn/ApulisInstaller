@@ -7,7 +7,7 @@
     - prepare
     - { role: docker, when: "CONTAINER_RUNTIME == 'docker'" }
     - kube-worker
-    - { role: "storage", nfs_mode: 'client' }
+    - { role: "nfs", nfs_mode: 'client', when: "CLUSTER_STORAGE == 'nfs'" }
     - kube-init
   tasks:
     - block:
