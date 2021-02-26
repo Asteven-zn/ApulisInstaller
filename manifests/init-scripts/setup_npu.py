@@ -693,7 +693,7 @@ if __name__ == "__main__":
             handle_mindspore()
 
         else:
-            pass
+            handle_tensorflow()
 
     else:
 
