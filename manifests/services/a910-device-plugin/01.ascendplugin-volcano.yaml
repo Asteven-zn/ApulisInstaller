@@ -42,7 +42,7 @@ spec:
           effect: NoSchedule
       priorityClassName: "system-node-critical"
       nodeSelector:
-        gpuType: huawei_npu_{{ arch_map[ansible_architecture] }}
+        npu: active
       containers:
       - image: {{ util.image_fullname('ascend-k8sdeviceplugin', 'third') }}
         name: device-plugin-01

@@ -22,7 +22,8 @@
 
 - name: Master label for nvidia GPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=nvidia_gpu_{{arch_map[ansible_architecture]}}', 'gpu=active', 'worker=active' ]"
+    role_node_labels: "{{ role_node_labels }} + ['gpu=active', 'worker=active' ]"
+    gpuType: "{{'nvidia_gpu_' + arch_map[ansible_architecture] + ('_' + hostvars[inventory_hostname]['SERIES']) if 'SERIES' in hostvars[inventory_hostname] else ''}}"
   when:
     - MASTER_AS_WORKER
     - NVIDIA_VAR.rc == 0
@@ -30,7 +31,8 @@
 
 - name: Master label for Huawei NPU GPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}', 'worker=active' ]"
+    role_node_labels: "{{ role_node_labels }} + ['worker=active', 'npu=active' ]"
+    gpuType: "{{'huawei_npu_' + arch_map[ansible_architecture] + ('_' + hostvars[inventory_hostname]['SERIES']) if 'SERIES' in hostvars[inventory_hostname] else ''}}"
   when:
     - MASTER_AS_WORKER
     - NPU_VAR.rc == 0
@@ -44,17 +46,25 @@
 
 - name: Worker label for nvidia GPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=nvidia_gpu_{{arch_map[ansible_architecture]}}', 'gpu=active' ]"
+    role_node_labels: "{{ role_node_labels }} + ['gpu=active' ]"
+    gpuType: "{{'nvidia_gpu_' + arch_map[ansible_architecture] + ('_' + hostvars[inventory_hostname]['SERIES']) if 'SERIES' in hostvars[inventory_hostname] else ''}}"
   when:
     - NVIDIA_VAR.rc == 0
     - inventory_hostname in groups['kube-worker']
 
 - name: Worker label for huawei NPU nodes
   set_fact:
-    role_node_labels: "{{ role_node_labels }} + [ 'gpuType=huawei_npu_{{arch_map[ansible_architecture]}}' ]"
+    role_node_labels: "{{ role_node_labels }} + ['npu=active' ]"
+    gpuType: "{{'huawei_npu_' + arch_map[ansible_architecture] + ('_' + hostvars[inventory_hostname]['SERIES']) if 'SERIES' in hostvars[inventory_hostname] else ''}}"
   when:
     - NPU_VAR.rc == 0
     - inventory_hostname in groups['kube-worker']
+
+- name: add gpuType to list
+  set_fact:
+    role_node_labels: "{{ role_node_labels }} + ['gpuType={{gpuType}}' ]"
+  when:
+    - gpuType is defined
 
 - debug: var=role_node_labels
 
