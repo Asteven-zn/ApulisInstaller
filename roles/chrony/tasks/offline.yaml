@@ -9,7 +9,7 @@
 - block:
     - name: 分发 chrony_xenial 离线包
       copy:
-        src: "{{ base_dir }}/download/packages/{{ arch_map[ansible_architecture] }}/chrony_xenial.tar.gz"
+        src: "{{ resource_dir }}/apt/{{ arch_map[ansible_architecture] }}/chrony_xenial.tar.gz"
         dest: "/opt/kube/packages/chrony/chrony_xenial.tar.gz"
 
     - name: 安装 chrony_xenial 离线包
@@ -22,7 +22,7 @@
 - block:
     - name: 分发 chrony_{{UBUNTU_VERSION}} 离线包
       copy:
-        src: "{{ base_dir }}/download/packages/{{ arch_map[ansible_architecture] }}/chrony_{{UBUNTU_VERSION}}.tar.gz"
+        src: "{{ resource_dir }}/apt/{{ arch_map[ansible_architecture] }}/chrony_{{UBUNTU_VERSION}}.tar.gz"
         dest: "/opt/kube/packages/chrony/chrony_{{UBUNTU_VERSION}}.tar.gz"
 
     - name: 安装 chrony_{{UBUNTU_VERSION}} 离线包

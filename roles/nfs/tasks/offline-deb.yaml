@@ -9,7 +9,7 @@
 - block:
     - name: 分发 nfs_{{UBUNTU_VERSION}} 离线包
       copy:
-        src: "{{ resource_dir }}/packages/{{ arch_map[ansible_architecture] }}/nfs_{{UBUNTU_VERSION}}.tar.gz"
+        src: "{{ resource_dir }}/apt/{{ arch_map[ansible_architecture] }}/nfs_{{UBUNTU_VERSION}}.tar.gz"
         dest: "/opt/kube/packages/nfs/nfs_{{UBUNTU_VERSION}}.tar.gz"
 
     - name: 安装 nfs_{{UBUNTU_VERSION}} 离线包

@@ -27,7 +27,7 @@
 
     - name: 分发 basic_bionic 离线包
       copy:
-        src: "{{ base_dir }}/download/packages/{{ arch_map[ansible_architecture] }}/{{ item }}_{{UBUNTU_VERSION}}.tar.gz"
+        src: "{{ resource_dir }}/apt/{{ arch_map[ansible_architecture] }}/{{ item }}_{{UBUNTU_VERSION}}.tar.gz"
         dest: "/opt/kube/packages/common/{{ item }}"
       with_items:
         - basic
