@@ -1,8 +1,12 @@
 group_labels:
   - group: kube-master
+    index: 0
     labels:
       - mysql=active
       - postgres=active
+
+  - group: kube-master
+    labels:
       - grafana=active
       - prometheus=active
       - aiarts-backend=active
@@ -16,6 +20,7 @@ group_labels:
       - watchdog=active
       - webportal=active
       - mlflow=active
+
   - group: kube-worker
     labels:
       - worker=active

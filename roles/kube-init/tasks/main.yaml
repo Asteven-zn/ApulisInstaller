@@ -16,3 +16,13 @@
   with_subelements:
     - "{{ group_labels }}"
     - labels
+
+- name: 设置组内指定节点的标签
+  command: >-
+    {{ bin_dir }}/kubectl label node {{ inventory_hostname }} {{ item.1 }} --overwrite=true
+  when:
+    - "{{ item.0.index is defined }}"
+    - "{{ inventory_hostname in groups[item.0.group][item.0.index] }}"
+  with_subelements:
+    - "{{ group_labels }}"
+    - labels

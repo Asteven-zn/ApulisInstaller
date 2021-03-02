@@ -11,7 +11,7 @@
       ignore_errors: true
 
     - name: clean node {{ NODE_TO_DEL }} if possible
-      shell: "ansible-playbook -i hosts {{ base_dir }}/96.reset-node.yaml \
+      shell: "ansible-playbook -i {{ base_dir }}/hosts {{ base_dir }}/96.reset-node.yaml \
         -e NODE_TO_CLEAN={{ NODE_TO_DEL }} \
         -e DEL_WORKER=yes >> /tmp/ansible-`date +'%Y%m%d%H%M%S'`.log 2>&1 \
         || echo 'data not cleaned on {{ NODE_TO_DEL }}'"
