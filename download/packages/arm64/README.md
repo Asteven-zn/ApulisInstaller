@@ -1,0 +1,1 @@
+amd64 packages install by offline

@@ -1,0 +1,16 @@
+# 离线安装 nfs
+- name: 准备离线安装包目录
+  file: name=/opt/kube/packages/nfs state=directory
+
+# ubuntu 1804
+- block:
+    - name: 分发 nfs_bionic 离线包
+      copy:
+        src: "{{ base_dir }}/download/packages/{{ arch_map[ansible_architecture] }}/nfs_bionic.tar.gz"
+        dest: "/opt/kube/packages/nfs/nfs_bionic.tar.gz"
+
+    - name: 安装 nfs_bionic 离线包
+      shell: 'cd /opt/kube/packages/nfs && tar zxf nfs_bionic.tar.gz && \
+             dpkg -i *.deb > /tmp/install_nfs.log 2>&1'
+  when: ansible_distribution_release == "bionic"
+  ignore_errors: true

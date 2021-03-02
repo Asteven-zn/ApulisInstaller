@@ -1,5 +1,5 @@
 # tasks file for roles/nfs-mount
-- name: Install NFS mount utility
+- name: Install NFS mount utility online
   become: true
   apt:
     name:
@@ -8,6 +8,12 @@
     state: present
   when:
     - 'INSTALL_SOURCE == "online"'
+    - "ansible_os_family == 'Debian'"
+
+# tasks file for roles/nfs-mount
+- import_tasks: offline-deb.yaml
+  when:
+    - 'INSTALL_SOURCE == "offline"'
     - "ansible_os_family == 'Debian'"
 
 - name: Ensure directories to export exist

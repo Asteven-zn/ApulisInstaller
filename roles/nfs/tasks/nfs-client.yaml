@@ -4,6 +4,12 @@
     - 'INSTALL_SOURCE == "online"'
     - "ansible_os_family == 'Debian'"
 
+# tasks file for roles/nfs-mount
+- import_tasks: offline-deb.yaml
+  when:
+    - 'INSTALL_SOURCE == "offline"'
+    - "ansible_os_family == 'Debian'"
+
 - name: Ensure rpcbind is running
   service: name=rpcbind state=started enabled=yes
 
