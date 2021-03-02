@@ -10,4 +10,10 @@
 
 - hosts: ceph-server
   roles:
-    - { role: "rook-ceph", when: "CLUSTER_STORAGE == 'ceph'" }
+    - { role: "rook-ceph", ceph_mode: "server", when: "CLUSTER_STORAGE is defined and CLUSTER_STORAGE == 'ceph'" }
+
+- hosts:
+    - kube-master
+    - kube-worker
+  roles:
+    - { role: "rook-ceph", ceph_mode: "client", when: "CLUSTER_STORAGE == 'ceph'" }

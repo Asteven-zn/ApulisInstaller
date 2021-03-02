@@ -20,17 +20,25 @@
   when:
     - 'INSTALL_SOURCE == "online"'
 
-- name: 下发Ubuntu-{{UBUNTU_VERSION}}系统的依赖包
-  copy:
-    src: "{{ item }}"
-    dest: "/tmp/apt/"
-  with_fileglob:
-    - "{{resource_dir}}/apt/{{UBUNTU_VERSION}}/*"
+# ubuntu 1804
+- block:
+    - name: 准备离线安装包目录
+      file: name=/opt/kube/packages/common state=directory
+
+    - name: 分发 basic_bionic 离线包
+      copy:
+        src: "{{ resource_dir }}/apt/{{ arch_map[ansible_architecture] }}/{{ item }}_{{UBUNTU_VERSION}}.tar.gz"
+        dest: "/opt/kube/packages/common/{{ item }}"
+      with_items:
+        - basic
+
+    - name: 解压离线包
+      shell: 'cd /opt/kube/packages/common && tar zxf {{ item }}_{{UBUNTU_VERSION}}.tar.gz'
+      with_items:
+        - basic
+
+    - name: 安装 basic_bionic 离线包
+      shell: 'cd /opt/kube/packages/common && dpkg -i -R *.deb > /tmp/install_common.log 2>&1'
   when:
     - 'INSTALL_SOURCE == "offline"'
-    - ('{{ item.endswith("_all.deb") }}') or ('{{item.endswith("_" + arch_map[ansible_architecture] +".deb")}}')
-
-- name: 安装系统依赖包
-  command: "dpkg -i -R /tmp/apt"
-  when: 'INSTALL_SOURCE == "offline"'
   ignore_errors: true
