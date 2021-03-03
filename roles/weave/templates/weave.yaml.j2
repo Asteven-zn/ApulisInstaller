@@ -40,6 +40,8 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
+                - name: WEAVE_CIDR
+                  value: {{CLUSTER_CIDR}}
               image: {{ util.image_fullname('weave-kube', 'third') }}
               readinessProbe:
                 httpGet:
