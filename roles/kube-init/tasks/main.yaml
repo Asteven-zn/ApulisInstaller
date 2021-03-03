@@ -12,6 +12,7 @@
   command: >-
         {{ bin_dir }}/kubectl label node {{ inventory_hostname }} {{ item.1 }} --overwrite=true
   when:
+    - "{{ item.0.index is not defined }}"
     - "{{ inventory_hostname in groups[item.0.group] }}"
   with_subelements:
     - "{{ group_labels }}"
@@ -22,7 +23,7 @@
     {{ bin_dir }}/kubectl label node {{ inventory_hostname }} {{ item.1 }} --overwrite=true
   when:
     - "{{ item.0.index is defined }}"
-    - "{{ inventory_hostname in groups[item.0.group][item.0.index] }}"
+    - "{{ inventory_hostname == groups[item.0.group][item.0.index] }}"
   with_subelements:
     - "{{ group_labels }}"
     - labels
