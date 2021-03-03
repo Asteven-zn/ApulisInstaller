@@ -55,7 +55,7 @@ spec:
   {% endfor %}
   nfs:
     server: {{groups['nfs-server'][0]}}
-    path: {{ nfs_pv_pvc_mounts["model-data"]["nfs_path"] }}
+    path: {{ nfs_pv_pvc_mounts["kfserving-pod-model-data"]["nfs_path"] }}
 
 ---
 kind: PersistentVolumeClaim
