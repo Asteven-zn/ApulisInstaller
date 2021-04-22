@@ -137,23 +137,13 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
 
 - 1、使用**root用户**登录管理节点（192.168.3.9）
 
-- 2、安装ansible的方式有多种，下面为常用的两种方式：
-
-  - 2.1、第一种方式：apt安装
+- 2、安装ansible：
 
     ```
     apt update
     apt install software-properties-common
     apt-add-repository --yes --update ppa:ansible/ansible
     apt install ansible
-    ```
-
-  - 2.2、第二种方式：pip安装
-
-    ```
-    pip config set global.index-url https://mirrors.aliyun.com/pypi/simple && \
-    pip config set install.trusted-host mirrors.aliyun.com
-    pip install --user ansible
     ```
 
 - 3、查看Ansible的版本。
