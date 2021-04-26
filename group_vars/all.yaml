@@ -1,7 +1,7 @@
 # Project Name
 PROJECT_NAME: "sz_gongdianju"
 
-PLATFORM_NAME: "Apulis"
+PLATFORM_NAME: "依瞳人工智能平台"
 
 # the name of cluster
 CLUSTER_NAME: "DLWS"
