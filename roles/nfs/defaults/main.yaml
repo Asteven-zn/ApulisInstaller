@@ -36,4 +36,4 @@ nfs_pv_pvc_mounts:
   kfserving-pod-model-data:
     storageClassName: kfserving-data
     name: kfserving-model-data
-    nfs_path: "{{nfs_path_prefix}}/pvc"
+    nfs_path: "{{nfs_path_prefix}}/pvc/kfserving-model-data"
