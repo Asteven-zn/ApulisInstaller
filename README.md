@@ -4,12 +4,6 @@
 - 系统安装盘下载链接: http://old-releases.ubuntu.com/releases/18.04.1/
 - 系统安装链接: https://support.huawei.com/enterprise/zh/doc/EDOC1100136592/426cffd9
 
-## 驱动准备
-- 驱动下载链接：https://ascend.huawei.com/#/hardware/firmware-drivers
-- 驱动安装链接：https://support.huaweicloud.com/instg-msInstall-cann202/atlasms_03_0002.html
-
-
-
 
 # 安装部署
 
@@ -31,7 +25,7 @@
 | 软件名称           | 版本        |
 | ------------------ | ----------- |
 | 操作系统           | Ubuntu18.04.1 |
-| NPU驱动            | CANN 20.2      |
+| GPU驱动            | 适配机器GPU型号  |
 | 依瞳平台部署安装包 | v1.5.0      |
 
 须知：依瞳平台部署安装包可用于部署在不同架构类型的机器，ARM架构和x86架构可以使用同一个安装包。
