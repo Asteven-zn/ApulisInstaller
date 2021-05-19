@@ -28,31 +28,6 @@
 | GPU驱动            | 适配机器GPU型号  |
 | 依瞳平台部署安装包 | v1.5.0      |
 
-须知：依瞳平台部署安装包可用于部署在不同架构类型的机器，ARM架构和x86架构可以使用同一个安装包。
-
-## 单机部署组网方案
-
-### 组网方案1
-
-Ansible管理节点、kubernetes集群的master、worker节点均部署在一台Atlas 800 训练服务器上，按照图2所示进行逻辑组网。
-
-图2 单机部署方案1
-
-
-### 组网方案2
-
-Ansible管理节点部署在通用服务器上，kubernetes集群的master、worker节点均部署在一台Atlas 800 训练服务器上，按照图3所示进行逻辑组网。
-
-图3 单机部署方案2
-
-
-须知：
-
-- 使用第二种方案进行部署时，需确保Ansible管理节点所在机器能够访问训练服务器。
-- **本文使用第一种组网方案来进行部署**，即将Atlas训练服务器作为Ansible的管理节点。
-
-
-
 
 
 ## 配置环境依赖
@@ -60,76 +35,41 @@ Ansible管理节点部署在通用服务器上，kubernetes集群的master、wor
 **前提条件：**
 
 - 已完成操作系统的安装。
-- 已完成NPU驱动的安装。
+- 已完成GPU驱动的安装。
 
-本文按照组网方案1，Ansible管理节点、kubernetes集群的master、worker节点均部署在一台Atlas 800 训练服务器上。
 
-**部署节点的相关信息如下：**
 
-- 管理节点：192.168.3.9（内网）（将集群的master作为Ansible的管理节点）
-- 集群节点（被管理节点）：
-  - 192.168.3.9（内网）（master）
-  - 192.168.3.9（内网）（worker01）
+### 3.2配置免密登录
 
-### 配置免密登录
-
-- 1、使用**root用户**登录管理节点（192.168.3.9）
-
-- 2、在管理节点生成ssh-key
-
-  ```
-  ssh-keygen -t rsa -b 2048 -N ''（一直回车即可）
-  ```
-
-- 3、将管理节点的公钥拷贝到所有被管理节点的机器上：
-
-  ```
-  ssh-copy-id -i ~/.ssh/id_rsa.pub root@192.168.3.9
-  ```
-
-- 4、检查管理节点能否ssh免密登录到被管理节点：
-
-  ```
-  ssh root@192.168.3.9
-  ```
-
-注意：**如果没有特别标注，本文中的所有执行命令都默认使用root用户执行。**
-
-### 安装pip
-
-- 1、以**root用户**登录所有被管理节点（192.168.3.9）
-
-- 2、部署过程中可能需要通过pip下载package。ubuntu 18.04系统默认自带python3，不再需要手动安装，但需要确保pip3能用。查看系统默认的python和pip版本：
+1. 登录机器并生成SSH Key
 
   ```sh
-  python --version
-  # Python 3.7.5
-  
-  pip --version
-  # pip 20.2.2 from /usr/local/lib/python3.7/dist-packages/pip (python 3.7)
+ssh-keygen -t rsa -b 2048 -N ''    #一直回车即可
   ```
 
-- 2、如果pip不能使用，需要安装一下：
+2. 将公钥拷贝到本机器【将`<ip>`替换成要拷贝到的对应机器 ip 】：
 
-  ```
-  apt install python3-pip
-  ```
+```sh
+ssh-copy-id -i ~/.ssh/id_rsa.pub root@<ip>    
 
-### 安装netaddr
-
-在被管理节点（192.168.3.9）安装netaddr，有下列两种安装方式：
-
+#执行过程中，提示输入yes/no时，请输入yes，回车，然后输入对应节点的登录密码
 ```
-使用pip安装：pip install netaddr -i https://pypi.tuna.tsinghua.edu.cn/simple netaddr
 
-使用pip3安装：pip3 install netaddr -i https://pypi.tuna.tsinghua.edu.cn/simple netaddr
+3.验证是否可以免密登录到本机器：
+
+```sh
+ssh root@xxx.xxx.xxx.xxx
+
+#exit
 ```
+
+注意：**如果没有特别标注，本文中的所有执行命令都默认使用root用户执行。**
 
 
 
 ## 安装Ansible
 
-- 1、使用**root用户**登录管理节点（192.168.3.9）
+- 1、使用**root用户**登录机器
 
 - 2、安装ansible：
 
