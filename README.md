@@ -711,74 +711,9 @@ ansible-playbook -i hosts 10.aiarts-service.yaml
 
 ## 部署后检查
 
-1、检查平台能否正常登录：192.168.3.9（直接使用kube-vip进行登录）
+1、检查平台能否正常登录：192.168.3.9（直接使用本机IP进行登录）
 
 2、检查平台页面是否正常
 
 3、检查平台是否可以正常进行训练等各项功能
 
-
-
-# 更新镜像
-
-**通过manifest方式推送新的镜像到集群harbor的方式：**
-
-1. 修改InstallationYTung/group_vars/all.yaml文件中对应的镜像name和tag
-
-2. 将新的镜像的tar包放在InstallationYTung/resources/images目录下
-
-   1. tar包的名称没有限制（尽量写规范点，能够标识包里的imageName,tag,镜像架构等）
-
-   2. tar包里面的镜像的名称有限制：
-
-      1. 必须带有/amd64或者/arm64来表示镜像的架构类型，如：
-         
-         harbor.sigsus.cn:8443/sz_gongdianju/apulistech/tensorflow-serving/amd64:1.15.0
-         
-         harbor.atlas.cn:8443/sz_gongdianju/apulistech/tensorflow-npu/arm64:1.15-20.1.RC1
-
-      2. 镜像name和tag必须与all.yaml一致
-
-
-3. 执行`ansible-playbook -i hosts 08.harbor.yaml`（这个playbook会帮助我们推送新的镜像到集群harbor中）
-
-更新了镜像之后，我们可能需要重拉镜像来**重启某个服务**，方式是：
-
-```sh
-ansible-playbook -i hosts 93.aiarts-restart.yaml -e sn=serviceName
-或者：
-service_ctl.sh restart ${serviceName}
-```
-
-- `serviceName`指的是服务的名称，可在`InstallationYTung/manifests/services`目录下查看：
-
-```sh
-root@master:~/test/InstallationYTung/manifests/services# ll
-总用量 104
-drwxr-xr-x 26 root root 4096 1月  13 19:05 ./
-drwxr-xr-x  5 root root 4096 1月  13 19:05 ../
-drwxr-xr-x  2 root root 4096 1月  16 15:00 a910-device-plugin/
-drwxr-xr-x  2 root root 4096 1月  18 15:48 aiarts-backend/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 aiarts-frontend/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 cAdvisor/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 custommetrics/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 custom-user-dashboard/
-drwxr-xr-x  2 root root 4096 1月  16 15:00 data-platform/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 device-plugin/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 image-label/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 istio/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 jobmanager2/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 kfserving/
-drwxr-xr-x  2 root root 4096 1月  16 15:00 knative/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 mlflow/
-drwxr-xr-x  8 root root 4096 1月  19 17:31 monitor/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 mysql/
-drwxr-xr-x  3 root root 4096 1月  13 19:05 nginx/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 node-cleaner/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 nvidia-device-plugin/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 openresty/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 postgres/
-drwxr-xr-x  2 root root 4096 1月  13 19:05 restfulapi2/
-drwxr-xr-x  2 root root 4096 1月  15 11:29 volcanosh/
-drwxr-xr-x  2 root root 4096 1月  16 15:00 webui3/
-```
