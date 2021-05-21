@@ -1,7 +1,8 @@
-## Apulis Aiarts standalone版安装手册
+## Apulis AI Platform Installer
+
 ### 一.部署整体流程介绍
 
-- 从gitlab下载安装包
+- 从github下载安装脚本
 
 - 修改安装程序配置文件
 
