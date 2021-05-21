@@ -1,9 +1,0 @@
-# to install network plugin, only one can be chosen
-- hosts:
-    - kube-master
-    - kube-worker
-    - ceph-server
-  roles:
-    - { role: weave, when: "CLUSTER_NETWORK == 'weavenet'" }
-    - kube-vip
-    - coredns

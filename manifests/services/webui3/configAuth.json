@@ -1,3 +1,0 @@
-{
-    "Authentications" : "{{ service["Authentications"] }}"
-}

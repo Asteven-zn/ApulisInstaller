@@ -1,0 +1,53 @@
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: node-cleaner-amd64
+  namespace: default
+  labels:
+     run: node-cleaner
+spec:
+  selector:
+    matchLabels:
+      app: node-cleaner-amd64
+  template:
+    metadata:
+      labels:
+        app: node-cleaner-amd64
+    spec:
+      
+      hostNetwork: true
+      nodeSelector:
+        gpuType: huawei_npu_arm64
+      containers:
+      - name: node-cleaner
+        image: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/node-cleaner:latest
+
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: /root/config.yaml
+          name: appconfig
+          subPath: config.yaml
+        - mountPath: /data
+          name: aiplatform-model-data-pvc
+        - mountPath: /root/logs
+          name: npulog
+      env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+      volumes:
+      - name: appconfig
+        configMap:
+          name: node-cleaner-cm
+      - name: aiplatform-model-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-model-data-pvc
+      - name: npulog
+        hostPath:
+          path: /var/log/npu/slog
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule

@@ -1,3 +1,0 @@
-dns_install: "yes"
-dns_backend: "coredns"
-

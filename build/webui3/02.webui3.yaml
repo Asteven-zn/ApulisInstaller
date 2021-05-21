@@ -1,0 +1,50 @@
+
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: webui3-amd64
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      webportal-node: pod
+  template:
+    metadata:
+      name: webui3
+      labels:
+        app: webui3-amd64
+        webportal-node: pod
+    spec:
+      
+      nodeSelector:
+        archType: amd64
+        webportal: active
+  
+      hostNetwork: true
+      containers:
+      - name: webui3
+        image: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/apulistech/dlworkspace_webui3:v1.5.0-rc8
+
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: /WebUI
+          name: webuiconfig
+        - mountPath: /usr/src/app/config
+          name: nodejsconfig
+        - mountPath: /var/log/webui3
+          name: webuilog
+      volumes:
+      - name: webuiconfig
+        configMap:
+          name: webui-cm
+      - name: webuilog
+        hostPath:
+          path: /var/log/webui3
+      - name: nodejsconfig
+        configMap:
+          name: webui-cm
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule            

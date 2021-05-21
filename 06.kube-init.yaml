@@ -1,6 +1,0 @@
-# to install network plugin, only one can be choosen
-- hosts:
-    - cluster
-    - ceph-server
-  roles:
-    - kube-init

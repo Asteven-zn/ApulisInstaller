@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+  namespace: default
+spec:
+  ports:
+  - port: 9010
+  selector:
+    app: mlflow-amd64
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mlflow-amd64
+  namespace: default
+  labels:
+     app: mlflow-amd64
+spec:
+  selector:
+    matchLabels:
+      mlflow-node: pod
+  template:
+    metadata:
+      name: mlflow-amd64
+      labels:
+        mlflow-node: pod
+        app: mlflow-amd64
+    spec:
+      nodeSelector:
+        mlflow:   active
+        archType: amd64
+      containers:
+      - name: mlflow
+        image: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/apulistech/mlflow:v1.0.0
+
+        imagePullPolicy: Always
+        command: ["mlflow", "server", "--backend-store-uri", 'postgresql://postgres:36wFZvf8suFgfdyY@postgres.kube-system:5432/mlflow', "--default-artifact-root", "file:///app/mlflow-data", "--port", "9010", "--host" ,"0.0.0.0"]
+        ports:
+        - containerPort: 9010
+          hostPort:      9010
+          name: main
+        volumeMounts:
+      volumes:
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+
