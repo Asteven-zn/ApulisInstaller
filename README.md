@@ -18,10 +18,10 @@ prepare fiel -> install docker -> install kubernetes -> node lable -> install nf
 
 ## 三.部署实操作
 
-### 1.从gitlab 下载安装包
+### 1.从github 下载安装包
 
 ```shell
-cd /home && git clone git@apulis-gitlab.apulis.cn:Ning.Zhao/InstallApulis1.5.git
+cd /home && git clone https://github.com/Asteven-zn/ApulisInstaller.git
 ```
 
 - 安装包说明
