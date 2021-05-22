@@ -34,7 +34,7 @@ spec:
         - /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         - --bearer
         - /var/run/secrets/kubernetes.io/serviceaccount/token
-        - https://192.168.2.156:443
+        - https://192.168.2.163:443
         env:
         - name: LOGGING_LEVEL
           value: INFO

@@ -1,0 +1,8 @@
+{
+  "name": "PM",
+  "url": "http://localhost:9091/prometheus",
+  "basicAuth": false,
+  "access": "proxy",
+  "type": "prometheus",
+  "isDefault": true
+}

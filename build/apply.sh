@@ -1,8 +1,10 @@
 #!/bin/bash
 
-host_ip=$1
+#host_ip=$1
 
-arr=(
+cp -r ../yaml/* ./
+
+arr1=(
     "storage-nfs"
     "nvidia-device-plugin"
     "postgres"
@@ -16,51 +18,62 @@ arr=(
     "webui3"
     "aiarts-backend"
     "aiarts-frontend"
-    "mlflow"
+#    "mlflow"
     "volcanosh"
 )
 
 #修改环境ip
-for item in ${arr[*]}
+echo -e "\n-------------------------------配置环境IP----------------------------"
+for item1 in ${arr1[*]}
 do
-	#echo $item
-	n=`cd $item && ls`
-    old_ip=`grep -o -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' aiarts-backend/01.aiarts_cm.yaml | tail -1`
+	#echo $item1
+	n=`cd $item1 && ls -l | grep ^- | awk -F " +" '{print $9}'`
+        #old_ip=`grep -o -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' aiarts-backend/01.aiarts_cm.yaml | tail -1`
 	#echo $n
-    cd $item && for file in $n ; do ( sed -i s/$old_ip/$host_ip/g $file); done ; cd ../
+        cd $item1 && for file in $n ; do ( sed -i s/conip/192.168.2.163/g $file); done ; cd ../
 	
 done
 
-#启动上次pod服务
-length=${#arr}
+#启动上层pod服务
+echo -e "\n-------------------------------running Apulis AI Platform service ----------------------------"
+#length=${#arr}
 #echo "长度为：$length"
 
 # for 遍历服务目录
-for item in ${arr[*]}
+for item1 in ${arr1[*]}
 do
-	#echo $item
-	n=`cd $item && ls | grep '^[0-9]'`
+	#echo $item1
+	n=`cd $item1 && ls | grep '^[0-9]'`
 	#echo $n
-	cd $item && for file in $n ; do ( echo $file; kubectl apply -f $file ); done ; cd ../
+	cd $item1 && for file in $n ; do ( echo $file; kubectl apply -f $file ); done ; cd ../
 
 done
 
-cd istio && bash pre-render.sh && cd ../
-
 sleep 3
+
+echo -e "\n-----------------------------------------running pre-render ------------------------------------"
+
+cd istio && bash pre-render.sh && cd ../
 
 arr2=(
     "knative"
     "kfserving"
-    "cvat"
+#    "cvat"
 )
 
-for item2 in ${arr3[*]}
+for item2 in ${arr2[*]}
 do
-	#echo $item
-	n=`cd $item && ls | grep '^[0-9]'`
+	#echo $item2
+	n=`cd $item2 && ls | grep '^[0-9]'`
 	#echo $n
-	cd $item && for file in $n ; do ( echo $file; kubectl apply -f $file ); done ; cd ../
-
+	cd $item2 && for file in $n ; do ( echo $file; kubectl apply -f $file ); done ; cd ../
+    
 done
 
+echo -e "\n-------------------------------------------------------------------------------------------------"
+if [ $? -ne 0 ];then
+    echo -e "Apulis AI Platform Installer failed"
+else    
+    echo -e "Apulis AI Platform Installer succeed"
+    kubectl get node
+fi

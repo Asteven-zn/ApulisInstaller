@@ -43,5 +43,6 @@ sleep 3
 
 #节点打lable
 echo -e "\n-------------------------------node lable tag----------------------------"
+kubectl label node $HOSTNAME node-role.kubernetes.io/worker=worker
 kubectl taint nodes --all node-role.kubernetes.io/master-
 bash lab.sh

@@ -15,7 +15,7 @@ spec:
     - intr
     - tcp
   nfs:
-    server: 192.168.2.141
+    server: 192.168.2.163
     path: /data/nfs/pvc/aiplatform-component-data
 
 ---

@@ -33,16 +33,16 @@ data:
       sizelimit: 1000000000
 
     Anno:
-      backendUrl: http://192.168.2.156/data-platform-backend
+      backendUrl: http://192.168.2.163/data-platform-backend
 
     Infer:
-      backendUrl: http://192.168.2.156
+      backendUrl: http://192.168.2.163
 
     auth:
-      url: http://192.168.2.156:80/
+      url: http://192.168.2.163:80/
       key: "Sign key for JWT"
 
-    DltsUrl: http://192.168.2.156:80/apis
+    DltsUrl: http://192.168.2.163:80/apis
     TrackingUrl: http://localhost:9010/api/2.0/mlflow
     image:
       tensorflow:

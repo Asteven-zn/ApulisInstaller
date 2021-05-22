@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: kube-system
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql-amd64
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: mysql-amd64
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: mysql-amd64
+  template:
+    metadata:
+      labels:
+        app: mysql-amd64
+    spec:
+      nodeSelector:
+        archType: amd64
+        mysql: active
+      hostNetwork: true    
+      containers:
+      - name: mysql
+        image: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/mysql/mysql-server:8.0
+
+        env:
+          # Use secret in real usage
+        - name: MYSQL_ROOT_HOST
+          value: "%"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "4Tka6kDR8Kgy455O"
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-log
+          mountPath: /var/log/mysql          
+        - name: aiplatform-component-data-pvc
+          mountPath:  /var/lib/mysql
+          subPath: mysql/
+      volumes:
+      - name: mysql-log
+        hostPath:
+          path: /var/log/mysql
+      - name: aiplatform-component-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-component-data-pvc
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule            

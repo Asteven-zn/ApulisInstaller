@@ -15,8 +15,8 @@ wechat:
   appId: "wx403e175ad2bf1d2d"
   appSecret: "dc8cb2946b1d8fe6256d49d63cd776d0"
 
-domain: http://192.168.2.156
-casUrl: http://192.168.2.156/cas
+domain: http://192.168.2.163
+casUrl: http://192.168.2.163/cas
 
 administrators:
   - admin
@@ -26,17 +26,17 @@ clusters:
     title: Grafana-endpoint-of-the-cluster
     workStorage: /dlwsdata/work
     dataStorage: /dlwsdata/storage
-    grafana: "http://192.168.2.156:80/endpoints/grafana/"
-    prometheus: http://192.168.2.156:9091
+    grafana: "http://192.168.2.163:80/endpoints/grafana/"
+    prometheus: http://192.168.2.163:9091
 userGroup:
   type: custom
-  domain: http://192.168.2.156
+  domain: http://192.168.2.163
   backEndPath: /custom-user-dashboard-backend
   frontEndPath: /custom-user-dashboard
 
 extranet_protocol: http
-docs: http://192.168.2.156/docs
+docs: http://192.168.2.163/docs
 platformName: 依瞳人工智能平台
 i18n: True
 
-aiarts_url: http://192.168.2.156/ai_arts/api/
+aiarts_url: http://192.168.2.163/ai_arts/api/

@@ -1,7 +1,8 @@
-## Apulis Aiarts standalone版安装手册
+## Apulis AI Platform Installer
+
 ### 一.部署整体流程介绍
 
-- 从gitlab下载安装包
+- 从github下载安装脚本
 
 - 修改安装程序配置文件
 
@@ -10,17 +11,19 @@
 - 部署完成登录平台
 
   ***注意：服务器必须可以访问 Internet*
+- 附GPU驱动安装
+
 
 ### 二.部署执行链路
 
 prepare fiel -> install docker -> install kubernetes -> node lable -> install nfs ->  install aiarts (apply)
 
-## 三.部署实操作
+### 三.部署实操作
 
-### 1.从gitlab 下载安装包
+#### 1.从github 下载安装包
 
 ```shell
-cd /home && git clone git@apulis-gitlab.apulis.cn:Ning.Zhao/InstallApulis1.5.git
+cd /home && git clone https://github.com/Asteven-zn/ApulisInstaller.git
 ```
 
 - 安装包说明
@@ -30,21 +33,25 @@ cd /home && git clone git@apulis-gitlab.apulis.cn:Ning.Zhao/InstallApulis1.5.git
   ├── app.tar.gz         用到的二进制文件
   ├── build              aiarts的yaml文件
   │   ├── apply.sh       aiarts脚本
+  ├── credentials        认证信息文件
+  ├── daemon.json
   ├── docker.sh          docker脚本
   ├── install.sh         部署主程序
   ├── k8s.sh             kubernetes脚本
   ├── lab.sh             node lable脚本
   ├── nfs.sh             nfs-server脚本
+  ├── nginxfile.tar.gz
+  └── remove.sh          卸载平台脚本
   └── nginxfile.tar.gz   nginx相关配置文件
   ```
 
-### 2.进入安装包目录
+#### 2.进入安装包目录
 
 ```shell
 cd /home/InstallApulis
 ```
 
-### 3.修改install.sh 主安装脚本配置
+#### 3.修改install.sh 主安装脚本配置
 
 将 eth_ip 参数改为本地服务器的业务网卡 IP 地址，如下：
 
@@ -58,17 +65,17 @@ eth_ip=192.168.2.156
 ..................
 ```
 
-### 4.部署完成
+#### 4.部署完成
 
 讲到如下输出内容，平台部署完成
 
 ```shell
-*************************Apulis aiarts succeed********************************
+Apulis AI Platform Installer succeed
 ```
 
-## 四.部署脚本
+### 四.部署脚本
 
-### install.sh
+#### install.sh
 
 ```shell
 #/bin/bash
@@ -194,7 +201,7 @@ echo -e "\n-------------------------------start docker -------------------------
 systemctl daemon-reload && systemctl enable docker.service && systemctl restart docker.service
 ```
 
-### k8s.sh
+#### k8s.sh
 
 ```shell
 #!/bin/bash
@@ -246,7 +253,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 bash lab.sh
 ```
 
-### lab.sh
+#### lab.sh
 
 ```shell
 #!/bin/bash
@@ -288,7 +295,7 @@ done
 kubectl get node --show-labels
 ```
 
-### nfs.sh
+#### nfs.sh
 
 ```shell
 #!/bin/bash
@@ -315,7 +322,7 @@ systemctl restart rpcbind
 systemctl enable rpcbind
 ```
 
-### apply
+#### apply
 
 ```shell
 #!/bin/bash
@@ -390,3 +397,21 @@ else
         echo -e "*************************Apulis aiarts succeed********************************"
 fi
 ```
+
+### 五.GPU驱动安装
+
+```shell
+查看设备gpu信息
+lspci | grep -i nvidia
+安装gpu驱动
+apt install ubuntu-drivers-common -y
+sudo ubuntu-drivers autoinstall -y
+
+安装 nvidia-container-runtime
+sed -i 's/127.0.0.53/8.8.8.8/' /etc/resolv.conf
+curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | sudo apt-key add - distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | sudo tee /etc/apt/sources.list.d/nvidia-container-runtime.list
+sudo apt-get update
+apt-get install nvidia-container-runtime -y
+```
+

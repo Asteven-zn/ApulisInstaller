@@ -30,7 +30,7 @@ spec:
       - name: check-postgres-ready
         image: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/apulistech/busybox:v1.28
 
-        command: ['sh', '-c', "until nc -vz 192.168.2.156 5432; do echo 'Waiting for postgres service'; sleep 2; done;"]
+        command: ['sh', '-c', "until nc -vz 192.168.2.163 5432; do echo 'Waiting for postgres service'; sleep 2; done;"]
 
       containers:
       - name: restfulapi

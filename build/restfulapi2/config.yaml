@@ -6,7 +6,7 @@ mysql :
   username: root
   password: "4Tka6kDR8Kgy455O"
 postgresql:
-  hostname: 192.168.2.156
+  hostname: 192.168.2.163
   port: 5432
   username: postgres
   password: 36wFZvf8suFgfdyY
@@ -18,16 +18,16 @@ root-path: /DLWorkspace/src/
 nvidiaDriverPath: /opt/nvidia-driver/current
 clusterId: fc505c7b-4905-5a97-9e40-39e2880af3ba
 domain: sigsus.cn
-apiserver: "https://192.168.2.156:6443"
+apiserver: "https://192.168.2.163:6443"
 certificate-authority: /etc/kubernetes/ssl/ca.pem
 client-certificate: /etc/kubernetes/ssl/admin.pem
 client-key: /etc/kubernetes/ssl/admin-key.pem
 pod_ip_range: 10.68.0.0/16
 per_user_gpu_limit: -1
-mountpoints: {u'nfsshare1': {u'mountpoints': None, u'server': u'192.168.2.156', u'filesharename': u'/mnt/local', u'mountcmd': u' ', u'type': u'nfs', u'options': u'rsize=8192,timeo=14,intr,tcp', u'curphysicalmountpoint': u'/mntdlws'}}
+mountpoints: {u'nfsshare1': {u'mountpoints': None, u'server': u'192.168.2.163', u'filesharename': u'/mnt/local', u'mountcmd': u' ', u'type': u'nfs', u'options': u'rsize=8192,timeo=14,intr,tcp', u'curphysicalmountpoint': u'/mntdlws'}}
 mounthomefolder: True
 deploymounts: 
-webportal_node: 192.168.2.156
+webportal_node: 192.168.2.163
 kube_custom_scheduler: False
 gpu_count_per_node: 1
 worker_node_num: 1
@@ -53,7 +53,7 @@ master_token:
 nccl_ib_disable: 
 vc_node_hard_assignment: 
 
-gpu_reporter: 'http://192.168.2.156:9092'
+gpu_reporter: 'http://192.168.2.163:9092'
 
 vc_without_shared_storage: 
 
@@ -86,7 +86,7 @@ inference:
     allowedImageVersions:
       - 1.0.0
 
-usermanagerapi: http://192.168.2.156/custom-user-dashboard-backend
+usermanagerapi: http://192.168.2.163/custom-user-dashboard-backend
 usermanagerapitoken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMwMDAwLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxOTIwODUyOTA0fQ.kT7Bf9xc1SPR_5QI0k7dqMYzgWfuHjUGdq2tstVPEf0
 
 enable_jobmanager_debug_mode: False
@@ -97,7 +97,7 @@ extranet_protocol: http
 defalt_virtual_cluster_device_type_list:
   - nvidia_gpu_amd64
 
-master_private_ip:  192.168.2.156
+master_private_ip:  192.168.2.163
 
 data_platform_path: /dlwsdata/label/
 private_docker_registry: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/

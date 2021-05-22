@@ -35,7 +35,7 @@ data:
     ADMINISTRATOR_PASSWORD="McgOWa"
 
     # Cluster
-    RESTFULAPI=http://192.168.2.156:80/apis
+    RESTFULAPI=http://192.168.2.163:80/apis
 
     # Optional config
     ENABLE_I18N=True
