@@ -1,0 +1,60 @@
+{
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Information",
+      "Microsoft": "Information"
+    }
+  },
+  
+  "UserGroups": {u'DLWSAdmins': {u'gid': u'20001', u'uid': u'20000', u'Allowed': [u'admin']}, u'DLWSRegister': {u'gid': u'20001', u'uid': u'20001-29999', u'Allowed': [u'@gmail.com', u'@live.com', u'@outlook.com', u'@hotmail.com', u'@apulis.com']}},
+  "WinbindServers": "",
+  "DeployAuthentications": [u'Corp', u'Live', u'Gmail'],
+
+
+  "DLClusters" : 
+  {
+     "DLWS" : {
+        "AdminGroups": [u'DLWSAdmins'],
+        "AuthorizedGroups": [u'DLWSAdmins'],
+        "RegisterGroups": [u'DLWSRegister'],
+        "ClusterId": "fc505c7b-4905-5a97-9e40-39e2880af3ba",
+        "Restapi": "http://conip:5000",
+        "Grafana": "",
+        "WorkFolderAccessPoint": "/",
+        "DataFolderAccessPoint": "",
+        "smbUsername": "",
+        "smbUserPassword": "",
+        "SQLHostname": "",
+        "SQLUsername": "",
+        "SQLPassword": "",
+        "SQLDatabaseForUser": "AuthorizeUser-",
+        "MySQLHostname": "mysql.kube-system",
+        "MySQLPort": "3306",
+        "MySQLUsername": "root",
+        "MySQLPassword": "4Tka6kDR8Kgy455O",
+        "datasource": "postgres",
+        "mountdescription" : "{u'hdfs': u'Hadoop file system (replicated distribute storage).', u'azurefileshare': u'Azure file storage', u'localHDD': u'Local HDD. ', u'glusterfs': u'GlusterFS (replicated distributed storage)', u'nfs': u'NFS (remote file share)', u'emptyDir': u'Kubernetes emptyDir (folder will be erased after job termination).', u'local': u'Local SSD. '}",
+        "mountpoints" : "{u'nfsshare1': {u'mountpoints': None, u'server': u'conip', u'filesharename': u'/mnt/local', u'mountcmd': u' ', u'type': u'nfs', u'options': u'rsize=8192,timeo=14,intr,tcp', u'curphysicalmountpoint': u'/mntdlws'}}",
+        "mounthomefolder" : "True",
+        "deploymounts" : ""
+        , "domain": "sigsus.cn"
+    },
+  },
+
+  "MasterTemplates" :
+  {
+    "SQLHostname": "",
+    "SQLUsername": "",
+    "SQLPassword": "",
+    "SQLDatabaseForTemplates": "Templates-master", 
+    "MySQLHostname": mysql.kube-system,
+    "MySQLPort": 3306,
+    "MySQLUsername": root,
+    "MySQLPassword": 4Tka6kDR8Kgy455O,
+    "datasource": postgres,
+  },
+
+
+}

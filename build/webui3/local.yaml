@@ -1,0 +1,42 @@
+sign: Sign key for JWT
+winbind: "Will call /domaininfo/GetUserId with userName query to get the user's id info"
+masterToken: "Access token of all users"
+
+authEnabled:
+  wechat: 1
+
+  microsoft: 1
+
+activeDirectory:
+  tenant: "1"
+  clientId: "1"
+  clientSecret: "1"
+wechat:
+  appId: "wx403e175ad2bf1d2d"
+  appSecret: "dc8cb2946b1d8fe6256d49d63cd776d0"
+
+domain: http://192.168.2.178
+casUrl: http://192.168.2.178/cas
+
+administrators:
+  - admin
+clusters:
+  DLWS:
+    restfulapi: http://127.0.0.1/apis
+    title: Grafana-endpoint-of-the-cluster
+    workStorage: /dlwsdata/work
+    dataStorage: /dlwsdata/storage
+    grafana: "http://192.168.2.178:80/endpoints/grafana/"
+    prometheus: http://192.168.2.178:9091
+userGroup:
+  type: custom
+  domain: http://192.168.2.178
+  backEndPath: /custom-user-dashboard-backend
+  frontEndPath: /custom-user-dashboard
+
+extranet_protocol: http
+docs: http://192.168.2.178/docs
+platformName: 依瞳人工智能平台
+i18n: True
+
+aiarts_url: http://192.168.2.178/ai_arts/api/

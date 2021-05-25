@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: aiplatform-model-data-pv
+spec:
+  capacity:
+    storage: 300Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: model-data
+  mountOptions:
+    - rsize=8192
+    - timeo=14
+    - intr
+    - tcp
+  nfs:
+    server: 192.168.2.178
+    path: /data/nfs/pvc/aiplatform-model-data
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: aiplatform-model-data-pvc
+spec:
+  storageClassName: model-data
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Mi
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    istio-injection: disabled
+    serving.kubeflow.org/inferenceservice: enabled
+  name: kfserving-pod
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: aiplatform-model-data-pv-kfserving-pod
+  namespace: kfserving-pod
+spec:
+  capacity:
+    storage: 300Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: kfserving-data
+  mountOptions:
+    - rsize=8192
+    - timeo=14
+    - intr
+    - tcp
+  nfs:
+    server: 192.168.2.178
+    path: /data/nfs/pvc
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: aiplatform-model-data-pvc-kfserving-pod
+  namespace: kfserving-pod
+spec:
+  storageClassName: kfserving-data
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Mi
+

@@ -1,0 +1,42 @@
+sign: Sign key for JWT
+winbind: "Will call /domaininfo/GetUserId with userName query to get the user's id info"
+masterToken: "Access token of all users"
+
+authEnabled:
+  wechat: 1
+
+  microsoft: 1
+
+activeDirectory:
+  tenant: "1"
+  clientId: "1"
+  clientSecret: "1"
+wechat:
+  appId: "wx403e175ad2bf1d2d"
+  appSecret: "dc8cb2946b1d8fe6256d49d63cd776d0"
+
+domain: http://conip
+casUrl: http://conip/cas
+
+administrators:
+  - admin
+clusters:
+  DLWS:
+    restfulapi: http://127.0.0.1/apis
+    title: Grafana-endpoint-of-the-cluster
+    workStorage: /dlwsdata/work
+    dataStorage: /dlwsdata/storage
+    grafana: "http://conip:80/endpoints/grafana/"
+    prometheus: http://conip:9091
+userGroup:
+  type: custom
+  domain: http://conip
+  backEndPath: /custom-user-dashboard-backend
+  frontEndPath: /custom-user-dashboard
+
+extranet_protocol: http
+docs: http://conip/docs
+platformName: 依瞳人工智能平台
+i18n: True
+
+aiarts_url: http://conip/ai_arts/api/

@@ -1,0 +1,84 @@
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: aiarts-backend-amd64
+  namespace: default
+  labels:
+     run: dlwsaiarts-backend
+spec:
+  selector:
+    matchLabels:
+      aiarts-backend-node: pod
+  template:
+    metadata:
+      name: aiarts-backend
+      labels:
+        aiarts-backend-node: pod
+        app: aiarts-backend
+    spec:
+      
+      nodeSelector:
+        aiarts-backend: active
+        archType: amd64
+      initContainers:
+      #During this Pod's initialization, check that postgres service is up and running before starting this pod
+      - name: check-postgres-ready
+        image: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/apulistech/busybox:v1.28
+
+        command: ['sh', '-c', "until nc -vz postgres.kube-system 5432; do echo 'Waiting for postgres service'; sleep 2; done;"]
+
+      containers:
+      - name: aiarts-backend
+        image: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/apulistech/aiarts-backend:v1.5.0-rc7
+
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+          hostPort: 9000
+          name: main
+        volumeMounts:
+        - mountPath: /root/config.yaml
+          name: appconfig
+          subPath: config.yaml
+        - mountPath: /home
+          name: aiplatform-app-data-pvc
+          subPath: work/
+        - mountPath: /data
+          name: aiplatform-model-data-pvc
+        - mountPath: /etc/kubernetes
+          name: cluster-conf
+        - mountPath: /root/logs
+          name: applog
+        - mountPath: /root/.kube/config
+          name: kubeconf
+        - mountPath: /root/.ssh
+          name: sshkey
+      volumes:
+    
+      - name: appconfig
+        configMap:
+          name: aiarts-cm
+      - name: aiplatform-app-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-app-data-pvc
+      - name: aiplatform-model-data-pvc
+        persistentVolumeClaim:
+          claimName: aiplatform-model-data-pvc
+      - name: cluster-conf
+        hostPath:
+          path: /etc/kubernetes
+          type: DirectoryOrCreate
+      - name: applog
+        hostPath:
+          path: /var/log/aiarts-backend
+      - name: kubeconf
+        hostPath:
+          path: /root/.kube/config
+      - name: sshkey
+        hostPath:
+          path: /home/dlwsadmin/.ssh
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule

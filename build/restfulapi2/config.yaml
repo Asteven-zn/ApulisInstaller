@@ -1,0 +1,107 @@
+datasource: postgres
+#datasource: "PostgreSQL"
+mysql :
+  hostname: mysql.kube-system
+  port: 3306
+  username: root
+  password: "4Tka6kDR8Kgy455O"
+postgresql:
+  hostname: 192.168.2.178
+  port: 5432
+  username: postgres
+  password: 36wFZvf8suFgfdyY
+
+dltsdata-storage-mount-path: /dlwsdata
+kubelet-path: /usr/bin/kubectl
+storage-mount-path: /dlwsdata
+root-path: /DLWorkspace/src/
+nvidiaDriverPath: /opt/nvidia-driver/current
+clusterId: fc505c7b-4905-5a97-9e40-39e2880af3ba
+domain: sigsus.cn
+apiserver: "https://192.168.2.178:6443"
+certificate-authority: /etc/kubernetes/ssl/ca.pem
+client-certificate: /etc/kubernetes/ssl/admin.pem
+client-key: /etc/kubernetes/ssl/admin-key.pem
+pod_ip_range: 10.68.0.0/16
+per_user_gpu_limit: -1
+mountpoints: {u'nfsshare1': {u'mountpoints': None, u'server': u'192.168.2.178', u'filesharename': u'/mnt/local', u'mountcmd': u' ', u'type': u'nfs', u'options': u'rsize=8192,timeo=14,intr,tcp', u'curphysicalmountpoint': u'/mntdlws'}}
+mounthomefolder: True
+deploymounts: 
+webportal_node: 192.168.2.178
+kube_custom_scheduler: False
+gpu_count_per_node: 1
+worker_node_num: 1
+gpu_type: nvidia
+defalt_virtual_cluster_name: platform
+
+infiniband_mounts: 
+custom_mounts: 
+
+enable_cpuworker: False
+default_cpurequest: 
+default_cpulimit: 
+default_memoryrequest: 
+default_memorylimit: 
+default_cpu_sku: Standard_D2s_v3
+sku_meta: {u'default': {u'memory_ratio': 0.8, u'Standard_D2s_v3': {u'memory_ratio': 0.9, u'memory': 8, u'cpu': 2, u'cpu_ratio': 0.9}, u'cpu_ratio': 0.8}}
+
+enable_blobfuse: dalse
+
+local_fast_storage: 
+enable_custom_registry_secrets: False
+master_token: 
+nccl_ib_disable: 
+vc_node_hard_assignment: 
+
+gpu_reporter: 'http://192.168.2.178:9092'
+
+vc_without_shared_storage: 
+
+jwt:
+  secret_key: Sign key for JWT
+  algorithm: HS256
+  token_ttl: 86400
+
+Authentication:
+  WeChat:
+    AppId: "wx403e175ad2bf1d2d"
+    AppSecret: "dc8cb2946b1d8fe6256d49d63cd776d0"
+  Microsoft:
+    ClientId: "1"
+    ClientSecret: "1"
+
+administrators:
+  - admin
+
+inference:
+  tensorflow:
+    allowedImageVersions:
+      - 1.15.0
+      - 1.15.0-arm64
+      - 1.15.0-gpu
+      - 2.2.0
+      - 2.2.0-arm64
+      - 2.2.0-gpu
+  apulisVision:
+    allowedImageVersions:
+      - 1.0.0
+
+usermanagerapi: http://192.168.2.178/custom-user-dashboard-backend
+usermanagerapitoken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMwMDAwLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxOTIwODUyOTA0fQ.kT7Bf9xc1SPR_5QI0k7dqMYzgWfuHjUGdq2tstVPEf0
+
+enable_jobmanager_debug_mode: False
+
+extranet_port: 80
+extranet_protocol: http
+
+defalt_virtual_cluster_device_type_list:
+  - nvidia_gpu_amd64
+
+master_private_ip:  192.168.2.178
+
+data_platform_path: /dlwsdata/label/
+private_docker_registry: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/
+endpoint_use_short_domain: 
+
+
+

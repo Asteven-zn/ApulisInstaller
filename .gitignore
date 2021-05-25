@@ -1,0 +1,13 @@
+/bin
+/.idea
+/.cluster
+/credentials
+/images/
+/target/
+/.vscode/
+*.tar
+*.deb
+*.tgz
+*.retry
+download/ca.pem
+

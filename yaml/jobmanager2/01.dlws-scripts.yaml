@@ -1,0 +1,553 @@
+apiVersion: v1
+data:
+  bootstrap.sh: "#! /bin/bash\nset -ex\n\n\n## set npu device configs\nfunction setup_npu_config()
+    {\n\n\tnpu_info_dir=/home/${DLWS_USER_NAME}/.npu/${DLWS_JOB_ID}\n\tmkdir -p $npu_info_dir\n\n\t##
+    npu distributed job - worker\n\tif [ \"$DLWS_ROLE_NAME\" = \"worker\" ] && [ \"$DLWS_IS_NPU_JOB\"
+    = \"true\" ];\n\tthen\n\n\t\t## worker pod\n\t\techo \"ip=${NPU_IPS}\" >> ${npu_info_dir}/npu_${DLWS_ROLE_IDX}.info\n\t\thost_ip=`ip
+    route get 1 | sed -n 's/^.*src \\([0-9.]*\\) .*$/\\1/p'`\n\t\techo \"host=${host_ip}\"
+    >> ${npu_info_dir}/npu_${DLWS_ROLE_IDX}.info\n\n\t\tusermod -a -G HwHiAiUser ${DLWS_USER_NAME}\n\t\t##
+    worker pod, generate hccl.json\n                if  [ -x \"$(command -v python)\"
+    ] ; then\n                     python ${SCRIPT_DIR}/setup_npu.py\n                fi\n\n\t##
+    npu distributed job - master\n\telif [ \"$DLWS_ROLE_NAME\" = \"ps\" ] && [ \"$DLWS_IS_NPU_JOB\"
+    = \"true\" ];\n\tthen\n\n\t\tusermod -a -G HwHiAiUser ${DLWS_USER_NAME}\n\n\t\t##
+    master pod, generate hccl.json\n                if  [ -x \"$(command -v python)\"
+    ] ; then\n                     python ${SCRIPT_DIR}/setup_npu.py\n                fi\n\n\t##
+    npu job, single node\n\telif [ \"$DLWS_ROLE_NAME\" = \"master\" ] && [ ! -z \"$NPU_IPS\"
+    ];\n\tthen\n\t\t## worker pod\n\t\techo \"ip=${NPU_IPS}\" >> ${npu_info_dir}/npu_0.info\n\t\thost_ip=`ip
+    route get 1 | sed -n 's/^.*src \\([0-9.]*\\) .*$/\\1/p'`\n\t\techo \"host=${host_ip}\"
+    >> ${npu_info_dir}/npu_0.info\n\n\t\tusermod -a -G HwHiAiUser ${DLWS_USER_NAME}\n
+    \               if  [ -x \"$(command -v python)\" ] ; then\n                     python
+    ${SCRIPT_DIR}/setup_npu.py \n                fi\n\tfi\n\n\t## create npu log collection
+    script\n\tcat > /home/getnpu.sh << EOF\n#/bin/bash\n\nmapfile -t device_list <
+    <( ls /dev/ | grep davinci[0-9] )\ndevice_id_list=()\n\nfor device in \\${device_list[@]}\ndo\n
+    \       id=\\${device/davinci/}\n        device_id_list+=(\\$id)\ndone\n\nfile_list=\"\"\nfor
+    id in \\${device_id_list[@]}\ndo\n        latest_file=\\`ls -t /var/log/npulog/slog/device-\\$id/
+    | head -n 1\\`\n        if [ ! -z \\$latest_file ]; then\n                tail
+    -n 2000 /var/log/npulog/slog/device-\\$id/\\${latest_file} | grep -i ERROR\n        fi\ndone\n\nlatest_file=\\`ls
+    -t /var/log/npulog/slog/host-0/ | head -n 1\\`\nif [ ! -z \\$latest_file ]; then\n
+    \   tail -n 4000 /var/log/npulog/slog/host-0/\\${latest_file} | grep -i ERROR\nfi\nEOF\n\tchmod
+    777 /home/getnpu.sh\n}\n\nRUN_TIME_DIR=/dlts-runtime\nSCRIPT_DIR=/pod/scripts\nLOG_DIR=/pod/logs\n\nmkdir
+    -p ${RUN_TIME_DIR}\nmkdir -p ${SCRIPT_DIR}\nmkdir -p ${LOG_DIR}\n\n. ${RUN_TIME_DIR}/env/init.env\nsh
+    -x ${RUN_TIME_DIR}/install.sh\n\n# set apt mirrors for foreign sources\n# sudo
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub\n\n#
+    example: sed -i 's|https\\?://[^/]\\+/|http://mirrors.aliyun.com/|' /etc/apt/sources.list\n#
+    mirror url must be configed in config.yaml like below:\n# apt_mirror_url: http:\\/\\/mirrors.aliyun.com\n#
+    sed -i 's|https\\?://[^/]\\+/|{apt_mirror_url}/|' /etc/apt/sources.list\n\n# to
+    avoid apt-get update error:\n# download.nvidia.cn: connection timeout\nrm -rf
+    /etc/apt/sources.list.d/cuda.list /etc/apt/sources.list.d/cuda.list.save /etc/apt/sources.list.d/graphics-drivers-ubuntu-ppa-bionic.list
+    /etc/apt/sources.list.d/nvidia-ml.list /etc/apt/sources.list.d/nvidia-ml.list.save\n\necho
+    bootstrap starts at `date` &>> ${LOG_DIR}/bootstrap.log\n\n# https://stackoverflow.com/a/26759734/845762\n#
+    if ! [ -x \"$(command -v sudo)\" ] ; then\n#     time apt-get update && time apt-get
+    install -y sudo\n# fi\n\n# if ! [ -x \"$(command -v ifconfig)\" ];then\n#    time
+    apt-get update && time apt-get install -y net-tools\n# fi\n\n# if ! [ -x \"$(command
+    -v ip)\" ];then\n#    time\n#     && time apt-get install -y iproute2\n# fi\n\nif
+    [ \"$DLWS_ROLE_NAME\" != \"inferenceworker\" ];\nthen\n\t# Dir for saving running
+    status\n\texport PROC_DIR=/pod/running\n\trm -rf ${PROC_DIR}\n\tmkdir -p ${PROC_DIR}\n\n\t#
+    Dir for logs\n\texport LOG_DIR=/pod/logs\n\t#rm -rf ${LOG_DIR}\n\tmkdir -p ${LOG_DIR}\n\n\t#
+    Save the pid.\n\tPID_FILE=${PROC_DIR}/pid\n\techo $$ > $PID_FILE\nfi\n\n# Setup
+    container\necho \"==========================begin to create user and setup env
+    =============\" &>> ${LOG_DIR}/bootstrap.log\nbash ${SCRIPT_DIR}/init_user.sh
+    &>> ${LOG_DIR}/bootstrap.log\necho \"==========================create user done!===============================\"
+    &>> ${LOG_DIR}/bootstrap.log\n\nif [ \"$DLWS_ROLE_NAME\" != \"inferenceworker\"
+    ];\nthen\n\ttouch ${PROC_DIR}/CONTAINER_READY\nfi\n\n\n\n# Setup ssh listening
+    port and start ssh process\necho \"===========================begin to start ssh==============================\"&>>
+    ${LOG_DIR}/bootstrap.log\nbash ${SCRIPT_DIR}/setup_sshd.sh &>> ${LOG_DIR}/bootstrap.log\necho
+    \"===========================start ssh done!=================================\"&>>
+    ${LOG_DIR}/bootstrap.log\n\n\n\n\n# setup ssh configuration\nif [ \"$DLWS_ROLE_NAME\"
+    != \"inferenceworker\" ];\nthen\n  echo \"=========================begin to setup
+    ssh!=============================\"&>> ${LOG_DIR}/bootstrap.log\n    bash ${SCRIPT_DIR}/setup_ssh_config.sh
+    &>> ${LOG_DIR}/bootstrap.log\n\n\ttouch ${PROC_DIR}/ROLE_READY\n\techo \"=========================setup
+    ssh done!================================\"&>> ${LOG_DIR}/bootstrap.log\n\n# setup
+    ib config\necho \"===========================begin to setup ib config==============================\"&>>
+    ${LOG_DIR}/bootstrap.log\nbash ${SCRIPT_DIR}/setup_ib_config.sh &>> ${LOG_DIR}/bootstrap.log\necho
+    \"===========================setup ib config done!=================================\"&>>
+    ${LOG_DIR}/bootstrap.log\n\n\t# Setup job\n\t# TODO\n\ttouch ${PROC_DIR}/JOB_READY\nfi\n\n\n\n\n#
+    create path for training jobs\necho \"=========================begin to setup
+    path!=============================\"&>> ${LOG_DIR}/bootstrap.log\nif [ ! -z ${CODE_PATH}
+    ]; then\n\trunuser -l ${DLWS_USER_NAME} -c \"mkdir -p ${CODE_PATH}\"\nfi\n\nif
+    [ ! -z ${OUTPUT_PATH} ]; then\n\trunuser -l ${DLWS_USER_NAME} -c \"mkdir -p ${OUTPUT_PATH}\"\nfi\n\n#
+    setup npu device info for npu distributing jobs\nnpu_info_dir=/home/${DLWS_USER_NAME}/.npu/${DLWS_JOB_ID}\nif
+    [ -d /home/${DLWS_USER_NAME}/.npu ]; then chmod a+w /home/${DLWS_USER_NAME}/.npu;fi\nrunuser
+    -l ${DLWS_USER_NAME} -c \"mkdir -p ${npu_info_dir}\"\necho \"=========================setup
+    path done!=============================\"&>> ${LOG_DIR}/bootstrap.log\n\n\necho
+    \"===========================begin to setup npu config==============================\"&>>
+    ${LOG_DIR}/bootstrap.log\nsetup_npu_config\necho \"===========================setup
+    npu config done!==============================\"&>> ${LOG_DIR}/bootstrap.log\n\necho
+    bootstrap ends at `date` &>> ${LOG_DIR}/bootstrap.log\nset +e\n\n# Execute user's
+    command for the job\n# distributing job\nif [ \"$DLWS_NUM_PS\" != \"0\" ] ; then\n\n
+    \   if [ -z \"$DLWS_LAUNCH_CMD\" ]; then\n\t DLWS_LAUNCH_CMD=\"sleep infinity\"\n
+    \   fi\n\n    echo $DLWS_LAUNCH_CMD\n    printenv DLWS_LAUNCH_CMD > /pod/job_command.sh\n
+    \   chmod ugo+rx /pod/job_command.sh\n    chmod ugo+rx /pod.env\n    cat /pod/job_command.sh\n\n
+    \   runuser -l ${DLWS_USER_NAME} -c /pod/job_command.sh\n    # Save exit code\n
+    \   EXIT_CODE=$?\n    echo  `date` \": ${EXIT_CODE}\"  > ${PROC_DIR}/EXIT_CODE\n\nelif
+    ([ \"$DLWS_ROLE_NAME\" = \"worker\" ] && [ \"$DLWS_IS_NPU_JOB\" = \"false\" ])
+    || ([ \"$DLWS_ROLE_NAME\" = \"ps\" ] && [ \"$DLWS_IS_NPU_JOB\" = \"true\" ]);\nthen\n\n
+    \   runuser -l ${DLWS_USER_NAME} -c \"sleep infinity\"\nelse\n#    if ([ \"$DLWS_ROLE_NAME\"
+    = \"worker\" ] && [ \"$DLWS_IS_NPU_JOB\" = \"true\" ]);\n#    then\n#      DLWS_LAUNCH_CMD=\"${DLWS_LAUNCH_CMD}
+    \ && sleep infinity\"\n#    fi\n    printenv DLWS_LAUNCH_CMD > /pod/job_command.sh\n
+    \   chmod ugo+rx /pod/job_command.sh\n    chmod ugo+rx /pod.env\n    echo \"============================begin
+    to exec command!==========================\"&>> ${LOG_DIR}/bootstrap.log\n    runuser
+    -l ${DLWS_USER_NAME} -c /pod/job_command.sh\n    # Save exit code\n    EXIT_CODE=$?\n
+    \   echo  `date` \": ${EXIT_CODE}\"  > ${PROC_DIR}/EXIT_CODE\nfi\n\n# exit\nexit
+    ${EXIT_CODE}\n\n"
+  create_script.py: "# -*- coding: utf-8 -*-\n\"\"\"\nCreated on Sun Oct 25 11:35:11
+    2020\n\n@author: DELL\n\"\"\"\n\nfrom string import Template\nimport argparse\nparser
+    = argparse.ArgumentParser(description='gen run python shell script')\nparser.add_argument('--type',
+    help='shell script for tensorflow or mindspore')\nparser.add_argument('--command',
+    help='python script path with args')\nparser.add_argument('--out', help='shell
+    script output path')\nargs = parser.parse_args();\n\nif(args.command.replace(\"
+    \", \"\") ==\"sleepinfinity\"):\n    args.command = \"{{replace command here}}\"\n\nif(args.type
+    == \"tensorflow\"):\n    ids=\"IFS=',' read -ra VISIBLE_IDS <<< \\\"${VISIBLE_IDS}\\\"\\necho
+    \\\"NPU---${VISIBLE_IDS[@]}\\\"\\n\"\n    env_path='''\n# setting main path\nMAIN_PATH=$(dirname
+    $(readlink -f $0))\\n\nexport JOB_ID=$RANDOM\nexport SOC_VERSION=Ascend910\nexport
+    HCCL_CONNECT_TIMEOUT=200\\n\nexport GLOBAL_LOG_LEVEL=3\nexport TF_CPP_MIN_LOG_LEVEL=3\nexport
+    SLOG_PRINT_TO_STDOUT=0\\n\n# local variable\nexport RANK_SIZE=${#VISIBLE_IDS[@]}\nexport
+    RANK_TABLE_FILE=/home/$DLWS_USER_NAME/.npu/$DLWS_JOB_ID/hccl_tf.json\nexport POD_NAME=${DLWS_JOB_ID}\nexport
+    RANK_ID=${DLWS_JOB_ID}\nSAVE_PATH=$MAIN_PATH/training\\n\n# training stage\\n\nfor
+    device_phy_id in \"${VISIBLE_IDS[@]}\"\ndo\nexport DEVICE_ID=$device_phy_id\nexport
+    DEVICE_INDEX=$device_phy_id\nTMP_PATH=$SAVE_PATH/D$RANK_ID\nmkdir -p $TMP_PATH\ncd
+    $TMP_PATH\n# {{start command}}\n    '''\n    script=Template('${command} &\\n')\n
+    \   end='cd -\\n\\ndone\\n\\nwait'\nelif(args.type == \"mindspore\"):\n    ids=\"IFS=','
+    read -ra VISIBLE_IDS <<< \\\"${VISIBLE_IDS}\\\"\\necho \\\"NPU---${VISIBLE_IDS[@]}\\\"\\n\"\n
+    \   env_path='''\n# setting main path\nMAIN_PATH=$(dirname $(readlink -f $0))\\n\nexport
+    JOB_ID=$RANDOM\nexport SOC_VERSION=Ascend910\nexport HCCL_CONNECT_TIMEOUT=200\\n\n\n#
+    local variable\nexport RANK_SIZE=${#VISIBLE_IDS[@]}\nexport RANK_TABLE_FILE=/home/$DLWS_USER_NAME/.npu/$DLWS_JOB_ID/hccl_ms.json\nSAVE_PATH=$MAIN_PATH/training\\n\n#
+    training stage\\n\nfor device_phy_id in $(seq 0 $[$RANK_SIZE-1])\ndo\nexport DEVICE_ID=$device_phy_id\nexport
+    RANK_ID=$device_phy_id\necho \"start training for rank $RANK_ID, device $DEVICE_ID\"\nTMP_PATH=$SAVE_PATH/D$RANK_ID\nmkdir
+    -p $TMP_PATH\ncd $TMP_PATH\n# {{start command}}\n    '''\n    script=Template('${command}
+    &\\n')\n    end='cd -\\n\\ndone\\n\\nwait'\n    \ntxt = ids+env_path+script.substitute(command=args.command)+end\nprint(txt)\nwith
+    open(args.out,\"w\") as f:\n    f.write(txt)\n    \n\n"
+  init_user.sh: |
+    #/bin/bash
+    set -ex
+
+    #export POD_NAME=
+    #export DLWS_GID=
+    #export DLWS_UID=
+    #export DLWS_USER_NAME=
+
+    export ENV_FILE=/pod.env
+    rm -rf ${ENV_FILE}  # need to remove it if there is already one there
+
+    # install required pkgs
+    export DEBIAN_FRONTEND=noninteractive
+    # time apt-get update && time apt-get install sudo openssl -y
+
+    # setup user and group, fix permissions
+    if id "${DLWS_USER_NAME}" &>/dev/null;
+    then
+        echo "User ${DLWS_USER_NAME} found, skip adding user ..."
+    else
+        addgroup --force-badname --gid  ${DLWS_GID} domainusers
+        adduser --force-badname --home /home/${DLWS_USER_NAME} --shell /bin/bash --uid ${DLWS_UID}  -gecos '' --gid ${DLWS_GID} --disabled-password ${DLWS_USER_NAME}
+        usermod -p $(echo ${DLTS_JOB_TOKEN} | openssl passwd -1 -stdin) ${DLWS_USER_NAME}
+
+        chown ${DLWS_USER_NAME} /home/${DLWS_USER_NAME}/ /home/${DLWS_USER_NAME}/.profile /home/${DLWS_USER_NAME}/.ssh || /bin/true
+        chmod 700 /home/${DLWS_USER_NAME}/.ssh || /bin/true
+        chmod 755 /home/${DLWS_USER_NAME} || /bin/true
+
+        # setup sudoers
+        adduser $DLWS_USER_NAME sudo
+        echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    fi
+
+    # export envs
+    # options '-e' for exported ENVs only
+    compgen -e | while read line; do
+            if [[ $line != HOME* ]] && [[ $line != INTERACTIVE* ]] && [[ $line != LS_COLORS* ]]  && [[ $line != PATH* ]] && [[ $line != PWD* ]]; then
+                # Since bash >= 4.4 we could use
+                # echo "export ${line}=${!line@Q}" >> "${ENV_FILE}" ;
+                # For compatible with bash < 4.4
+                printf "export ${line}=%q\n" "${!line}" >> "${ENV_FILE}" ;
+            fi; done
+    echo "export PATH=$PATH:\${PATH}" >> "${ENV_FILE}"
+    echo "export LD_LIBRARY_PATH=/usr/local/nvidia/lib64/:\${LD_LIBRARY_PATH}" >> "${ENV_FILE}"
+
+    # source the envs
+    if [ -f /etc/bash.bashrc ]; then
+      chmod 644 /etc/bash.bashrc
+    fi
+
+    grep -qx "^\s*. ${ENV_FILE}" /home/${DLWS_USER_NAME}/.profile || cat << SCRIPT >> "/home/${DLWS_USER_NAME}/.profile"
+    if [ -f ${ENV_FILE} ]; then
+        . ${ENV_FILE}
+    fi
+    SCRIPT
+
+
+
+    # any command should run as ${DLWS_USER_NAME}
+    #runuser -l ${DLWS_USER_NAME} -c your_commands
+  install.sh: |
+    cwd=`dirname $0`
+    ssh_root="$cwd/ssh_build/usr"
+
+    mkdir -p /usr/etc
+    cp $ssh_root/etc/* /usr/etc
+    cp $cwd/ssh_config/sshd/sshd_config /usr/etc/sshd_config
+
+    cp $cwd/ssh_config/init.d/* /etc/init.d
+    cp $cwd/ssh_config/default/* /etc/default
+    chmod +x /etc/init.d/ssh
+
+    cp -r $ssh_root/bin $ssh_root/sbin $ssh_root/lib $ssh_root/libexec /usr/
+
+    ssh-keygen -t dsa -f /usr/etc/ssh_host_dsa_key -N ""
+    ssh-keygen -t rsa -f /usr/etc/ssh_host_rsa_key -N ""
+    ssh-keygen -t ecdsa -f /usr/etc/ssh_host_ecdsa_key -N ""
+  setup_ib_config.sh: "#! /bin/bash\nset -x\n\n\n\n# find ib ip, if there is no ib
+    interface, select an available interface\nIB_CONFIG_FILE=/job/ib_config-${DLWS_ROLE_NAME}-${DLWS_ROLE_IDX}\nSSH_CONFIG_FILE=/home/${DLWS_USER_NAME}/.ssh/config\nWORKER_IB_CONFIG_FILE=/job/.ib_config-${DLWS_ROLE_NAME}-${DLWS_ROLE_IDX}\n\n\nif
+    [ ! -f $IB_CONFIG_FILE ];then touch $IB_CONFIG_FILE;fi\n\nget_ib_ip(){\n  interface_ip=\n
+    \ # search an interface ip\n  if ifconfig |grep ib -A 1|grep inet ; # if there
+    is ib interface, which is extremely fast, select it\n  then\n    interface_ip=`ifconfig
+    |grep ib -A 1|grep inet |awk '{print $2}'`\n  else # if there is no ib interface,
+    search a available interface\n    virtual_interface_array=()\n    available_interface=\n
+    \   for virtual_interface in `ls /sys/devices/virtual/net/`\n    do\n\t  # can't
+    use ${ #array_name } to acquire arraya length due to jinjia transfer syntax\n\t
+    \ num=`echo virtual_interface_array | wc -w`\n      virtual_interface_array[${num}]=$virtual_interface\n
+    \   done\n    for network_interface in  `ip addr | grep -v lo| sed -r -n ' s/^[0-9]+:
+    (.*):.*/\\1/p'`\n    do\n      if [[ ! `ifconfig $network_interface | grep \"inet
+    \" ` ]] ;\n\t  then\n        continue\n      fi\n      if [[ \"${virtual_interface_array[@]}\"
+    =~ \"$network_interface\" ]] ; then\n              continue\n      else\n        available_interface=$network_interface\n
+    \       break\n      fi\n    done\n    interface_ip=`ifconfig |grep $available_interface
+    -A 1|grep inet |awk '{print $2}'`\n  fi\n}\n\nif [ \"$DLWS_ROLE_NAME\" = \"worker\"
+    ] && command -v ifconfig ;\nthen\n  get_ib_ip\n  # check if interface ip is present\n
+    \ if [ -n \"$interface_ip\" ]; then\n\n\n    if ! cat $IB_CONFIG_FILE |grep ib-${DLWS_ROLE_NAME}-${DLWS_ROLE_IDX};\n
+    \   then\n      echo \"ib-${DLWS_ROLE_NAME}-${DLWS_ROLE_IDX} slots=${DLWS_NUM_GPU_PER_WORKER}\"
+    >> $IB_CONFIG_FILE\n    else\n      sed \"s/#ib-${DLWS_ROLE_NAME}-${DLWS_ROLE_IDX}.*/'ib-${DLWS_ROLE_NAME}-${DLWS_ROLE_IDX}
+    slots=${DLWS_NUM_GPU_PER_WORKER}'/g\" -i $IB_CONFIG_FILE\n    fi\n\n    # TODO
+    add ib ip to ~/.ssh/config to do \"ssh ib-worker-x\" without password\n    port_key=DLWS_SD_${DLWS_ROLE_NAME}${DLWS_ROLE_IDX}_SSH_PORT\n
+    \   port=$(printenv $port_key)\n\n    ENV_FILE=/pod.env\n    ENVIRONMENT_FILE=/job/.env-${DLWS_ROLE_NAME}-${DLWS_ROLE_IDX}\n
+    \   printf \"export DLWS_SD_${DLWS_ROLE_NAME}${DLWS_ROLE_IDX}_IB_IP=${interface_ip}\\n\"
+    >> \"${ENVIRONMENT_FILE}\";\n\ncat >>${WORKER_IB_CONFIG_FILE} <<EOF\n\nHost ib-${DLWS_ROLE_NAME}-${DLWS_ROLE_IDX}\n
+    \ HostName ${interface_ip}\n  Port ${port}\n  User ${DLWS_USER_NAME}\n  StrictHostKeyChecking
+    no\n  UserKnownHostsFile /dev/null\n\nEOF\n\n  fi\nfi\n\nHOST_CONFIG_FILE=/job/.hosts\nif
+    [ \"$DLWS_ROLE_NAME\" = \"ps\" ];then\n  files=/job/.ib_config-worker-*\n  files_list=(${files//
+    / })\n  until [ ${#files_list[@]} == ${DLWS_NUM_WORKER} ]; do\n      echo \"waiting
+    for all worker write ib ip done\"\n      sleep 1\n      files=/job/.ib_config-worker-*\n
+    \     files_list=${files[@]}\n  done\n\n  if [ ! -f $HOST_CONFIG_FILE ];then touch
+    $HOST_CONFIG_FILE;fi\n  cat $HOST_CONFIG_FILE >> /etc/hosts\n\n  for i in /job/.ib_config-worker-*;do\n
+    \   cat $i >> $SSH_CONFIG_FILE\n  done\n\n  for i in /job/.env-worker-*;do\n    cat
+    $i >> /job/.env\n  done\n\n  echo 1 > /job/ib_ready\nfi\n\nif [ \"$DLWS_ROLE_NAME\"
+    = \"worker\" ];then\n  until [ -f /job/ib_ready ]; do\n      echo \"waiting for
+    ps0 sync ib message\"\n      sleep 1\n  done\nfi\n\nENV_FILE=/pod.env\nsed -i
+    \"/_IB_IP/d\" ${ENV_FILE}\n\n"
+  setup_npu.py: "#!/usr/bin/python\n# -*- coding: UTF-8 -*-\n\nimport os\nimport json\nimport
+    time\nimport pdb\nimport platform\nimport string\nimport random\n\n\n# 此脚本与create_script.sh由算法同事\n#
+    帮忙维护，当代码变更时需更新此版本号\ncode_version=\"1.0\"\n\n\ndef create_hccl_mindspore():\n\n
+    \   done = 0\n    rank_id = 0\n    hccl_data = {}\n\n    # for test only\n    #os.environ['DLWS_WORKER_NUM']
+    = \"2\"\n    #os.environ['DLWS_JOB_ID'] = \"test_npu_device\"\n    #os.environ['DLWS_USER_NAME']
+    = \"bifeng.peng\"\n    #\n\n    ## 单机任务，用DLWS_PS_NUM=0判断最好\n    if \"DLWS_WORKER_NUM\"
+    not in os.environ:\n        os.environ['DLWS_WORKER_NUM'] = \"1\"\n    else:\n
+    \       pass\n\n    worker_num = int(os.environ['DLWS_WORKER_NUM'])\n    job_id
+    = os.environ['DLWS_JOB_ID']\n    user_name =  os.environ['DLWS_USER_NAME']\n\n
+    \   # 1）hccl文件和相关脚本都会放到此目录\n    # 2）文件和具体的JOB有关, 不同JOB隔离存储\n    npu_dir = '/home/%s/.npu/%s/'
+    % (user_name, job_id)\n\n    # 以下变量写死\n    hccl_data[\"board_id\"] = \"0x0020\"\n
+    \   hccl_data[\"chip_info\"] = \"910\"\n    hccl_data[\"deploy_mode\"] = \"lab\"\n
+    \   hccl_data[\"group_count\"] = \"1\"\n    hccl_data[\"para_plane_nic_location\"]
+    = \"device\"\n    hccl_data[\"para_plane_nic_name\"] = [\n                                        \"eth0\",\n
+    \                                       \"eth1\",\n                                        \"eth2\",\n
+    \                                       \"eth3\",\n                                        \"eth4\",\n
+    \                                       \"eth5\",\n                                        \"eth6\",\n
+    \                                       \"eth7\"\n                                    ]\n
+    \   hccl_data[\"para_plane_nic_num\"] = \"8\"\n    hccl_data[\"status\"] = \"completed\"\n
+    \   hccl_data[\"group_list\"] = []\n\n    group = {}\n    group[\"device_num\"]
+    = str(worker_num * 8)\n    group[\"server_num\"] = str(worker_num)\n    group[\"group_name\"]
+    = \"test\"\n    group[\"instance_count\"] = group[\"device_num\"]\n    group[\"instance_list\"]
+    = []\n\n    ## 生成npu_idx.info文件\n    ## 文件数量和worker个数一致\n    while True:\n\n        PATH
+    = npu_dir + ('/npu_%d.info' % (done))\n        if os.path.isfile(PATH) and os.access(PATH,
+    os.R_OK):\n\n            \n            with open(PATH, \"r\") as f:\n\n                ips
+    = \"\"\n                host_ip = \"\"\n\n                # 文件中的格式：\n                #
+    ip=id1:ip1,id2:ip2\n                # host=xxx\n                for line in f:\n
+    \                   print(line)\n                    if \"ip=\" in line:\n                        _,
+    ips = line.strip().split(\"=\")\n                    elif \"host=\" in line:\n
+    \                       _, host_ip = line.strip().split(\"=\")\n\n                ip_list
+    = ips.split(\",\")\n                ip_list = sorted(ip_list)\n\n                for
+    ip_elem in ip_list:\n\n                    # 设备id和ip\n                    device_id,
+    device_ip = ip_elem.split(\":\")\n\n                    ## set up group list\n
+    \                   device_item = {}  # item of instance list\n                    device_item[\"devices\"]
+    = [{\n                        \"device_id\" : device_id,\n                        \"device_ip\"
+    : device_ip\n                    }]\n\n                    device_item[\"rank_id\"]
+    = str(rank_id)\n                    device_item[\"server_id\"] = str(host_ip)\n\n
+    \                   #pdb.set_trace()\n                    rank_id = rank_id +
+    1\n                    group[\"instance_list\"].append(device_item)\n\n                f.close()\n
+    \               done = done + 1\n        else:\n            pass\n\n        if
+    done == worker_num:\n            break\n        else:\n            pass\n\n        time.sleep(1)\n\n
+    \   group[\"instance_count\"] = group[\"device_num\"] = str(len(group[\"instance_list\"]))\n
+    \   print(\"succ!\")\n    hccl_data[\"group_list\"].append(group)\n\n    # dump
+    to json file\n    with open(npu_dir + '/hccl_ms.json', 'w') as fp:\n        json.dump(hccl_data,
+    fp)\n\n    return\n\ndef create_hccl_tensorflow():\n\n    done = 0          #
+    worker node to process\n    rank_id = 0       # equals to device count\n    hccl_data
+    = {}\n\n    # for test only\n    #os.environ['DLWS_WORKER_NUM'] = \"2\"\n    #os.environ['DLWS_JOB_ID']
+    = \"test_npu_device\"\n    #os.environ['DLWS_USER_NAME'] = \"bifeng.peng\"\n    #\n\n
+    \   ## non distributed job\n    if \"DLWS_WORKER_NUM\" not in os.environ:\n        os.environ['DLWS_WORKER_NUM']
+    = \"1\"\n    else:\n        pass\n\n    worker_num = int(os.environ['DLWS_WORKER_NUM'])\n
+    \   job_id = os.environ['DLWS_JOB_ID']\n    pod_name = os.environ['POD_NAME']\n
+    \   user_name =  os.environ['DLWS_USER_NAME']\n\n    distributing_job= False\n
+    \   if \"DLWS_NUM_PS\" in os.environ:\n        if int(os.environ[\"DLWS_NUM_PS\"])
+    > 0: \n            distributing_job = True\n        else:\n            pass\n
+    \   else:\n        pass\n    \n\n    # 1）hccl文件和相关脚本都会放到此目录\n    # 2）文件和具体的JOB有关,
+    不同JOB隔离存储\n    npu_dir = '/home/%s/.npu/%s/' % (user_name, job_id)\n\n    hccl_data[\"group_count\"]
+    = \"1\"\n    hccl_data[\"status\"] = \"completed\"\n    hccl_data[\"group_list\"]
+    = []\n\n    group = {}\n    #group[\"device_count\"] = worker_num * 8\n    group[\"instance_count\"]
+    = str(worker_num)\n    group[\"group_name\"] = \"test\"\n    group[\"instance_list\"]
+    = []\n\n    ## 生成npu_idx.info文件\n    ## 文件数量和worker个数一致\n    while True:\n\n        PATH
+    = npu_dir + ('/npu_%d.info' % (done))\n        if os.path.isfile(PATH) and os.access(PATH,
+    os.R_OK):\n\n            with open(PATH, \"r\") as f:\n\n                ips =
+    \"\"\n                host_ip = \"\"\n\n                # 文件中的格式：\n                #
+    ip=id1:ip1,id2:ip2\n                # host=xxx\n                for line in f:\n
+    \                   print(line)\n                    if \"ip=\" in line:\n                        _,
+    ips = line.strip().split(\"=\")\n                    elif \"host=\" in line:\n
+    \                       _, host_ip = line.strip().split(\"=\")\n\n                instance_item
+    = {}  # item of instance list\n                if distributing_job is True:\n
+    \                   instance_item[\"pod_name\"] = job_id + \"-worker-\" + str(done)\n
+    \               else:\n                    instance_item[\"pod_name\"] = pod_name\n\n
+    \               instance_item[\"server_id\"] = host_ip\n                instance_item[\"devices\"]
+    = []\n\n                # parse string to get all device ips\n                ip_list
+    = ips.split(\",\")\n                ip_list = sorted(ip_list)\n\n                for
+    ip_elem in ip_list:\n\n                    # one device\n                    device_id,
+    device_ip = ip_elem.split(\":\")\n\n                    ## set up group list\n
+    \                   device_item =  {\n                        \"device_id\" :
+    device_id,\n                        \"device_ip\" : device_ip\n                    }\n\n
+    \                   # append to instance list\n                    rank_id = rank_id
+    + 1\n                    instance_item[\"devices\"].append(device_item)\n                    #pdb.set_trace()\n\n
+    \               group[\"instance_list\"].append(instance_item)\n                f.close()\n
+    \               done = done + 1\n\n        else:\n            pass\n\n        if
+    done == worker_num:\n            break\n        else:\n            pass\n\n        time.sleep(1)\n\n
+    \   group[\"device_count\"] = str(rank_id)\n    group[\"instance_count\"] = str(len(group[\"instance_list\"]))\n
+    \   hccl_data[\"group_list\"].append(group)\n\n    print(\"succ!\")\n\n    # dump
+    to json file\n    with open(npu_dir + '/hccl_tf.json', 'w') as fp:\n        json.dump(hccl_data,
+    fp)\n\n    return\n\n\n# 从/pod.env导入环境变量\ndef load_env(file_path):\n    envs =
+    {}\n\n    with open(file_path, \"r\") as f:\n\n        lines = f.readlines()\n
+    \       for line in lines:\n\n            line = line.strip().lstrip(\"export\")\n
+    \           if line is not \"\" and \"=\" in line:\n                key_val =
+    line.strip().split(\"=\")\n\n                key = key_val[0]\n                value
+    = key_val[1]\n                envs[key] = value\n\n            else:\n                pass\n\n
+    \       f.close()\n\n    return envs\n\n# 向/pod.env写入环境变量\n# 先判断是否存在此环境量，如果已存在，则覆盖\ndef
+    add_env(path, envs):\n\n    # 覆盖相同key数据，文件已有的key保持不变\n    envs_orig = load_env(path)\n
+    \   for k, v in envs.items():\n         envs_orig[k] = v\n\n    with open(path,
+    \"w\") as f:\n        for k, v in envs_orig.items():\n            f.write(\"export
+    %s=%s\\n\" % (k, v))\n        \n        f.close()\n\n    return\n\n\ndef get_os_flag():\n\n
+    \   osflag=\"x86_64\"\n\n    if platform.machine() == \"aarch64\":\n        osflag
+    = \"arm64\"\n    else:\n        pass\n\n    return osflag\n\n# gnu安装目录中的架构和算法组件的不一样\n#
+    单独处理\ndef get_gnu_arch_flag():\n\n    osflag=\"x86_64\"\n\n    if platform.machine()
+    == \"aarch64\":\n        osflag = \"aarch64\"\n    else:\n        pass\n\n    return
+    osflag\n\n\ndef get_random_num(length):\n    return ''.join(random.choice(string.digits)
+    for _ in range(length))\n\n\n# 用于将环境变量更新 写入指定用户的shell加载文件\ndef set_bashrc(username):\n\n
+    \   path = \"\"\n    if username == \"root\":\n        path = \"/root/.bashrc\"\n
+    \   else:\n        path = \"/home/\" + username + \"/.bashrc\"\n\n\n    with open(path,
+    \"a\") as f:\n\n        cmd = '''\n        if [ -f \"/pod.env\"  ]; then\n            .
+    /pod.env\n        fi\n        '''\n\n        f.write(cmd + \"\\n\")\n        f.close()\n\n
+    \   return\n\n\n# 准备mindspore环境\n# 1) 预备环境变量，并写入/pod.env\n# 2) 创建算法需要的训练shell脚本\n#
+    3) 创建算法需要的hccl文件\ndef handle_mindspore():\n\n    path = \"/pod.env\"\n    envs
+    = load_env(path)  # 导入平台加载过程中已创建的环境变量\n    envs_to_add= {}\n    envs_to_add[\"DEVICE_ID\"]
+    = \"0\"\n\n    # 解析GPU/NPU设备ID\n    if \"VISIBLE_IDS\" in envs:\n        envs[\"VISIBLE_IDS\"]
+    = envs[\"VISIBLE_IDS\"].replace(\"\\\\\",\"\")\n        envs_to_add[\"VISIBLE_IDS\"]
+    = envs[\"VISIBLE_IDS\"] \n    else:\n        pass\n\n\n    # 解析NPU Device ID\n
+    \   if \"NPU_IPS\" in envs:\n        envs[\"NPU_IPS\"] = envs[\"NPU_IPS\"].replace(\"\\\\\",\"\")\n
+    \       envs_to_add[\"NPU_IPS\"] = envs[\"NPU_IPS\"] \n    else:\n        pass\n\n
+    \   ## 将/pod.env已有的环境变量\n    ## 与os当前具有的环境变量合并, 放入envs\n    for k, v in os.environ.items():\n
+    \       if k not in envs:\n            envs[k] = v\n        else:\n            pass\n\n
+    \   ## 不需要解析device id\n\n    ## 设置随机参数, 算法要求\n    envs[\"RANDOM\"] = get_random_num(6)\n
+    \   envs[\"osflag\"] = get_os_flag()\n    envs[\"gnu_arch\"] = get_gnu_arch_flag()\n\n
+    \   # mindspore环境变量模板\n    mindspore_envs = [\n      \"PYTHONPATH=/usr/local/lib/python3.7/site-packages/mindspore/lib:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl:${PYTHONPATH}\",\n
+    \     \"LD_LIBRARY_PATH=/usr/lib/${gnu_arch}-linux-gnu/hdf5/serial:/usr/local/Ascend/add-ons/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/add-ons:/home/HwHiAiUser/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe/op_tiling:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/atc/lib64:/usr/local/Ascend/fwkacllib/lib64/:/usr/local/lib/python3.7/site-packages/mindspore/lib/:/usr/local/lib/python3.7/site-packages/torch/lib:/usr/local/lib:/home/clang+llvm/lib/:$LD_LIBRARY_PATH\",\n
+    \     \"TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe\",\n
+    \     \"PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/ccec_compiler/bin/:/home/clang+llvm/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/atc/bin\",\n
+    \     \"ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp\",\n
+    \     \"LLVM_CONFIG=/home/clang+llvm/bin/llvm-config\",\n      \"SOC_VERSION=Ascend910\",\n
+    \     \"POD_NAME=${DLWS_JOB_ID}\",\n      \"JOB_ID=${RANDOM}\",\n      \"RANK_SIZE=1\",\n
+    \     \"ASCEND_GLOBAL_LOG_LEVEL=3\",\n      \"ASCEND_GLOBAL_EVENT_ENABLE=0\"\n
+    \   ]\n\n    # 模板渲染\n    for item in mindspore_envs:\n\n        tpl = string.Template(item)\n
+    \       new_item = tpl.safe_substitute(envs)\n\n        if \"=\" in new_item:\n
+    \           key_val = new_item.strip().split(\"=\")\n            k = key_val[0]\n
+    \           v = key_val[1]\n            envs_to_add[k] = v\n\n        else:\n
+    \           pass\n\n    # 1) 更新/pod.env, 创建环境变量\n    add_env(path, envs_to_add)\n\n
+    \   # 2) 生成shell训练脚本\n    pod_cmd = os.environ[\"DLWS_LAUNCH_CMD\"]\n    npu_info_dir
+    = \"/home/\" + os.environ[\"DLWS_USER_NAME\"] + \"/.npu/\" + os.environ[\"DLWS_JOB_ID\"]
+    + \"/train.sh\"\n\n    cmd = 'python /pod/scripts/create_script.py --type mindspore
+    --command \"%s\" --out %s'% (pod_cmd, npu_info_dir)\n    os.system(cmd)\n    os.system(\"chmod
+    777 \" + npu_info_dir)\n\n    # 将环境变量更新写入 root\n    set_bashrc(\"root\")\n\n    ##
+    3) 生成hccl_tf.json\n    if need_create_hccl() is True:\n        create_hccl_mindspore()\n
+    \   else:\n        pass\n\n    # 4) 分布式训练任务，环境配置同步\n    if is_distributed_job()
+    is True and is_ps_pod() is True:\n        notify()\n\n    elif is_distributed_job()
+    is True and is_worker_pod() is True:\n        wait()\n\n    else:\n        pass\n\n
+    \   return\n\n\n# 准备tensorflow环境\n# 1) 预备环境变量，并写入/pod.env\n# 2) 创建算法需要的训练shell脚本\n#
+    3) 创建算法需要的hccl文件\ndef handle_tensorflow():\n\n    # 1) 预备环境变量，并写入/pod.env\n    path
+    = \"/pod.env\"\n    envs = load_env(path) # 导入平台加载过程中已创建的环境变量\n    envs_to_add=
+    {}\n\n    # 解析GPU/NPU设备ID\n    if \"VISIBLE_IDS\" in envs:\n        envs[\"VISIBLE_IDS\"]
+    = envs[\"VISIBLE_IDS\"].replace(\"\\\\\",\"\")\n        envs_to_add[\"VISIBLE_IDS\"]
+    = envs[\"VISIBLE_IDS\"] \n    else:\n        pass\n\n    if \"NPU_IPS\" in envs:\n
+    \       envs[\"NPU_IPS\"] = envs[\"NPU_IPS\"].replace(\"\\\\\",\"\")\n        envs_to_add[\"NPU_IPS\"]
+    = envs[\"NPU_IPS\"] \n    else:\n        pass\n\n    ## 将/pod.env已有的环境变量\n    ##
+    与os当前具有的环境变量合并, 放入envs\n    for k, v in os.environ.items():\n        if k not
+    in envs:\n            envs[k] = v\n        else:\n            pass\n\n    ## 第一个设备id\n
+    \   device_id=\"0\"\n    device_index=\"0\"\n\n    if \"VISIBLE_IDS\" in envs:\n
+    \        devid = envs[\"VISIBLE_IDS\"].split(\",\")[0].strip()\n         if len(devid)
+    > 0:\n             device_id = devid\n         else:\n             pass\n    else:\n
+    \       pass\n\n    device_index = device_id\n\n    ## 设置随机参数\n    envs[\"RANDOM\"]
+    = get_random_num(6)\n    envs[\"osflag\"] = get_os_flag()\n    envs[\"gnu_arch\"]
+    = get_gnu_arch_flag()\n\n    # 模板配置\n    tensorflow_envs = [\n      \"PYTHONPATH=/usr/local/lib/python3.7/site-packages/mindspore/lib:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl:${PYTHONPATH}\",\n
+    \     \"LD_LIBRARY_PATH=/usr/lib/${gnu_arch}-linux-gnu/hdf5/serial:/usr/local/Ascend/add-ons/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/add-ons:/home/HwHiAiUser/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe/op_tiling:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/atc/lib64:/usr/local/Ascend/fwkacllib/lib64/:/usr/local/lib/python3.7/site-packages/mindspore/lib/:/usr/local/lib/python3.7/site-packages/torch/lib:/usr/local/lib:/home/clang+llvm/lib/:$LD_LIBRARY_PATH\",\n
+    \     \"TBE_IMPL_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe\",\n
+    \     \"PATH=$PATH:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/${osflag}-linux/fwkacllib/ccec_compiler/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/fwkacllib/ccec_compiler/bin/:/home/clang+llvm/bin/:/home/HwHiAiUser/Ascend/ascend-toolkit/latest/atc/bin\",\n
+    \     \"ASCEND_OPP_PATH=/home/HwHiAiUser/Ascend/ascend-toolkit/latest/opp\",\n
+    \     \"LLVM_CONFIG=/home/clang+llvm/bin/llvm-config\",\n      \"SOC_VERSION=Ascend910\",\n
+    \     \"POD_NAME=${DLWS_JOB_ID}\",\n      \"JOB_ID=${RANDOM}\",\n      \"RANK_SIZE=1\",\n
+    \     \"ASCEND_GLOBAL_LOG_LEVEL=3\",\n      \"ASCEND_GLOBAL_EVENT_ENABLE=0\"\n
+    \   ]\n\n    envs_to_add[\"DEVICE_ID\"] = device_id\n    envs_to_add[\"DEVICE_INDEX\"]
+    = device_index\n\n    # 渲染模板\n    for item in tensorflow_envs:\n\n        tpl
+    = string.Template(item)\n        new_item = tpl.safe_substitute(envs)\n\n        if
+    \"=\" in new_item:\n            key_val = new_item.strip().split(\"=\")\n            k
+    = key_val[0]\n            v = key_val[1]\n            envs_to_add[k] = v\n\n        else:\n
+    \           pass\n\n    #  1) 更新环境变量\n    add_env(path, envs_to_add)\n\n    ##
+    2) 生成shell脚本\n    pod_cmd = os.environ[\"DLWS_LAUNCH_CMD\"]\n    npu_info_dir
+    = \"/home/\" + os.environ[\"DLWS_USER_NAME\"] + \"/.npu/\" + os.environ[\"DLWS_JOB_ID\"]
+    + \"/train.sh\"\n\n    cmd = 'python /pod/scripts/create_script.py --type tensorflow
+    --command \"%s\" --out %s'% (pod_cmd, npu_info_dir)\n    print(cmd, \"==========================\")\n
+    \   os.system(cmd)\n    os.system(\"chmod 777 \" + npu_info_dir)\n\n    # 更新用户bash脚本\n
+    \   set_bashrc(\"root\")\n\n    # 3) 生成hccl_tf.json\n    if need_create_hccl()
+    is True:\n        create_hccl_tensorflow()\n    else:\n        pass\n\n    # 4)
+    分布式训练任务，环境配置同步\n    if is_distributed_job() is True and is_ps_pod() is True:\n
+    \       notify()\n\n    elif is_distributed_job() is True and is_worker_pod()
+    is True:\n        wait()\n\n    else:\n        pass\n\n\n    return\n\n# 是否分布式训练任务\ndef
+    is_distributed_job():\n\n    if \"DLWS_NUM_PS\" in os.environ:\n        dlws_num_ps
+    = os.environ[\"DLWS_NUM_PS\"].strip().lower()\n\n        if len(dlws_num_ps) >
+    0 and int(dlws_num_ps) >0:\n            print(\"is_distributed_job return true\")\n
+    \           return True\n\n    return False\n\n# 是否master节点\ndef is_ps_pod():\n\n
+    \   if \"DLWS_ROLE_NAME\" in os.environ:\n        dlws_role_name = os.environ[\"DLWS_ROLE_NAME\"].strip().lower()\n\n
+    \       ## Ps表示多机多卡ps pod\n        if dlws_role_name == \"ps\":\n            return
+    True\n\n    return False\n\n\n# 是否worker节点\ndef is_worker_pod():\n\n    if \"DLWS_ROLE_NAME\"
+    in os.environ:\n        dlws_role_name = os.environ[\"DLWS_ROLE_NAME\"].strip().lower()\n\n
+    \       ## Ps表示多机多卡ps pod\n        if dlws_role_name == \"worker\":\n            return
+    True\n\n    return False\n\n\n# 分布式训练任务 \n# ps节点在环境预备结束后，创建setup_environment_done文件\n#
+    用作环境准备完成的标识\ndef notify():\n\n    # 单机训练任务，只有一个POD不需要做协同\n    if is_distributed_job()
+    is False:\n        return\n\n    setup_environment_done = \"/home/\" + os.environ[\"DLWS_USER_NAME\"]
+    + \"/.npu/\" + os.environ[\"DLWS_JOB_ID\"] + \"/setup_environment_done\"\n\n    #
+    多机多卡训练，ps节点预备环境\n    if not os.path.exists(setup_environment_done):\n        open(setup_environment_done,
+    'a').close()\n\n    return\n\n# 分布式训练任务 \n# worker节点通过检查setup_environment_done文件\n#
+    来判断环境准备是否结束\ndef wait():\n\n    # 单机训练任务，只有一个POD不需要等待环境\n    if is_distributed_job()
+    is False:\n        return\n\n    setup_environment_done = \"/home/\" + os.environ[\"DLWS_USER_NAME\"]
+    + \"/.npu/\" + os.environ[\"DLWS_JOB_ID\"] + \"/setup_environment_done\"\n\n    #
+    多机多卡训练，ps节点预备环境\n    while True:\n        if not os.path.exists(setup_environment_done):\n
+    \           print(\"===========\", setup_environment_done, \" not found. wait\")\n
+    \           time.sleep(1)\n        else:\n            break\n\n    return\n\n\n\n#
+    1) 单机训练中，需要创建hccl文件\n# 2）多机多卡中，需要在ps pod创建hccl文件, 此文件会被worker pod共同读取\ndef need_create_hccl():\n
+    \   \n\n    if \"DLWS_ROLE_NAME\" in os.environ:\n        dlws_role_name = os.environ[\"DLWS_ROLE_NAME\"].strip().lower()\n\n
+    \       ## master表示单机POD\n        ## Ps表示多机多卡ps pod\n        if dlws_role_name
+    == \"ps\" or dlws_role_name == \"master\":\n            return True\n\n    return
+    False\n\n\nif __name__ == \"__main__\":\n\n    # 1) 训练框架类别由前端传入\n    #    本脚本依据此字段,
+    为不同框架创建不同的环境参数\n    #    hccl文件、环境变量等等\n\n    # 2) 脚本经平台bootstrap.sh调用\n    #
+    \   仅在JOB为单机节点或者 分布式任务的PS节点被执行\n    if \"aiframework\" in os.environ:\n\n        framework
+    = os.environ[\"aiframework\"].strip().lower()\n\n        if framework == \"tensorflow\":\n
+    \           handle_tensorflow()\n\n        elif framework == \"mindspore\":\n
+    \           handle_mindspore()\n\n        else:\n            handle_tensorflow()\n\n
+    \   else:\n\n        # 兼容版本<v1.3.0\n        create_hccl_mindspore()\n        create_hccl_tensorflow()\n\n
+    \   pass\n"
+  setup_ssh_config.sh: "#! /bin/bash\nset -x\n\n# judge if it is safe to write shared
+    files \n#\nfunction can_write_shared_file() {\n    \n    if [ \"$DLWS_ROLE_NAME\"
+    = \"master\" ]; then\n\t# true\n\treturn 0\n\n    elif [ \"$DLWS_ROLE_NAME\" =
+    \"ps\" ]; then\n\t# true\n\treturn 0\n    else\n \n\t# false\n\treturn 1\n    fi\n}\n\n#
+    judge if config file has been created\nfunction prepare_ssh_config_file_done()
+    {\n\n    CONFIG_FILE=/home/${DLWS_USER_NAME}/.ssh/config\n    if test -f \"$CONFIG_FILE\";
+    then\n  \n\t# true\n        return 0\n    else\n\n\t# false\n        return 1\n
+    \   fi\n}\n\n\n# judge if it is worker pod\nfunction is_worker_pod() {\n\n    if
+    [ \"$DLWS_ROLE_NAME\" = \"worker\" ]; then\n\n        # true\n        return 0\n
+    \   else\n\n        # false\n        return 1\n    fi\n}\n\n\n\n# generate ps
+    host list\nfunction prepare_host_list() {\n\n    ps_host_list=\"\"\n    for i
+    in $(seq 0 $(( ${DLWS_NUM_PS} - 1 )) )\n    do\n        ps_host_list+=\"ps-${i}
+    \"\n    done\n    \n    # generate worker host list\n    worker_host_list=\"\"\n
+    \   if [ \"$DLWS_ROLE_NAME\" = \"master\" ];\n    then\n        worker_host_list=\"${DLWS_ROLE_NAME}\"\n
+    \   else\n        for i in $(seq 0 $(( ${DLWS_NUM_WORKER} - 1 )) )\n        do\n
+    \           worker_host_list+=\"worker-${i} \"\n        done\n    fi\n    \n    #
+    generate host list\n    # host_list=\"ps0 worker-0 worker-1 ...\"\n    host_list=\"${ps_host_list}
+    ${worker_host_list}\"\n}\n\n# shared ssh files\n# for distributed job, they are
+    used for pod communication\nfunction create_shared_ssh_file() {\n\n    # generate
+    ~/.ssh/config\n    SSH_CONFIG_FILE=/home/${DLWS_USER_NAME}/.ssh/config\n    NPU_CONFIG_FILE=/home/${DLWS_USER_NAME}/.ssh/npu_config\n
+    \   \n    # for distributed job, we only create file from ps pod\n    if can_write_shared_file
+    ; then\n\n        if [ ! -f ${SSH_CONFIG_FILE} ] ; then\n            >${SSH_CONFIG_FILE}\n
+    \       fi\n\n        if [ ! -f ${NPU_CONFIG_FILE} ] ; then\n            >${NPU_CONFIG_FILE}\n
+    \       fi\n    \n        chown ${DLWS_USER_NAME} ${SSH_CONFIG_FILE}\n        chmod
+    600 ${SSH_CONFIG_FILE}\n    fi\n}\n\n# \nfunction prepare_ssh_file() {\n\n    for
+    host in ${host_list}\n    do\n\n        if [ \"$DLWS_ROLE_NAME\" = \"master\"
+    ];\n        then\n            ip=$DLWS_SD_SELF_IP\n            port=$DLWS_SD_SELF_SSH_PORT\n
+    \           host_ip=$DLWS_SD_SELF_HOST_IP\n\n        else\n            role=${host%%-*}\n
+    \           idx=${host##*-}\n    \n            ip_key=DLWS_SD_${role}${idx}_IP\n
+    \           ib_ip_key=DLWS_SD_${role}${idx}_IB_IP\n            port_key=DLWS_SD_${role}${idx}_SSH_PORT\n
+    \   \n            npu_ip_list_key=DLWS_SD_${role}${idx}_SSH_PORT\n            host_ip_key=DLWS_SD_${idx}_HOST_IP\n
+    \   \n            ip=$(printenv $ip_key)\n            ib_ip=$(printenv $ib_ip_key)\n
+    \           port=$(printenv $port_key)\n    \n            npu_ip_list=$(printenv
+    $npu_ip_list_key)\n            host_ip=$(printenv $host_ip_key)\n        fi\n\n
+    \       # for distributed job, we change ssh files from ps pod\n        if can_write_shared_file
+    ; then\n\n        cat >>${SSH_CONFIG_FILE} <<EOF\nHost ${host}\n      HostName
+    ${ip}\n      Port ${port}\n      User ${DLWS_USER_NAME}\n      StrictHostKeyChecking
+    no\n      UserKnownHostsFile /dev/null\nEOF\n        fi\n\n\n        # also add
+    entry to /etc/hosts\n        echo -e \"${ip}\\t${host}\" >> /etc/hosts\n    done\n}\n\nfunction
+    prepare_environment_file() {\n\n# generate npu info for distributed npu jobs\nif
+    [ ! -z npu_ip_list ] && [ \"$role\" = \"worker\" ]; then\n    cat >> ${NPU_CONFIG_FILE}
+    << EOF\n${npu_ip_list} slots=${DLWS_NUM_GPU_PER_WORKER}\n${host_ip} slots=${DLWS_NUM_GPU_PER_WORKER}\nEOF\nfi\n\nenvs=(\nLD_LIBRARY_PATH\nLIBRARY_PATH\nPATH\nPYTHONPATH\nNCCL_IB_DISABLE\nNCCL_VERSION\nDLWS_HOST_NETWORK\nDLWS_JOB_ID\nDLTS_JOB_TOKEN\nDLWS_NUM_PS\nDLWS_NUM_WORKER\nDLWS_NUM_GPU_PER_WORKER\nDLWS_NUM_WORKER\nDLWS_VC_NAME\nDLWS_UID\nDLWS_GID\nDLWS_USER_NAME\nDLWS_USER_EMAIL\nDLWS_ROLE_NAME\nDLWS_ROLE_IDX\n)\n\nif
+    [ \"$DLWS_ROLE_NAME\" = \"master\" ] || [ \"$DLWS_ROLE_NAME\" = \"ps\" ];then\nSSH_ENVIRONMENT_FILE=/home/${DLWS_USER_NAME}/.ssh/environment\nfor
+    env_key in \"${envs[@]}\" ; do\n    if [ \"`printenv $env_key`\" != \"\" ] ; then\n
+    \       printf $env_key >> $SSH_ENVIRONMENT_FILE\n        printf = >> $SSH_ENVIRONMENT_FILE\n
+    \       printenv $env_key >> $SSH_ENVIRONMENT_FILE\n    fi\ndone\nchown ${DLWS_USER_NAME}
+    ${SSH_ENVIRONMENT_FILE}\nchmod 600 ${SSH_ENVIRONMENT_FILE}\nfi\n}\n\n\nfunction
+    setup_root_ssh() {\n    # set up ssh config for root user\n    mkdir -p /root/.ssh
+    && cp /home/${DLWS_USER_NAME}/.ssh/* /root/.ssh/ && chown root /root/.ssh/* &&
+    chmod 600 /root/.ssh/*\n}\n\n\nfunction prepare_hostfile() {\n# generate /job/hostfile\nif
+    [ \"$DLWS_ROLE_NAME\" = \"master\" ] || [ \"$DLWS_ROLE_NAME\" = \"ps\" ];\nthen\n
+    \   SLOT_FILE=\"/job/hostfile\"\n    >${SLOT_FILE}\n    chown ${DLWS_USER_NAME}
+    ${SLOT_FILE}\n\n    for host in ${worker_host_list}\n    do\n        slots=${DLWS_NUM_GPU_PER_WORKER}\n
+    \       cat >>${SLOT_FILE} <<EOF\n${host} slots=${slots}\nEOF\n    done\nfi\n\n}\n\n#######################################################\n#
+    \n#######################################################\nprepare_host_list\ncreate_shared_ssh_file\nprepare_ssh_file\nprepare_environment_file\nsetup_root_ssh\nprepare_hostfile\n\n\n\n\n#
+    make sure worker have sshd up and running\nif [ \"$DLWS_ROLE_NAME\" = \"ps\" ];\nthen\n
+    \   for host in ${host_list}\n    do\n        succ=false\n        for i in `seq
+    1 3600` ; do\n            echo \"testing $host\"\n            ssh $host \"echo
+    1\"\n            # do not add code here\n            rtn=$?\n            echo
+    \"done testing $host\"\n            if [ \"$rtn\" -eq \"0\" ] ; then\n                succ=true\n
+    \               echo \"$host has done sshd setup\"\n                break\n            else\n
+    \               echo \"$host has not done sshd setup wait 1s\"\n                sleep
+    1\n            fi\n        done\n\n        if [ \"$succ\" = \"false\" ] ; then\n
+    \           exit 1\n        fi\n    done\nfi\n\n\nHOST_CONFIG_FILE=/job/.hosts\nif
+    [ \"$DLWS_ROLE_NAME\" = \"ps\" ];then\n  if [ ! -f $HOST_CONFIG_FILE ];then touch
+    $HOST_CONFIG_FILE;fi\n  cat $HOST_CONFIG_FILE >> /etc/hosts\nfi\n\n\n"
+  setup_sshd.sh: |
+    #! /bin/bash
+    set -ex
+
+    function fail {
+      echo $1 >&2
+      exit 1
+    }
+
+    function retry {
+      local n=1
+      local max=3
+      local delay=3
+      while true; do
+        "$@" && break || {
+          if [[ $n -lt $max ]]; then
+            ((n++))
+            echo "Command failed. Attempt $n/$max:"
+            sleep $delay;
+          else
+            fail "The command has failed after $n attempts."
+          fi
+        }
+      done
+    }
+
+    function setup_sshd {
+        SSH_PORT=$DLWS_SD_SELF_SSH_PORT
+        sed -i -E "s/^#?Port 22/Port ${SSH_PORT}/" /usr/etc/sshd_config || exit 1
+
+        echo "${SSH_PORT}" > ${PROC_DIR}/SSH_PORT
+        echo "${POD_IP}" > ${PROC_DIR}/POD_IP
+
+        time /etc/init.d/ssh restart || exit 1
+    }
+
+    retry setup_sshd
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: dlws-scripts

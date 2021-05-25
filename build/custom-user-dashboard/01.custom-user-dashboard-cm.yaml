@@ -1,0 +1,48 @@
+apiVersion: v1
+data:
+  local.config: |-
+    # Log
+    LOGGING_DIR=logs
+    LOGGING_LEVEL=debug
+
+    # Auth
+    JWT_SECRET_KEY=Sign key for JWT
+    SECRET_KEY=123abcABC!@#
+
+    # OAuth
+    MS_CLIENT_ID="1"
+    MS_CLIENT_SECRET="1"
+
+    WX_APP_ID="wx403e175ad2bf1d2d"
+    WX_SECRET="dc8cb2946b1d8fe6256d49d63cd776d0"
+
+    # Server
+    APP_HOST=127.0.0.1
+    APP_PORT=5001
+
+    # Database
+    DB_TYPE=postgres
+    DB_NAME=user_group
+
+
+    DB_HOST=postgres.kube-system
+    DB_PORT=5432
+    DB_USERNAME=postgres
+    DB_PASSWORD="36wFZvf8suFgfdyY"
+
+
+    ADMINISTRATOR_USER_NAME="["admin" ]"
+    ADMINISTRATOR_PASSWORD="McgOWa"
+
+    # Cluster
+    RESTFULAPI=http://192.168.2.178:80/apis
+
+    # Optional config
+    ENABLE_I18N=True
+    ENABLE_VC=True
+    PLATFORM_NAME=依瞳人工智能平台
+    ENABLE_AVISUALS=False
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: custom-user-dashboard-cm

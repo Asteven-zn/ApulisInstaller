@@ -1,0 +1,84 @@
+apiVersion: v1
+data:
+  appsettings.json: |-
+    {
+        /*
+        "ConnectionStrings": {
+          "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=aspnet-WebUI-2ECAA934-5CD0-4F65-945B-016852512C59;Trusted_Connection=True;MultipleActiveResultSets=true"
+        }, */
+        "Data": {
+            "FileName": "WebUI.db",
+            "Path": "database"
+        },
+        "Logging": {
+            "IncludeScopes": false,
+            "LogLevel": {
+                "Default": "Debug",
+                "System": "Information"
+            }
+        },
+        "Authentication": {
+            // Manage at https://open.weixin.qq.com
+            "WeChat": {
+                "AppId": "wx403e175ad2bf1d2d",
+                "AppSecret": "dc8cb2946b1d8fe6256d49d63cd776d0"
+            },
+            // Manage at https://apps.dev.microsoft.com/
+            "Microsoft": {
+                "ClientId": "6d93837b-d8ce-48b9-868a-39a9d843dc57",
+                "ClientSecret": "eIHVKiG2TlYa387tssMSj?E?qVGvJi[]"
+            },
+            "Google": {
+                "ClientId": "79875480060-v3767v9ja9hl1vs1iu0cpv205hs3j8mo.apps.googleusercontent.com",
+                "ClientSecret": "uUHI10QzqmJHlH3jWHYN42xb"
+            }
+        },
+        "AllowedHosts": "*",
+        "EmailSender": {
+            "Host": "smtp.office365.com",
+            "Port": 587,
+            "EnableSSL": true,
+            "UserName": "dev@apulis.com",
+            "Password": "Yitong#123"
+        },
+        "SecurityKey": "Sign key for JWT",
+        "FontEndUrlDevelopment": "http://localhost:3000",
+        "FontEndUrl": "http://apulis-sz-dev-worker01.sigsus.cn",
+        "BackEndUrl": "https://localhost:44326",
+        "userDashboardUrl": "http://conip/custom-user-dashboard-backend",
+        "userDashboardToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMwMDAwfQ.72IHfoQCsme92ymkqAY2cQ1Vb6Dy3rmY1U--03zSXrI"
+    }
+  config.yaml: "datasource: postgres\n#datasource: \"PostgreSQL\"\nmysql :\n  hostname:
+    mysql.kube-system\n  port: 3306\n  username: root\n  password: \"4Tka6kDR8Kgy455O\"\npostgresql:\n
+    \ hostname: conip\n  port: 5432\n  username: postgres\n  password: 36wFZvf8suFgfdyY\n\ndltsdata-storage-mount-path:
+    /dlwsdata\nkubelet-path: /usr/bin/kubectl\nstorage-mount-path: /dlwsdata\nroot-path:
+    /DLWorkspace/src/\nnvidiaDriverPath: /opt/nvidia-driver/current\nclusterId: fc505c7b-4905-5a97-9e40-39e2880af3ba\ndomain:
+    sigsus.cn\napiserver: \"https://conip:6443\"\ncertificate-authority: /etc/kubernetes/ssl/ca.pem\nclient-certificate:
+    /etc/kubernetes/ssl/admin.pem\nclient-key: /etc/kubernetes/ssl/admin-key.pem\npod_ip_range:
+    10.68.0.0/16\nper_user_gpu_limit: -1\nmountpoints: {u'nfsshare1': {u'mountpoints':
+    None, u'server': u'conip', u'filesharename': u'/mnt/local', u'mountcmd':
+    u' ', u'type': u'nfs', u'options': u'rsize=8192,timeo=14,intr,tcp', u'curphysicalmountpoint':
+    u'/mntdlws'}}\nmounthomefolder: True\ndeploymounts: \nwebportal_node: conip\nkube_custom_scheduler:
+    False\ngpu_count_per_node: 1\nworker_node_num: 1\ngpu_type: nvidia\ndefalt_virtual_cluster_name:
+    platform\n\ninfiniband_mounts: \ncustom_mounts: \n\nenable_cpuworker: False\ndefault_cpurequest:
+    \ndefault_cpulimit: \ndefault_memoryrequest: \ndefault_memorylimit: \ndefault_cpu_sku:
+    Standard_D2s_v3\nsku_meta: {u'default': {u'memory_ratio': 0.8, u'Standard_D2s_v3':
+    {u'memory_ratio': 0.9, u'memory': 8, u'cpu': 2, u'cpu_ratio': 0.9}, u'cpu_ratio':
+    0.8}}\n\nenable_blobfuse: dalse\n\nlocal_fast_storage: \nenable_custom_registry_secrets:
+    False\nmaster_token: \nnccl_ib_disable: \nvc_node_hard_assignment: \n\ngpu_reporter:
+    'http://conip:9092'\n\nvc_without_shared_storage: \n\njwt:\n  secret_key:
+    Sign key for JWT\n  algorithm: HS256\n  token_ttl: 86400\n\nAuthentication:\n
+    \ WeChat:\n    AppId: \"wx403e175ad2bf1d2d\"\n    AppSecret: \"dc8cb2946b1d8fe6256d49d63cd776d0\"\n
+    \ Microsoft:\n    ClientId: \"1\"\n    ClientSecret: \"1\"\n\nadministrators:\n
+    \ - admin\n\ninference:\n  tensorflow:\n    allowedImageVersions:\n      - 1.15.0\n
+    \     - 1.15.0-arm64\n      - 1.15.0-gpu\n      - 2.2.0\n      - 2.2.0-arm64\n
+    \     - 2.2.0-gpu\n  apulisVision:\n    allowedImageVersions:\n      - 1.0.0\n\nusermanagerapi:
+    http://conip/custom-user-dashboard-backend\nusermanagerapitoken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMwMDAwLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxOTIwODUyOTA0fQ.kT7Bf9xc1SPR_5QI0k7dqMYzgWfuHjUGdq2tstVPEf0\n\nenable_jobmanager_debug_mode:
+    False\n\nextranet_port: 80\nextranet_protocol: http\n\ndefalt_virtual_cluster_device_type_list:\n
+    \ - nvidia_gpu_amd64\n\nmaster_private_ip:  conip\n\ndata_platform_path:
+    /dlwsdata/label/\nprivate_docker_registry: harbor.apulis.cn:8443/aiarts_v1.5.0_rc8/\nendpoint_use_short_domain:
+    \n\n\n\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: restful-cm
